@@ -1,0 +1,37 @@
+/* .full-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-left: auto;
+} */
+.left-container{
+    background-image: url("../assets//Background.jpeg");
+}
+
+.heading{
+    max-width: 634px;
+    margin-top: 156px;
+    font-weight: 500;
+    margin-left: 87px;
+}
+
+.heading span{
+    /* color: linear-gradient( #2C43B8 100%); */
+    color: #2C43B8
+}
+
+.right-container{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.logo-right{
+    margin-left: 56px;
+    margin-top: 83px;
+}
+.customise-container h1{
+    font-weight: 500;
+    font-size: 32px;
+    color: #26203B;
+}
