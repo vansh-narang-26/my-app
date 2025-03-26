@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import "./BookDemo.css"
 import tick from "../assets/Ticks.svg"
 import grdp from "../assets/1.svg"
@@ -10,6 +10,7 @@ import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
 import "../Pages/Button.css"
+import moment from 'moment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -22,7 +23,17 @@ import ProgressBar from '../Components/ProgressBar'
 const StyledSpan = styled.span`
   color: red;
 `;
-
+const dept = [
+    { value: "IT", label: "IT" },
+    { value: "Finance", label: "Finance" },
+    { value: "Human Resources", label: "Human Resources" },
+    { value: "Marketing", label: "Marketing" },
+    { value: "Sales", label: "Sales" },
+    { value: "Operations", label: "Operations" },
+    { value: "Research and Development", label: "Research and Development" },
+    { value: "Customer Support", label: "Customer Support" },
+    { value: "Other", label: "Other" },
+]
 const questionsData = [
     { id: 1, text: "Which segment does your company belongs to?", options: ["Startup", "Scale Startup", "SME", "Mid Enterprises", "Large Enterprises", "Public Sector", "Non-Profit Organizations"] },
     { id: 2, text: "How many technical teams will be working with NexaStack?", options: ["0-10", "11-50", "51-100", "More Than 100", "Only Me"] },
@@ -32,6 +43,39 @@ const questionsData = [
     { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Others (Please Specify)"] },
     { id: 7, text: "Are there specific AI models you plan to operate using NexaStack?", options: ["LLMs (Large Language Models)", "Vision Models", "Recommendation Systems", "Speech & Audio Models", "Custom AI/ML Models", "Not Sure, Need Guidance"] },
 ];
+const IndustryList = [
+    { value: "Aerospace", label: "Aerospace" },
+    { value: "Agriculture", label: "Agriculture" },
+    { value: "Automotive", label: "Automotive" },
+    { value: "Banking and Finance Sector", label: "Banking and Finance Sector", },
+    { value: "Consumer Goods", label: "Consumer Goods" },
+    { value: "Consumer Technology", label: "Consumer Technology" },
+    { value: "Education", label: "Education" },
+    { value: "Enterprise Technology", label: "Enterprise Technology" },
+    { value: "Financial Services", label: "Financial Services" },
+    { value: "Gaming", label: "Gaming" },
+    { value: "Government", label: "Government" },
+    { value: "Healthcare", label: "Healthcare" },
+    { value: "Hospitality", label: "Hospitality" },
+    { value: "Insurance", label: "Insurance" },
+    { value: "Life Sciences", label: "Life Sciences" },
+    { value: "Manufacturing", label: "Manufacturing" },
+    { value: "Marketing & Advertising", label: "Marketing & Advertising" },
+    { value: "Media", label: "Media" },
+    { value: "Mining", label: "Mining" },
+    { value: "Non-Profit Organization", label: "Non-Profit Organization" },
+    { value: "Oil and Gas", label: "Oil and Gas" },
+    { value: "Power & Utilities", label: "Power & Utilities" },
+    { value: "Professional Services", label: "Professional Services" },
+    { value: "Real Estate and Construction", label: "Real Estate and Construction", },
+    { value: "Retail", label: "Retail" },
+    { value: "Telecommunication", label: "Telecommunication" },
+    { value: "Transportation and Logistics", label: "Transportation and Logistics", },
+    { value: "Travel", label: "Travel" },
+    { value: "Wholesale and Distribution", label: "Wholesale and Distribution", },
+    { value: "Other", label: "Other" },
+];
+
 
 const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -118,10 +162,49 @@ const BookDemo = () => {
             setCurrentStep(3);
         }
     };
-    const duration = 1000; // ms
-    const delay = 500; // ms
+    const QuestionWrapper = styled.div`
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+  
+        &.visible {
+        opacity: 1;
+        transform: translateY(0);
+  }
+`;
+    // const [timeSlots, setTimeSlots] = useState([
+    //     { time: '9:00 AM', isAvailable: true },
+    //     { time: '9:30 AM', isAvailable: false },
+    //     { time: '10:00 AM', isAvailable: true },
 
-    const animStr = (i) => `fadeIn ${duration}ms ease-out ${delay * i}ms forwards`;
+    // ]);
+
+    let inTime = "08:00 AM"
+    let outTime = "10:00 AM"
+    const [slots, setSlots] = useState([]);
+    function intervals(startString, endString) {
+        var start = moment(startString, 'hh:mm a');
+        var end = moment(endString, 'hh:mm a');
+        start.minutes(Math.ceil(start.minutes() / 30) * 30);
+
+        var current = moment(start);
+
+        while (current <= end) {
+            if (slots.includes(current.format('hh:mm a'))) {
+                return null
+            }
+            else {
+                slots.push(current.format('hh:mm a'));
+                current.add(30, 'minutes');
+            }
+        }
+
+        return slots;
+    }
+
+
+    // const duration = 1000; // ms
+    // const delay = 500; // ms
 
     // const handleChange = (event) => {
     //     setSelectedValue(event.target.value);
@@ -129,6 +212,9 @@ const BookDemo = () => {
 
     const progress = (Object.keys(selectedAnswers).length / questionsData.length) * 100;
 
+    useEffect(()=>{
+        intervals(inTime, outTime);
+    })
     return (
         <div className='w-full md:flex md:flex-row flex-col justify-between mx-auto h-screen font-inter overflow-x-hidden'>
             <div className='w-full left-container flex flex-col items-start'>
@@ -196,18 +282,19 @@ const BookDemo = () => {
                                 </h2>
                                 <div className="flex flex-wrap gap-5 md:gap-6 md:gap-y-8 mx-4 md:ml-12 my-6 md:text-[15px]">
                                     {questionsData[currentQuestionIndex].options.map((option) => (
-                                        <button
-                                            style={{ animation: animStr(questionsData[currentQuestionIndex].id) }}
-                                            key={option}
-                                            className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-sm
+                                        <div className='delay-100 transition duration-150 ease-in-out'>
+                                            <button
+                                                key={option}
+                                                className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-sm
                                             ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "bg-blue-500 text-white" :
-                                                    pendingAnswer && pendingAnswer.option === option ? "bg-blue-500 text-white" :
-                                                        "bg-[#F6F6F6]"}`}
-                                            onClick={() => handleAnswer(questionsData[currentQuestionIndex].id, option)}
-                                            disabled={pendingAnswer !== null} //Waiting until previous answer is not null as one time one selection is there
-                                        >
-                                            {option}
-                                        </button>
+                                                        pendingAnswer && pendingAnswer.option === option ? "bg-blue-500 text-white" :
+                                                            "bg-[#F6F6F6]"}`}
+                                                onClick={() => handleAnswer(questionsData[currentQuestionIndex].id, option)}
+                                                disabled={pendingAnswer !== null} //Waiting until previous answer is not null as one time one selection is there
+                                            >
+                                                {option}
+                                            </button>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -309,16 +396,17 @@ const BookDemo = () => {
                                     Industry Belongs To <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#9C9AA5] ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="industry"
                                     value={formData.industry}
                                     onChange={handleInputChange}
                                 >
                                     <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
-                                    <option value="volvo">Volvo</option>
-                                    <option value="saab">Saab</option>
-                                    <option value="fiat">Fiat</option>
-                                    <option value="audi">Audi</option>
+                                    {IndustryList.map((ind) => (
+                                        <option key={ind.value} value={ind.value}>
+                                            {ind.label}
+                                        </option>
+                                    ))}
                                 </select>
                                 {formErrors.industry && (
                                     <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
@@ -329,16 +417,17 @@ const BookDemo = () => {
                                     Department / Team <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#9C9AA5] ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="department"
                                     value={formData.department}
                                     onChange={handleInputChange}
                                 >
-                                    <option value="" className='text-[#9C9AA5]'>Select your Department/ Team</option>
-                                    <option value="volvo">Volvo</option>
-                                    <option value="saab">Saab</option>
-                                    <option value="fiat">Fiat</option>
-                                    <option value="audi">Audi</option>
+                                    <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
+                                    {dept.map((dept) => (
+                                        <option key={dept.value} value={dept.value}>
+                                            {dept.label}
+                                        </option>
+                                    ))}
                                 </select>
                                 {formErrors.department && (
                                     <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
@@ -361,11 +450,11 @@ const BookDemo = () => {
                     <div className='w-full'>
                         <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
                             <h1 className='md:text-[32px] flex mx-auto md:ml-12'>Book Demo</h1>
-                            <p className='text-[#727272] md:-ml-[108px] ml-0 md:w-full md:text-[24px] font-normal'>Please pick your suitable date and time slot for the demo.</p>
+                            <p className='text-[#727272] md:-ml-[108px] ml-3 md:w-full md:text-[24px] font-normal'>Please pick your suitable date and time slot for the demo.</p>
                         </div>
-                        <div className='flex mt-10 ml-8'>
+                        <div className='flex mt-10 items-center'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className="flex justify-center items-center gap-x-10 w-full">
+                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 md:ml-16">
                                     <DateCalendar
                                         disablePast
                                         // dayOfWeekFormatter={(day) => {
@@ -392,7 +481,7 @@ const BookDemo = () => {
                                             //     marginX: '1px',
                                             // },
                                             '& .Mui-selected': {
-                                                backgroundColor: '#FF0000 !important',
+                                                backgroundColor: '#FB3F4A !important',
                                                 color: 'white !important',
                                                 '&:hover': {
                                                     backgroundColor: '#FF3333 !important',
@@ -400,7 +489,19 @@ const BookDemo = () => {
                                             },
                                         }}
                                     />
-                                    <div className="h-[300px] w-[1px] bg-gray-200"></div>
+                                    <div className="h-[300px] w-[1px] bg-gray-200 ml-12 hidden md:block"></div>
+                                    <div className='flex flex-col gap-y-4 w-7/12 items-center'>
+                                    <h1 className='text-[#333333] font-bold text-[18px] md:text-[24px] md:mt-0 mt-6'>Available Time Slots</h1>
+                                        {
+                                            slots && slots.length > 0 ? slots.map((time, index) => {
+                                                return (
+                                                    <button key={index} className='bg-white py-2 px-4 w-48 border rounded-xl hover:bg-[#093179] hover:text-white'>
+                                                        <p>{time}</p>
+                                                    </button>
+                                                )
+                                            }) : null
+                                        }
+                                    </div>
                                 </div>
                             </LocalizationProvider>
 
