@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Progress_bar = ({ bgcolor, progress, height }) => {
+const ProgressBar = ({ bgcolor, progress, height }) => {
 
     const Parentdiv = {
         maxWidth:"100%",
@@ -26,14 +26,14 @@ const Progress_bar = ({ bgcolor, progress, height }) => {
     // }
 
     return (
-        <div className='flex items-center ml-8 mt-4'>
+        <div className='flex items-center md:ml-8 mt-4'>
             <div style={Parentdiv}>
                 <div style={Childdiv}>
                 </div>
             </div>
-            <p className='p-0 text-[15px] font-normal'>{`${progress}%`} completed</p>
+            <p className='p-0 text-[10px] md:text-[15px] font-normal'>{`${progress}%`} completed</p>
         </div>
     )
 }
 
-export default Progress_bar;
+export default ProgressBar;

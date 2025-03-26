@@ -4,34 +4,56 @@
     justify-content: space-between;
     margin-left: auto;
 } */
-.left-container{
+.left-container {
     background-image: url("../assets//Background.jpeg");
 }
 
-.heading{
+.heading {
     max-width: 634px;
     margin-top: 156px;
     font-weight: 500;
-    margin-left: 87px;
+    margin-left: 40px;
 }
 
-.heading span{
+@media (max-width:768px) {
+    .heading {
+        margin-top: 68px;
+        font-weight: 400;
+        margin-left: 0px;
+    }
+}
+
+.heading span {
     /* color: linear-gradient( #2C43B8 100%); */
     color: #2C43B8
 }
 
-.right-container{
+.right-container {
     display: flex;
     flex-direction: column;
     align-items: start;
 }
 
-.logo-right{
+.logo-right {
     margin-left: 56px;
     margin-top: 83px;
 }
-.customise-container h1{
+
+.customise-container h1 {
     font-weight: 500;
     font-size: 32px;
     color: #26203B;
+}
+
+@media (max-width:430px) {
+    .customise-container h1 {
+        font-weight: 600;
+        font-size: 16px;
+        color: #26203B;
+    }
+    .logo-right {
+        margin-left: 138px;
+        margin-top: 50px;
+        margin-bottom: 20px;
+    }
 }

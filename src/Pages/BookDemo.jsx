@@ -10,7 +10,7 @@ import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 // import Button from '../Components/Button'
 import arrow from "../assets/Vector.svg"
-import "../Pages/Button.css"
+import "./Button.css"
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -21,7 +21,7 @@ import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
 import { StaticTimePicker } from '@mui/x-date-pickers/StaticTimePicker';
 import styled from "styled-components";
-import Progress_bar from '../Components/ProgressBar'
+import ProgressBar from '../Components/ProgressBar'
 
 const StyledSpan = styled.span`
   color: red;
@@ -92,43 +92,43 @@ const BookDemo = () => {
                 <p className='mt-12 text-[#3E57DA] ml-24 tracking-[0.67px]'>WHAT TO EXPECT:</p>
                 <div className='ml-24 mt-4 space-y-4 flex items-start flex-col'>
                     <div className='flex items-center gap-x-3'>
-                        <img src={tick} /><p className='text-[#333B52] tracking-[-0.08px]'>Get a personalized demo of NexaStack</p>
+                        <img src={tick} alt='tick'/><p className='text-[#333B52] tracking-[-0.08px]'>Get a personalized demo of NexaStack</p>
                     </div>
                     <div className='flex items-center gap-x-3 '>
-                        <img src={tick} />  <p className='text-[#333B52] tracking-[-0.08px]'>Learn about pricing for your use case</p>
+                        <img src={tick} alt='tick'/>  <p className='text-[#333B52] tracking-[-0.08px]'>Learn about pricing for your use case</p>
                     </div>
                     <div className='flex items-center gap-x-3'>
-                        <img src={tick} />
+                        <img src={tick} alt='tick'/>
                         <p className='text-[#333B52] tracking-[-0.08px]'>Hear proven customer success stories</p>
                     </div>
 
                 </div>
                 <div className='flex ml-24 mt-12 gap-x-12'>
-                    <img src={grdp} />
-                    <img src={soc} />
-                    <img src={iso} />
+                    <img src={grdp} alt='grdp'/>
+                    <img src={soc} alt='soc'/>
+                    <img src={iso} alt='iso'/>
                 </div>
                 <div className='ml-24 mt-24'>
                     <h3 className='text-[#333B52]'>Trusted by over Top AI companies of all size</h3>
                 </div>
                 <div className='ml-14 mt-4'>
                     <div className='grid grid-cols-4 gap-x-10'>
-                        <img src={zoom} />
-                        <img src={reuters} />
-                        <img src={heineken} />
-                        <img src={reuters} />
+                        <img src={zoom} alt='zoom'/>
+                        <img src={reuters} alt='reuters'/>
+                        <img src={heineken} alt='heineken'/>
+                        <img src={reuters} alt='reuters'/>
                     </div>
                     <div className='grid grid-cols-4 gap-x-10'>
-                        <img src={zoom} />
-                        <img src={reuters} />
-                        <img src={heineken} />
-                        <img src={reuters} />
+                    <img src={zoom} alt='zoom'/>
+                        <img src={reuters} alt='reuters'/>
+                        <img src={heineken} alt='heineken'/>
+                        <img src={reuters} alt='reuters'/>
                     </div>
                 </div>
             </div>
             <div className='right-container w-full'>
                 <div className='logo-right'>
-                    <img src={logo} />
+                    <img src={logo} alt='comapny-logo'/>
                 </div>
 
                 {/* 1st step */}
@@ -139,7 +139,7 @@ const BookDemo = () => {
                         <p className='text-[#727272] text-[24px] font-normal'>Setup your primary focus and customise the demo accordingly.</p>
                     </div>
                     <div className='w-full '>
-                        <Progress_bar
+                        <ProgressBar
                             bgcolor="#0066FF"
                             progress={Math.round(progress)}
                             height={9}
@@ -165,8 +165,8 @@ const BookDemo = () => {
                         ))}
                     </div>
                     <div className='text-white flex absolute bottom-12 right-12'>
-                        //Disbaled
-                        <button className={`btn-next flex gap-x-6 items-center font-normal`} >Next Step <img src={arrow} /></button>
+                        {/* //Disbaled */}
+                        <button className={`btn-next flex gap-x-6 items-center font-normal`} >Next Step <img src={arrow} alt='arrow'/></button>
                     </div>
                 </div>
 
