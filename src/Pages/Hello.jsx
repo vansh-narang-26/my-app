@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import "./BookDemo.css"
 import tick from "../assets/Ticks.svg"
 import grdp from "../assets/1.svg"
@@ -13,9 +13,9 @@ import "../Pages/Button.css"
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
-import dayjs from 'dayjs';
+// import { DemoItem } from '@mui/x-date-pickers/internals/demo';
+// import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+// import dayjs from 'dayjs';
 import styled from "styled-components";
 import ProgressBar from '../Components/ProgressBar'
 
@@ -37,8 +37,10 @@ const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [selectedValue, setSelectedValue] = useState('');
+    // const [selectedValue, setSelectedValue] = useState('');
+    const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -49,24 +51,32 @@ const BookDemo = () => {
     });
     const [formErrors, setFormErrors] = useState({});
 
-    const handleAnswer = (questionId, option) => {
-        setSelectedAnswers((prev) => ({
-            ...prev,
-            [questionId]: option
-        }));
+    const handleAnswer = useCallback((questionId, option) => {
+        setPendingAnswer({ questionId, option });
+        setLoading(false)
 
-        //Next question moving
-        if (currentQuestionIndex < questionsData.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
-        }
-        //Enabling next (for last question)
-        else if (currentQuestionIndex === questionsData.length - 1) {
-            setIsLastQuestionAnswered(true);
-        }
-    };
+        setTimeout(() => {
+            setSelectedAnswers((prev) => ({
+                ...prev,
+                [questionId]: option
+            }));
+
+
+            setPendingAnswer(null);
+            setLoading(true)
+
+            if (currentQuestionIndex < questionsData.length - 1) {
+                setCurrentQuestionIndex(prev => prev + 1);
+            }
+
+            else if (currentQuestionIndex === questionsData.length - 1) {
+                setIsLastQuestionAnswered(true);
+            }
+        }, 500);
+    }, [currentQuestionIndex]);
 
     const handleNext = () => {
-        
+
         if (Object.keys(selectedAnswers).length === questionsData.length) {
             setCurrentStep(prevStep => prevStep + 1);
         }
@@ -108,10 +118,14 @@ const BookDemo = () => {
             setCurrentStep(3);
         }
     };
+    const duration = 1000; // ms
+    const delay = 500; // ms
 
-    const handleChange = (event) => {
-        setSelectedValue(event.target.value);
-    };
+    const animStr = (i) => `fadeIn ${duration}ms ease-out ${delay * i}ms forwards`;
+
+    // const handleChange = (event) => {
+    //     setSelectedValue(event.target.value);
+    // };
 
     const progress = (Object.keys(selectedAnswers).length / questionsData.length) * 100;
 
@@ -164,9 +178,9 @@ const BookDemo = () => {
                 {/* Step 1 */}
                 {currentStep === 1 && (
                     <div>
-                        <div className='customise-container items-start flex flex-col ml-12 md:mt-20 mt-6'>
-                            <h1 className='md:text-[32px] ml-2 md:ml-0'>Customize your 30 minute Demo</h1>
-                            <p className='text-[#727272] w-96 -ml-8 md:w-full md:-ml-[104px] md:text-[24px] font-normal'>Setup your primary focus and customise the demo accordingly.</p>
+                        <div className='customise-container items-start flex flex-col md:mt-20 mt-6'>
+                            <h1 className='md:text-[32px] ml-16 md:ml-12'>Customize your 30 minute Demo</h1>
+                            <p className='text-[#727272] ml-2 md:ml-12 md:text-[24px] font-normal'>Setup your primary focus and customise the demo accordingly.</p>
                         </div>
                         <div className='w-96 mx-auto md:w-full items-center'>
                             <ProgressBar
@@ -183,9 +197,14 @@ const BookDemo = () => {
                                 <div className="flex flex-wrap gap-5 md:gap-6 md:gap-y-8 mx-4 md:ml-12 my-6 md:text-[15px]">
                                     {questionsData[currentQuestionIndex].options.map((option) => (
                                         <button
+                                            style={{ animation: animStr(questionsData[currentQuestionIndex].id) }}
                                             key={option}
-                                            className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-sm ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "bg-blue-500 text-white" : "bg-[#F6F6F6]"}`}
+                                            className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-sm
+                                            ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "bg-blue-500 text-white" :
+                                                    pendingAnswer && pendingAnswer.option === option ? "bg-blue-500 text-white" :
+                                                        "bg-[#F6F6F6]"}`}
                                             onClick={() => handleAnswer(questionsData[currentQuestionIndex].id, option)}
+                                            disabled={pendingAnswer !== null} //Waiting until previous answer is not null as one time one selection is there
                                         >
                                             {option}
                                         </button>
@@ -340,7 +359,7 @@ const BookDemo = () => {
                 {/* Step 3 */}
                 {currentStep === 3 && (
                     <div className='w-full'>
-                          <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
+                        <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
                             <h1 className='md:text-[32px] flex mx-auto md:ml-12'>Book Demo</h1>
                             <p className='text-[#727272] md:-ml-[108px] ml-0 md:w-full md:text-[24px] font-normal'>Please pick your suitable date and time slot for the demo.</p>
                         </div>
