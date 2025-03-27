@@ -10,6 +10,7 @@ import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
 import "../Pages/Button.css"
+import { motion } from 'framer-motion';
 import moment from 'moment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -76,7 +77,6 @@ const IndustryList = [
     { value: "Other", label: "Other" },
 ];
 
-
 const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [currentStep, setCurrentStep] = useState(1);
@@ -84,7 +84,7 @@ const BookDemo = () => {
     // const [selectedValue, setSelectedValue] = useState('');
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
-    const [loading, setLoading] = useState(false)
+    // const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -97,7 +97,7 @@ const BookDemo = () => {
 
     const handleAnswer = useCallback((questionId, option) => {
         setPendingAnswer({ questionId, option });
-        setLoading(false)
+        // setLoading(false)
 
         setTimeout(() => {
             setSelectedAnswers((prev) => ({
@@ -107,7 +107,7 @@ const BookDemo = () => {
 
 
             setPendingAnswer(null);
-            setLoading(true)
+            // setLoading(true)
 
             if (currentQuestionIndex < questionsData.length - 1) {
                 setCurrentQuestionIndex(prev => prev + 1);
@@ -162,59 +162,35 @@ const BookDemo = () => {
             setCurrentStep(3);
         }
     };
-    const QuestionWrapper = styled.div`
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.5s ease, transform 0.5s ease;
-  
-        &.visible {
-        opacity: 1;
-        transform: translateY(0);
-  }
-`;
-    // const [timeSlots, setTimeSlots] = useState([
-    //     { time: '9:00 AM', isAvailable: true },
-    //     { time: '9:30 AM', isAvailable: false },
-    //     { time: '10:00 AM', isAvailable: true },
-
-    // ]);
-
-    let inTime = "08:00 AM"
-    let outTime = "10:00 AM"
     const [slots, setSlots] = useState([]);
-    function intervals(startString, endString) {
+    const [selectedSlot, setSelectedSlot] = useState(null);
+
+    const intervals = (startString, endString) => {
         var start = moment(startString, 'hh:mm a');
         var end = moment(endString, 'hh:mm a');
         start.minutes(Math.ceil(start.minutes() / 30) * 30);
 
         var current = moment(start);
+        const timeSlots = [];
 
         while (current <= end) {
-            if (slots.includes(current.format('hh:mm a'))) {
-                return null
-            }
-            else {
-                slots.push(current.format('hh:mm a'));
-                current.add(30, 'minutes');
-            }
+            timeSlots.push(current.format('hh:mm a'));
+            current.add(30, 'minutes');
         }
 
-        return slots;
-    }
+        return timeSlots;
+    };
 
+    useEffect(() => {
+        const generatedSlots = intervals('08:00 AM', '08:00 PM');
+        setSlots(generatedSlots);
+    }, []);
 
-    // const duration = 1000; // ms
-    // const delay = 500; // ms
-
-    // const handleChange = (event) => {
-    //     setSelectedValue(event.target.value);
-    // };
-
+    const handleSlotSelection = (time) => {
+        setSelectedSlot(time);
+    };
     const progress = (Object.keys(selectedAnswers).length / questionsData.length) * 100;
 
-    useEffect(()=>{
-        intervals(inTime, outTime);
-    })
     return (
         <div className='w-full md:flex md:flex-row flex-col justify-between mx-auto h-screen font-inter overflow-x-hidden'>
             <div className='w-full left-container flex flex-col items-start'>
@@ -277,24 +253,33 @@ const BookDemo = () => {
                         </div>
                         <div className="w-full mt-14">
                             <div key={questionsData[currentQuestionIndex].id} className="mb-6 flex flex-col">
+                                <motion.div>
+
                                 <h2 className="text-sm md:text-xl font-semibold mb-2 text-start ml-6 md:ml-12 text-[22px] text-[#000000]">
                                     {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
                                 </h2>
+                                </motion.div>
                                 <div className="flex flex-wrap gap-5 md:gap-6 md:gap-y-8 mx-4 md:ml-12 my-6 md:text-[15px]">
                                     {questionsData[currentQuestionIndex].options.map((option) => (
-                                        <div className='delay-100 transition duration-150 ease-in-out'>
+                                        <motion.div
+                                            key={option}
+                                            initial="hidden"
+                                            animate="visible"
+                                            variants={optionVariants}
+                                            // custom={index}
+                                            // className='delay-100 transition duration-150 ease-in-out'
+                                        >
                                             <button
-                                                key={option}
                                                 className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-sm
-                                            ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "bg-blue-500 text-white" :
+                                              ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "bg-blue-500 text-white" :
                                                         pendingAnswer && pendingAnswer.option === option ? "bg-blue-500 text-white" :
                                                             "bg-[#F6F6F6]"}`}
                                                 onClick={() => handleAnswer(questionsData[currentQuestionIndex].id, option)}
-                                                disabled={pendingAnswer !== null} //Waiting until previous answer is not null as one time one selection is there
+                                                disabled={pendingAnswer !== null}
                                             >
                                                 {option}
                                             </button>
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             </div>
@@ -450,7 +435,7 @@ const BookDemo = () => {
                     <div className='w-full'>
                         <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
                             <h1 className='md:text-[32px] flex mx-auto md:ml-12'>Book Demo</h1>
-                            <p className='text-[#727272] md:-ml-[108px] ml-3 md:w-full md:text-[24px] font-normal'>Please pick your suitable date and time slot for the demo.</p>
+                            <p className='text-[#727272] md:-ml-[180px] ml-3 md:w-full md:text-[24px] font-normal'>Please pick your suitable date and time slot for the demo.</p>
                         </div>
                         <div className='flex mt-10 items-center'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -489,18 +474,36 @@ const BookDemo = () => {
                                             },
                                         }}
                                     />
-                                    <div className="h-[300px] w-[1px] bg-gray-200 ml-12 hidden md:block"></div>
-                                    <div className='flex flex-col gap-y-4 w-7/12 items-center'>
-                                    <h1 className='text-[#333333] font-bold text-[18px] md:text-[24px] md:mt-0 mt-6'>Available Time Slots</h1>
-                                        {
-                                            slots && slots.length > 0 ? slots.map((time, index) => {
-                                                return (
-                                                    <button key={index} className='bg-white py-2 px-4 w-48 border rounded-xl hover:bg-[#093179] hover:text-white'>
-                                                        <p>{time}</p>
-                                                    </button>
-                                                )
-                                            }) : null
-                                        }
+                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 "></div>
+                                    <div className='flex flex-col items-center w-7/12'>
+                                        <div className='w-full max-w-[300px] md:mb-4 flex flex-col'>
+                                            <h2 className='text-3xl font-semibold text-gray-700 mb-7 mt-4 md:mt-0'>
+                                                Available Time Slots
+                                            </h2>
+                                            <div className='overflow-hidden flex items-center mx-auto'>
+                                                <div className='h-[300px] w-[200px] overflow-y-scroll scrollbar-hide'>
+                                                    {slots && slots.length > 0 ? (
+                                                        <div className='space-y-6 p-2'>
+                                                            {slots.map((time, index) => (
+                                                                <button
+                                                                    key={index}
+                                                                    className={`w-full py-3 text-center rounded-xl border hover:bg-[#093179] hover:text-white transition-colors duration-200 ${selectedSlot === time
+                                                                            ? 'bg-[#093179] text-white'
+                                                                            : 'bg-white text-black'}`}
+                                                                    onClick={() => handleSlotSelection(time)}
+                                                                >
+                                                                    {time}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    ) : (
+                                                        <div className='text-center py-4 text-gray-500'>
+                                                            No time slots available
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </LocalizationProvider>
@@ -523,3 +526,18 @@ const BookDemo = () => {
 }
 
 export default BookDemo
+
+const optionVariants = {
+    hidden: { opacity: 0 },
+    visible: (index) => ({
+        opacity: 1,
+        x: 0,
+        transition: {
+            type: "tween",
+            ease: "easeOut",
+            duration: 1.5,
+            delay: index * 0.15
+        }
+    })
+
+};
