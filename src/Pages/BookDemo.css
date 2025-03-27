@@ -13,7 +13,7 @@
 }
 
 .heading {
-    max-width: 634px;
+    /* max-width: 634px; */
     margin-top: 106px;
     font-weight: 500;
     /* margin-left: 40px; */
@@ -23,7 +23,6 @@
     .heading {
         margin-top: 68px;
         font-weight: 400;
-        margin-left: 0px;
     }
 }
 
@@ -38,10 +37,10 @@
     align-items: start;
 }
 
-.logo-right {
+/* .logo-right {
     margin-left: 56px;
     margin-top: 83px;
-}
+} */
 
 .customise-container h1 {
     font-weight: 500;
