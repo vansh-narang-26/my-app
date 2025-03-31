@@ -26,12 +26,12 @@ const ProgressBar = ({ bgcolor, progress, height }) => {
     // }
 
     return (
-        <div className='flex items-center md:ml-8 mt-4'>
+        <div className='flex items-center md:ml-16 mt-4 w-full flex-row md:w-full xl:w-[450px] 2xl:w-full xl:ml-10 2xl:ml-8'>
             <div style={Parentdiv}>
                 <div style={Childdiv}>
                 </div>
             </div>
-            <p className='p-0 text-[15px] md:text-[15px] font-normal'>{`${progress}%`} completed</p>
+            <p className='p-0 text-[12px] md:text-[16px] lg:text-[20px] font-normal w-11/12 mx-auto lg:w-64 xl:w-full lg:mr-4 xl:mr-0 2xl:text-[16px] text-center xl:text-start'>{`${progress}%`} completed</p>
         </div>
     )
 }

@@ -6,6 +6,7 @@
 } */
 .left-container {
     background-image: url("../assets//Background.jpeg");
+    width: 100vw;
 }
 .btn-option{
     color: white;
@@ -44,7 +45,7 @@
 
 .customise-container h1 {
     font-weight: 500;
-    font-size: 32px;
+    /* font-size: 32px; */
     color: #26203B;
 }
 

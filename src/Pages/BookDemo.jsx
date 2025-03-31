@@ -34,7 +34,6 @@ const dept = [
     { value: "Operations", label: "Operations" },
     { value: "Research and Development", label: "Research and Development" },
     { value: "Customer Support", label: "Customer Support" },
-    { value: "Other", label: "Other" },
 ]
 const questionsData = [
     { id: 1, text: "Which segment does your company belongs to?", options: ["Startup", "Scale Startup", "SME", "Mid Enterprises", "Large Enterprises", "Public Sector", "Non-Profit Organizations"] },
@@ -79,10 +78,11 @@ const IndustryList = [
 ];
 
 const BookDemo = () => {
+    var todayDate = new Date().toISOString().slice(0, 10);
     const isDesktop = useMediaQuery('(min-width:768px)');
-    const [value, setValue] = React.useState(dayjs('2025-03-27'));
+    const [value, setValue] = React.useState(dayjs(todayDate));
     const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(3);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     // const [selectedValue, setSelectedValue] = useState('');
     const [pendingAnswer, setPendingAnswer] = useState(null);
@@ -97,6 +97,7 @@ const BookDemo = () => {
         department: ''
     });
     const [formErrors, setFormErrors] = useState({});
+    // console.log(todayDate);
 
     const handleAnswer = useCallback((questionId, option) => {
         setPendingAnswer({ questionId, option });
@@ -141,7 +142,18 @@ const BookDemo = () => {
                 [name]: ''
             }));
         }
+
+        if (name === 'firstName' || name === 'lastName') {
+            const regex = /^[a-zA-Z\s]+$/;
+            if (!regex.test(value)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    [name]: 'Only alphabets are allowed.'
+                }));
+            }
+        }
     };
+
     const validateForm = () => {
         const errors = {};
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -169,20 +181,21 @@ const BookDemo = () => {
     const [selectedSlot, setSelectedSlot] = useState(null);
 
     const intervals = (startString, endString) => {
-        var start = moment(startString, 'hh:mm a');
-        var end = moment(endString, 'hh:mm a');
+        const start = moment(startString, 'hh:mm a');
+        const end = moment(endString, 'hh:mm a');
         start.minutes(Math.ceil(start.minutes() / 30) * 30);
 
-        var current = moment(start);
         const timeSlots = [];
 
-        while (current <= end) {
-            timeSlots.push(current.format('hh:mm a'));
-            current.add(30, 'minutes');
+        while (start <= end) {
+            timeSlots.push(start.format('hh:mm a'));
+            start.add(30, 'minutes');
         }
 
         return timeSlots;
     };
+
+
     const date = new Date();
     const formattedTime = new Intl.DateTimeFormat('en-US', {
         hour: 'numeric',
@@ -195,39 +208,56 @@ const BookDemo = () => {
     const val = value.$d;
     const showDate = val.toDateString()
     // const month= showDate.toDateString()
-    console.log(showDate)
-    const newDate = val.getDate()
+    //console.log(showDate)
+    // const newDate = val.getDate()
 
 
     // console.log(newDate) //28
 
+    const formatSelectedSlot = (date, slot) => {
+        const startTime = moment(slot, 'hh:mm A');
+        const endTime = moment(startTime).add(30, 'minutes');
+
+        const formattedDate = moment(date).format('Do MMMM YYYY');
+        const formattedStartTime = startTime.format('h:mmA');
+        const formattedEndTime = endTime.format('h:mmA');
+
+        return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
+    };
 
     useEffect(() => {
-        if (date.getDate() === newDate) {
+        const selectedDay = val.getDay();
+        const selectedDate = moment(val);
+
+        if (selectedDay === 0 || selectedDay === 6) {
+            setSlots([]);
+        } else if (selectedDate.isSame(date, 'day')) {
             const generatedSlots = intervals(formattedTime, '08:00 PM');
             setSlots(generatedSlots);
-        }
-        else {
-            const generatedSlots = intervals('8:00 AM', '08:00 PM');
+        } else {
+            const generatedSlots = intervals('08:00 AM', '08:00 PM');
             setSlots(generatedSlots);
         }
-    }, [value]);
+    },[value,formattedTime]);
+
 
 
     const handleSlotSelection = (time) => {
-        setSelectedSlot(time);
+        if (slots.includes(time)) {
+            setSelectedSlot(time);
+        }
     };
     const progress = (Object.keys(selectedAnswers).length / questionsData.length) * 100;
 
     return (
-        <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-col 2xl:flex-row flex-col justify-between mx-auto h-screen font-inter overflow-x-hidden'>
+        <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
             <div className='w-full left-container flex flex-col items-start'>
-                <div className='flex flex-col items-start w-full md:ml-24'>
-                    <h1 className='heading text-[24px] md:text-[64px] text-center md:text-start md:tracking-[-2.69px] md:mb-0 w-full'>Book your <span>30-minute </span></h1>
-                    <h1 className='font-medium md:mt-[-26px] mt-[-10px] text-[24px] md:text-[64px] md:text-start text-center md:tracking-[-2.69px] w-full'>NexaStack demo.</h1>
+                <div className='flex flex-col items-center lg:items-start w-full xl:ml-16 2xl:ml-16 md:gap-y-1 lg:gap-y-0'>
+                    <h1 className='heading text-[24px] md:text-[40px] lg:text-[54px] xl:text-[50px] 2xl:text-[64px] text-center md:text-center xl:text-start md:tracking-[-2.69px] md:mb-0 w-full'>Book your <span>30-minute </span></h1>
+                    <h1 className='font-medium text-[24px] md:mt-[-26px] xl:text-[50px] 2xl:text-[64px] mt-[-10px] sm:text-[28px] md:text-[40px] lg:text-[54px] xl:text-start text-center md:tracking-[-2.69px] w-full'>NexaStack demo.</h1>
                 </div>
-                <p className='mt-16 text-[#3E57DA] md:text-start md:ml-24  tracking-[0.67px] w-full'>WHAT TO EXPECT:</p>
-                <div className='md:ml-24 mt-8 space-y-2 md:space-y-3 flex items-center md:items-start flex-col w-full text-[18.5px]'>
+                <p className='mt-16 text-[#3E57DA] text-center xl:text-start ml-0 xl:ml-16 2xl:ml-16 tracking-[0.67px] w-full md:text-[20px] lg:text-[24px] xl:text-[24px] 2xl:text-[24px]'>WHAT TO EXPECT:</p>
+                <div className='xl:ml-16 2xl:ml-16 mt-8 space-y-2 md:space-y-3 flex items-center xl:items-start flex-col w-full text-[14px] md:text-[20px] lg:text-[24px] xl:text-[23px] 2xl:text-[18px]'>
                     <div className='flex items-center gap-x-1 md:gap-x-3'>
                         <img src={tick} alt='tick' /><p className='text-[#333B52] tracking-[-0.08px]'>Get a personalized demo of NexaStack</p>
                     </div>
@@ -239,42 +269,42 @@ const BookDemo = () => {
                         <p className='text-[#333B52] tracking-[-0.08px]'>Hear proven customer success stories</p>
                     </div>
                 </div>
-                <div className='flex flex-col md:flex md:flex-row mt-16 md:gap-x-12 gap-y-5 items-center w-full md:items-start md:ml-24'>
-                    <img src={grdp} alt='grdp' className='w-[170px]' />
-                    <img src={soc} alt='soc' className='w-[170px]' />
-                    <img src={iso} alt='iso' className='w-[220px]' />
+                <div className='flex flex-col md:flex md:flex-row mt-16 md:gap-x-12 xl:gap-x-2 2xl:gap-x-4 gap-y-5 items-center justify-center w-full md:items-start lg:ml-16 xl:ml-16 2xl:mt-20 2xl:ml-[68px] xl:justify-start xl:items-start'>
+                    <img src={grdp} alt='grdp' className='w-[170px] xl:w-[170px] 2xl:w-[160px]' />
+                    <img src={soc} alt='soc' className='w-[170px] xl:w-[170px] 2xl:w-[160px]' />
+                    <img src={iso} alt='iso' className='w-[220px] xl:w-[200px] xl:h-[22px] 2xl:w-[220px]' />
                 </div>
-                <div className='text-center md:text-start mt-10 md:ml-24 md:mt-24 w-full'>
-                    <h3 className='text-[#333B52] text-[18.9px]'>Trusted by over Top AI companies of all size</h3>
+                <div className='flex justify-center sm:text-start mt-10 md:mt-24 w-full xl:justify-start xl:ml-16'>
+                    <h3 className='text-[#333B52] text-[13px] md:text-[18.9px] 2xl:text-[18.9px] flex text-center'>Trusted by over Top AI companies of all size</h3>
                 </div>
-                <div className='md:ml-14 md:mt-4 mt-10 mb-8'>
-                    <div className='grid grid-cols-4 gap-x-10'>
-                        <img src={zoom} alt='zoom' />
-                        <img src={reuters} alt='reuters' />
-                        <img src={heineken} alt='heineken' />
-                        <img src={reuters} alt='reuters' />
+                <div className='lg:ml-14 md:mt-4 mt-10 mb-8 w-full xl:ml-5 2xl:ml-6'>
+                    <div className='grid grid-cols-4 gap-x-0 sm:gap-x-10 xl:w-full xl:gap-x-0'>
+                        <img src={zoom} alt='zoom' className='' />
+                        <img src={reuters} alt='reuters' className='' />
+                        <img src={heineken} alt='heineken' className='' />
+                        <img src={reuters} alt='reuters' className='' />
                     </div>
-                    <div className='grid grid-cols-4 gap-x-10'>
-                        <img src={zoom} alt='zoom' />
-                        <img src={reuters} alt='reuters' />
-                        <img src={heineken} alt='heineken' />
-                        <img src={reuters} alt='reuters' />
+                    <div className='grid grid-cols-4 gap-x-0 sm:gap-x-10 xl:gap-x-0'>
+                        <img src={zoom} alt='zoom' className='' />
+                        <img src={reuters} alt='reuters' className='' />
+                        <img src={heineken} alt='heineken' className='' />
+                        <img src={reuters} alt='reuters' className='' />
                     </div>
                 </div>
             </div>
             <div className='right-container w-full'>
-                <div className='mt-20 flex items-center justify-center md:justify-normal md:ml-14 w-full'>
+                <div className='mt-20 flex items-center justify-center xl:justify-normal xl:ml-14 w-full'>
                     <img src={logo} alt='comapny-logo' className='md:w-[200px] w-[140px] items-center' />
                 </div>
 
                 {/* Step 1 */}
                 {currentStep === 1 && (
                     <div className='w-full'>
-                        <div className='customise-container items-center md:items-start flex flex-col md:mt-20 mt-6 max-w-full'>
-                            <h1 className='md:text-[32px] ml-16 md:ml-12'>Customize your 30 minute Demo</h1>
-                            <p className='text-[#727272] ml-2 md:ml-12 md:text-[24px] text-xl font-normal'>Setup your primary focus and customise the demo accordingly.</p>
+                        <div className='customise-container items-center xl:items-start flex flex-col md:mt-20 mt-6 max-w-full'>
+                            <h1 className='md:text-[28px] lg:text-[32px] xl:text-[27px] flex justify-center md:justify-normal md:ml-16 xl:ml-12 w-full'>Customize your 30-Minute Demo</h1>
+                            <p className='text-[#727272] ml-2 items-center justify-center md:ml-16 xl:ml-12 2xl:ml-12 flex md:items-start md:justify-normal md:text-[20px] lg:text-[24px] text-[18px] xl:text-[22px] font-normal w-full'>Setup your primary focus and customize the demo accordingly.</p>
                         </div>
-                        <div className='w-96 mx-auto md:w-full items-center'>
+                        <div className='w-full mx-auto items-center'>
                             <ProgressBar
                                 bgcolor="#0066FF"
                                 progress={Math.round(progress)}
@@ -282,7 +312,7 @@ const BookDemo = () => {
                             />
                         </div>
                         <div className="w-full mt-14">
-                            <div key={questionsData[currentQuestionIndex].id} className="mb-6 flex flex-col items-center md:items-start mx-auto">
+                            <div key={questionsData[currentQuestionIndex].id} className="mb-6 flex flex-col items-start mx-auto">
                                 <motion.div
                                     // key={id}
                                     initial="hidden"
@@ -290,11 +320,11 @@ const BookDemo = () => {
                                     variants={optionVariants}
                                     className='delay-100 transition duration-150 ease-in-out'
                                 >
-                                    <h2 className="text-[16px] md:text-xl font-semibold mb-2 text-center md:text-start md:ml-12 text-[22px] text-[#000000]">
+                                    <h2 className="font-semibold mb-2 text-start ml-4 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
                                         {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
                                     </h2>
                                 </motion.div>
-                                <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-center items-center md:justify-normal md:ml-12 my-6 md:text-[15px] max-w-full">
+                                <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center ml-3 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
                                     {questionsData[currentQuestionIndex].options.map((option) => (
                                         <motion.div
                                             key={option}
@@ -305,7 +335,7 @@ const BookDemo = () => {
                                             className='delay-100 transition duration-150 ease-in-out'
                                         >
                                             <button
-                                                className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:text-sm
+                                                className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
                                               ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "btn-option" :
                                                         pendingAnswer && pendingAnswer.option === option ? "btn-option" :
                                                             "bg-[#F6F6F6]"}`}
@@ -319,9 +349,9 @@ const BookDemo = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className='text-white flex justify-center items-center md:absolute md:right-12 md:bottom-12'>
+                        <div className='text-white flex justify-end items-center mr-6 mt-10 md:items-center md:justify-end md:mr-20 md:mt-24 xl:mr-14'>
                             <button
-                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal ${currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered ? '' : 'opacity-50 cursor-not-allowed'}`}
+                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered ? '' : 'opacity-50 cursor-not-allowed'} font-semibold`}
                                 onClick={handleNext}
                                 disabled={!(currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered)}
                             >
@@ -333,136 +363,137 @@ const BookDemo = () => {
 
                 {/* Step 2 */}
                 {currentStep === 2 && (
-                    <div className='flex items-center w-full flex-col md:items-start'>
-                        <div className='customise-container items-start flex flex-col md:ml-10 mt-6 md:mt-20'>
-                            <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
-                            <p className='text-[#727272] -ml-[11px] md:-ml-0 md:w-full md:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
-                        </div>
-                        <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-16 mt-10 '>
-                            <div className='flex flex-col items-start w-full md:w-5/12'>
-                                <label>
-                                    First Name <StyledSpan>*</StyledSpan>
-                                </label>
-                                <input
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    type="text"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleInputChange}
-                                    autoComplete="off"
-                                    placeholder="Please enter your First Name"
-                                />
-                                {formErrors.firstName && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.firstName}</p>
-                                )}
-                            </div>
-                            <div className='flex flex-col items-start w-full md:w-5/12'>
-                                <label>
-                                    Last Name <StyledSpan>*</StyledSpan>
-                                </label>
-                                <input
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleInputChange}
-                                    autoComplete="off"
-                                    placeholder="Please enter your Last Name"
-                                />
-                                {formErrors.lastName && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.lastName}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div className='flex flex-col md:flex-row mt-3 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-16 md:mt-0'>
-                            <div className='flex flex-col items-start w-full md:w-5/12'>
-                                <label>
-                                    Business Email ID <StyledSpan>*</StyledSpan>
-                                </label>
-                                <input
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    autoComplete="off"
-                                    placeholder="Please enter your email id"
-                                />
-                                {formErrors.email && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.email}</p>
-                                )}
-                            </div>
-                            <div className='flex flex-col items-start w-full md:w-5/12'>
-                                <label>
-                                    Company Name <StyledSpan>*</StyledSpan>
-                                </label>
-                                <input
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    type="text"
-                                    name="companyName"
-                                    value={formData.companyName}
-                                    onChange={handleInputChange}
-                                    autoComplete="off"
-                                    placeholder="Please enter your company Name"
-                                />
-                                {formErrors.companyName && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.companyName}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div className='flex flex-col w-11/12 gap-y-5 mx-auto md:gap-y-10 mt-5 md:mt-0'>
-                            <div className='flex flex-col items-start w-11/12'>
-                                <label>
-                                    Industry Belongs To <StyledSpan>*</StyledSpan>
-                                </label>
-                                <select
-                                    className={`scrollbar-hide p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    name="industry"
-                                    value={formData.industry}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
-                                    {IndustryList.map((ind) => (
-                                        <option key={ind.value} value={ind.value}>
-                                            {ind.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                {formErrors.industry && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
-                                )}
-                            </div>
-                            <div className='flex flex-col items-start w-11/12'>
-                                <label>
-                                    Department / Team <StyledSpan>*</StyledSpan>
-                                </label>
-                                <select
-                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    name="department"
-                                    value={formData.department}
-                                    onChange={handleInputChange}
-                                >
-                                    <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
-                                    {dept.map((dept) => (
-                                        <option key={dept.value} value={dept.value}>
-                                            {dept.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                {formErrors.department && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
-                                )}
-                            </div>
-                        </div>
-                        <div className='text-white flex ml-[248px] mb-2 md:absolute md:bottom-12 md:right-12 mt-6'>
-                            <button
-                                className='btn-next flex gap-x-6 items-center font-normal'
-                                onClick={handleNextStep}
-                            >
-                                Next Step <img src={arrow} alt='arrow' />
-                            </button>
-                        </div>
-                    </div>
+                  <div className='flex items-center w-full flex-col md:items-start'>
+                  <div className='customise-container items-start flex flex-col md:ml-10 mt-6 md:mt-20'>
+                      <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
+                      <p className='text-[#727272] md:-ml-0 md:w-full md:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
+                  </div>
+                  <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-10 2xl:gap-x-4'>
+                      <div className='flex flex-col items-start w-full md:w-5/12'>
+                          <label>
+                              First Name <StyledSpan>*</StyledSpan>
+                          </label>
+                          <input
+                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              type="text"
+                              name="firstName"
+                              value={formData.firstName}
+                              onChange={handleInputChange}
+                              autoComplete="off"
+                              placeholder="Please enter your First Name"
+                          />
+                          {formErrors.firstName && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.firstName}</p>
+                          )}
+                      </div>
+                      <div className='flex flex-col items-start w-full md:w-5/12'>
+                          <label>
+                              Last Name <StyledSpan>*</StyledSpan>
+                          </label>
+                          <input
+                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              type="text"
+                              name="lastName"
+                              value={formData.lastName}
+                              onChange={handleInputChange}
+                              autoComplete="off"
+                              placeholder="Please enter your Last Name"
+                          />
+                          {formErrors.lastName && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.lastName}</p>
+                          )}
+                      </div>
+                  </div>
+                  <div className='flex flex-col md:flex-row mt-3 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 2xl:gap-x-4 md:mt-0'>
+                      <div className='flex flex-col items-start w-full md:w-5/12'>
+                          <label>
+                              Business Email ID <StyledSpan>*</StyledSpan>
+                          </label>
+                          <input
+                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              type="email"
+                              name="email"
+                              value={formData.email}
+                              onChange={handleInputChange}
+                              autoComplete="off"
+                              placeholder="Please enter your email id"
+                          />
+                          {formErrors.email && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.email}</p>
+                          )}
+                      </div>
+                      <div className='flex flex-col items-start w-full md:w-5/12'>
+                          <label>
+                              Company Name <StyledSpan>*</StyledSpan>
+                          </label>
+                          <input
+                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              type="text"
+                              name="companyName"
+                              value={formData.companyName}
+                              onChange={handleInputChange}
+                              autoComplete="off"
+                              placeholder="Please enter your company Name"
+                          />
+                          {formErrors.companyName && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.companyName}</p>
+                          )}
+                      </div>
+                  </div>
+                  <div className='flex flex-col w-11/12 gap-y-5 md:ml-10 md:gap-y-10 mt-5 md:mt-0'>
+                      <div className='flex flex-col items-start md:w-11/12 w-full md:ml-2 xl:ml-0 lg:ml-0'>
+                          <label>
+                              Industry Belongs To <StyledSpan>*</StyledSpan>
+                          </label>
+                          <select
+                              className={`scrollbar-hide p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              name="industry"
+                              value={formData.industry}
+                              onChange={handleInputChange}
+                          >
+                              <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
+                              {IndustryList.map((ind) => (
+                                  <option key={ind.value} value={ind.value}>
+                                      {ind.label}
+                                  </option>
+                              ))}
+                          </select>
+                          {formErrors.industry && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
+                          )}
+                      </div>
+                      <div className='flex flex-col items-start md:w-11/12 w-full md:ml-2 xl:ml-0 lg:ml-0'>
+                          <label>
+                              Department / Team <StyledSpan>*</StyledSpan>
+                          </label>
+                          <select
+                              className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
+                              name="department"
+                              value={formData.department}
+                              onChange={handleInputChange}
+                          >
+                              <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
+                              {dept.map((dept) => (
+                                  <option key={dept.value} value={dept.value}>
+                                      {dept.label}
+                                  </option>
+                              ))}
+                          </select>
+                          {formErrors.department && (
+                              <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
+                          )}
+                      </div>
+                  </div>
+                  <div className='flex justify-end items-center w-full mt-10'>
+                      <button
+                          className='btn-next flex gap-x-2 md:gap-x-6 items-center md:mr-16 lg:mr-32 xl:mr-16 2xl:mr-24 font-semibold'
+                          onClick={handleNextStep}
+                      >
+                          Next Step <img src={arrow} alt='arrow' />
+                      </button>
+                  </div>
+              </div>
+              
                 )}
 
                 {/* Step 3 */}
@@ -474,37 +505,56 @@ const BookDemo = () => {
                         </div>
                         <div className='flex mt-10 items-center'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 md:ml-16">
+                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 md:ml-8">
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
                                             onChange={(newValue) => setValue(newValue)}
                                             disablePast
                                             // dayOfWeekFormatter={(day) => {
-                                            //     const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-                                            //     return days[day]; 
+                                            //     const abbreviatedDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+                                            //     return abbreviatedDays[day]; // Map day index (0-6) to weekday names
                                             // }}
                                             className="w-full md:max-w-lg max-w-sm"
                                             sx={{
                                                 width: '500px',
-                                                height: '450px',
+                                                '& .MuiPickersCalendarHeader-label': {
+                                                    fontSize: '24px',
+                                                    fontWeight: 'bold !important',
+                                                    textAlign: 'center',
+                                                },
+                                                '& .MuiDayCalendar-header': {
+                                                    gap: '30px',
+                                                    fontWeight: 700,
+                                                },
                                                 '& .MuiPickersDay-root': {
-                                                    marginX: '8px',
+                                                    marginX: '28px',
+                                                    // gap:"45px",
+                                                    fontWeight: 'bold !important',
+                                                    color: 'black !important',
                                                     '&:hover': {
                                                         backgroundColor: '#E6F2FF',
                                                     },
+                                                },
+                                                '& .MuiPickersCalendarHeader-switchViewButton': {
+                                                    display: 'none',
                                                 },
                                                 '& .MuiDayCalendar-weekContainer': {
                                                     justifyContent: 'center',
                                                 },
                                                 '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
-                                                    marginX: '12px',
+                                                    marginX: '10px',
                                                 },
-                                                // '& .MuiPickersDay-root.MuiPickersDay-weekend': {
-                                                //     marginX: '1px',
-                                                // },
+                                                '& .MuiDayCalendar-header': {
+                                                    fontWeight:'bold !important',
+                                                    color: 'black !important',
+                                                    gap: '17px',
+                                                },
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    fontSize: '18px',
+                                                    fontSize: '24px',
+                                                },
+                                                '& .MuiPickersArrowSwitcher-root': {
+                                                    marginRight: '105px'
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -515,34 +565,38 @@ const BookDemo = () => {
                                                 },
                                             }}
                                         />
+
+
                                     ) : (
                                         <DateCalendar
                                             disablePast
-                                            // dayOfWeekFormatter={(day) => {
-                                            //     const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-                                            //     return days[day]; 
-                                            // }}
+                                            onChange={(newValue) => setValue(newValue)}
                                             className="w-full md:max-w-lg max-w-sm"
                                             sx={{
-                                                width: '500px',
+                                                width: '280px',
                                                 height: '450px',
                                                 '& .MuiPickersDay-root': {
-                                                    marginX: '8px',
+                                                    marginX: '3px',
                                                     '&:hover': {
                                                         backgroundColor: '#E6F2FF',
                                                     },
                                                 },
-                                                '& .MuiDayCalendar-weekContainer': {
-                                                    justifyContent: 'center',
+                                                '& .MuiPickersCalendarHeader-switchViewButton': {
+                                                    display: 'none',
                                                 },
-                                                '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
-                                                    marginX: '2px',
-                                                },
-                                                // '& .MuiPickersDay-root.MuiPickersDay-weekend': {
-                                                //     marginX: '1px',
+                                                // '& .MuiDayCalendar-weekContainer': {
+                                                //     justifyContent: 'center',
+                                                // },
+                                                // '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
+                                                //     marginX: '0px',
+                                                // },
+                                                // "& .MuiDayCalendar-header":{
+                                                //     marginRight:'10px',
                                                 // },
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    fontSize: '24px',
+                                                    fontSize: '20px',
+                                                    width:"100%"
+                                                    // marginLeft: '0px'
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -561,7 +615,11 @@ const BookDemo = () => {
                                                 Available Time Slots
                                             </h2>
                                             <div className='overflow-hidden flex items-center mx-auto'>
-                                                <div className='h-[300px] w-[200px] overflow-y-scroll   '>
+                                                <div className={`${slots && slots.length > 0
+                                                    ? 'h-[300px] w-[200px] overflow-y-scroll'
+                                                    : 'h-[80px] w-[150px]'} 
+                                                    `}>
+
                                                     {slots && slots.length > 0 ? (
                                                         <div className='space-y-6 p-2'>
                                                             {slots.map((time, index) => (
@@ -589,15 +647,15 @@ const BookDemo = () => {
                             </LocalizationProvider>
 
                         </div>
-                        <div className='flex flex-col items-start ml-12 md:ml-16 mt-10 md:mt-24'>
+                        <div className='flex flex-col items-center md:items-start text-[18px] md:text-[16px] md:ml-12 mt-10 md:mt-24'>
                             <p className='text-[#666666]'>Demo Scheduling</p>
-                            <p className='text-[#333333] font-medium text-[24px]'>{
-                                selectedSlot ? <>{showDate} | {selectedSlot}</> : <>{ }</>
-                            }</p>
-                            <p>Time Zone : GMT +5:30 India/Asia</p>
+                            <p className='text-[#333333] font-medium md:text-[22px] text-[18px] '>
+                                {selectedSlot ? formatSelectedSlot(showDate, selectedSlot) : ''}
+                            </p>
+                            <p className='text-[14px]'>Timezone: GMT+5:30 India/Asia</p>
                         </div>
-                        <div className='text-white flex ml-[248px] mb-2 md:absolute md:bottom-12 md:right-12 mt-6'>
-                            <button className='btn-next flex gap-x-2 md:gap-x-6 items-center font-normal'>
+                        <div className='text-white flex justify-center items-center mt-10 md:items-center md:justify-end md:mr-20 md:-mt-4'>
+                            <button className='btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold'>
                                 Book Demo <img src={arrow} alt='arrow' />
                             </button>
                         </div>

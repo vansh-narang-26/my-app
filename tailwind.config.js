@@ -14,6 +14,10 @@ module.exports = {
         'primary-orange': '#FF5722',
       }
     },
+    // screens:{
+    //   // 'xl': {'max': '1279px'},
+    //   '2xl':{'max':'1537px'},
+    // },
   },
   plugins: [],
 }
