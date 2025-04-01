@@ -14,7 +14,8 @@ const ProgressBar = ({ bgcolor, progress, height }) => {
         width: `${progress}%`,
         backgroundColor: bgcolor,
         borderRadius: "100px",
-        textAlign: 'right'
+        textAlign: 'right',
+        transition: 'width 0.3s ease-in-out',
     };
 
     return (

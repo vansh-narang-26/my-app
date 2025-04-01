@@ -9,7 +9,7 @@ import reuters from "../assets/reuters.svg"
 import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
-import backArrow from "../assets/Vector.svg"
+import backArrow from "../assets/back.png"
 import "../Pages/Button.css"
 import { motion } from 'framer-motion';
 import moment from 'moment';
@@ -88,7 +88,10 @@ const BookDemo = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
-    const [answeredQuestions, setAnsweredQuestions] = useState([]); // Track which questions have been answered
+    const [answeredQuestions, setAnsweredQuestions] = useState([]);
+    const [showOtherInput, setShowOtherInput] = useState(false); // Multi selection ke liye
+    const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
+    const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -104,67 +107,63 @@ const BookDemo = () => {
         const currentQuestion = questionsData.find(q => q.id === questionId);
 
         if (currentQuestion.multiSelect) {
+            // Handling multi-select questions (like question 5)
             setMultiSelectAnswers(prev => {
                 const selections = prev[questionId] || [];
 
                 if (selections.includes(option)) {
-                    const updated = selections.filter(item => item !== option);
-                    return { ...prev, [questionId]: updated };
+                    // Remove if already selected
+                    return { ...prev, [questionId]: selections.filter(item => item !== option) };
                 } else {
+                    // Add new selection
                     return { ...prev, [questionId]: [...selections, option] };
                 }
             });
 
-            if (!answeredQuestions.includes(currentQuestionIndex) &&
-                (multiSelectAnswers[questionId]?.length > 0 || !multiSelectAnswers[questionId])) {
+            // Update answered questions tracking
+            if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
+        } else if (currentQuestion.hasOther && option === "Others (Please Specify)") {
+            // Handling "Others" option in question 6
+            setSelectedAnswers(prev => ({
+                ...prev,
+                [questionId]: option
+            }));
 
-            if (!multiSelectAnswers[questionId] || multiSelectAnswers[questionId].length === 0) {
+            setShowOtherInput(true);
+
+            if (!answeredQuestions.includes(currentQuestionIndex)) {
+                setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
+            }
+        } else {
+            // Visual feedback for selection
+            setActiveOptionAnimation(true);
+            setPendingAnswer({ questionId, option });
+
+            // Normal selection handling with smooth animation
+            setTimeout(() => {
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: option
+                }));
+
+                if (!answeredQuestions.includes(currentQuestionIndex)) {
+                    setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
+                }
+
+                setPendingAnswer(null);
+                setActiveOptionAnimation(false);
+
+                // Auto-advance to next question after selection (except for multi-select)
                 if (currentQuestionIndex < questionsData.length - 1) {
                     setTimeout(() => {
                         setCurrentQuestionIndex(prev => prev + 1);
-                    }, 500);
+                    }, 300);
                 } else if (currentQuestionIndex === questionsData.length - 1) {
                     setIsLastQuestionAnswered(true);
                 }
-            }
-        } else if (currentQuestion.hasOther && option === "Others (Please Specify)") {
-            setPendingAnswer({ questionId, option });
-
-            setTimeout(() => {
-                setSelectedAnswers(prev => ({
-                    ...prev,
-                    [questionId]: option
-                }));
-
-                if (!answeredQuestions.includes(currentQuestionIndex)) {
-                    setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
-                }
-
-                setPendingAnswer(null);
-            }, 500);
-        } else {
-            setPendingAnswer({ questionId, option });
-
-            setTimeout(() => {
-                setSelectedAnswers(prev => ({
-                    ...prev,
-                    [questionId]: option
-                }));
-
-                if (!answeredQuestions.includes(currentQuestionIndex)) {
-                    setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
-                }
-
-                setPendingAnswer(null);
-
-                if (currentQuestionIndex < questionsData.length - 1) {
-                    setCurrentQuestionIndex(prev => prev + 1);
-                } else if (currentQuestionIndex === questionsData.length - 1) {
-                    setIsLastQuestionAnswered(true);
-                }
-            }, 500);
+            }, 400);
         }
     }, [currentQuestionIndex, answeredQuestions, multiSelectAnswers]);
 
@@ -174,51 +173,75 @@ const BookDemo = () => {
 
     const handlePrevious = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1);
+            // Add a slight delay for animation
+            setActiveOptionAnimation(true);
+            setTimeout(() => {
+                setCurrentQuestionIndex(prev => prev - 1);
+                setActiveOptionAnimation(false);
+
+                // Clear "Other" input if moving back from question 6
+                if (currentQuestionIndex === 6 && showOtherInput) {
+                    setShowOtherInput(false);
+                }
+            }, 200);
         }
     };
-
     // const handlePreviousStep = () => {
     //     setCurrentStep(prev => prev - 1);
     // };
 
     const handleNext = () => {
-        const allQuestionsAnswered = questionsData.every(question => {
-            if (question.multiSelect) {
-                return multiSelectAnswers[question.id]?.length > 0;
-            } else if (question.id === 6 && selectedAnswers[question.id] === "Others (Please Specify)") {
-                //Added bcs if there the option is other please specify (it was not coming in selected answers)
-                setSelectedAnswers(prev => ({ ...prev, 6: selectedAnswers[question.id] }));
-                return otherText.trim() !== '';
-            } else {
-                return selectedAnswers[question.id];
-            }
-        });
+        const currentQuestion = questionsData[currentQuestionIndex];
+        let canProceed = false;
 
-        if (allQuestionsAnswered) {
-            if (currentQuestionIndex === questionsData.length - 1) {
-                // If already on the last question, move to the next step
+        if (currentQuestion.multiSelect) {
+            // For multi-select questions wala
+            canProceed = multiSelectAnswers[currentQuestion.id]?.length > 0;
+        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
+            // For "Others" option
+            canProceed = otherText.trim() !== '';
+        } else {
+            //Normal flow wala
+            canProceed = !!selectedAnswers[currentQuestion.id];
+        }
+
+        if (canProceed) {
+            console.log(progress)
+            if (progress === 100 && currentQuestionIndex === questionsData.length - 1) {
                 setCurrentStep(prevStep => prevStep + 1);
             } else {
-                // Move to the last question if all questions are answered
-                setCurrentQuestionIndex(questionsData.length - 1);
-            }
-        }
-        else {
-            const firstUnansweredIndex = questionsData.findIndex(question => {
-                if (question.multiSelect) {
-                    return !multiSelectAnswers[question.id] || multiSelectAnswers[question.id].length === 0;
-                } else if (question.id === 6 && selectedAnswers[question.id] === "Others (Please Specify)") {
-                    return otherText.trim() === '';
+                //finding the next unanswered question
+                const nextUnansweredIndex = findNextUnansweredQuestion();
+                if (nextUnansweredIndex !== -1) {
+                    setCurrentQuestionIndex(nextUnansweredIndex);
                 } else {
-                    return !selectedAnswers[question.id];
+                    //proceeding to next step
+                    setCurrentStep(prevStep => prevStep + 1);
                 }
-            });
+            }
+        } else {
+            alert("Please answer the current question to proceed.");
+        }
+    };
+    const findNextUnansweredQuestion = () => {
+        for (let i = 0; i < questionsData.length; i++) {
+            const question = questionsData[i];
+            let isAnswered = false;
 
-            if (firstUnansweredIndex !== -1) {
-                setCurrentQuestionIndex(firstUnansweredIndex);
+            if (question.multiSelect) {
+                isAnswered = multiSelectAnswers[question.id]?.length > 0;
+            } else if (question.hasOther && selectedAnswers[question.id] === "Others (Please Specify)") {
+                isAnswered = otherText.trim() !== '';
+            } else {
+                isAnswered = !!selectedAnswers[question.id];
+            }
+
+            if (!isAnswered) {
+                return i;
             }
         }
+
+        return -1;
     };
 
     const handleInputChange = (e) => {
@@ -280,7 +303,7 @@ const BookDemo = () => {
                 }));
             }
         }
-        
+
     };
 
     const validateForm = () => {
@@ -313,6 +336,11 @@ const BookDemo = () => {
             setCurrentStep(3);
         }
     };
+
+    const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
+
+
+    
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
@@ -394,11 +422,13 @@ const BookDemo = () => {
 
         updateAvailableSlots();
 
-        const intervalId = setInterval(updateAvailableSlots, 60000);
+        // Set up the interval
+        const intervalId = setInterval(() => {
+            updateAvailableSlots();
+        }, 60000); // Every minute
 
         return () => clearInterval(intervalId);
     }, [value, selectedSlot]);
-
 
 
     const handleSlotSelection = (time) => {
@@ -407,7 +437,6 @@ const BookDemo = () => {
         }
     };
 
-    // Calculate progress based on the highest answered question index
     const progress = currentQuestionIndex > 0
         ? ((currentQuestionIndex + 1) / questionsData.length) * 100
         : 0
@@ -436,18 +465,17 @@ const BookDemo = () => {
         };
     };
 
-    // Check if current question is answered
-    // const isCurrentQuestionAnswered = () => {
-    //     const currentQuestion = questionsData[currentQuestionIndex];
-
-    //     if (currentQuestion.multiSelect) {
-    //         return multiSelectAnswers[currentQuestion.id]?.length > 0;
-    //     } else if (currentQuestion.id === 6 && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
-    //         return otherText.trim() !== '';
-    //     } else {
-    //         return !!selectedAnswers[currentQuestion.id];
-    //     }
-    // };
+    const isCurrentQuestionAnswered = () => {
+        const currentQuestion = questionsData[currentQuestionIndex];
+        
+        if (currentQuestion.multiSelect) {
+        return multiSelectAnswers[currentQuestion.id]?.length > 0;
+        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
+        return otherText.trim() !== '';
+        } else {
+        return !!selectedAnswers[currentQuestion.id];
+        }
+    };
 
     const handleSubmitBooking = () => {
         // For backend (need to see)
@@ -547,7 +575,6 @@ const BookDemo = () => {
                                         } else {
                                             isSelected = selectedAnswers[currentQuestionId] === option;
                                         }
-                                        // console.log("printing option",isSelected)
                                         return (
                                             <motion.div
                                                 key={option}
@@ -609,7 +636,7 @@ const BookDemo = () => {
                                         </div>
                                     )}
                                 {/* Display selected multi-select options, including "Others" */}
-                                {questionsData[currentQuestionIndex].multiSelect &&
+                                {/* {questionsData[currentQuestionIndex].multiSelect &&
                                     multiSelectAnswers[questionsData[currentQuestionIndex].id]?.length > 0 && (
                                         <div className="ml-3 xl:ml-12 mb-4 w-full max-w-lg">
                                             <p className="text-sm text-gray-600 mb-2">Selected options:</p>
@@ -635,23 +662,23 @@ const BookDemo = () => {
                                                 ))}
                                             </div>
                                         </div>
-                                    )}
+                                    )} */}
                             </div>
                         </div>
 
-                        <div className='flex justify-between items-center mt-10 lg:mx-2 xl:mx-7 px-3 py-2'>
+                        <div className='flex justify-end gap-x-10 items-center mt-10 lg:mx-2 xl:mx-7 px-3 py-2'>
                             <button
-                                className={`flex gap-x-2 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
+                                className={`btn-next flex gap-x-2 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
                                 disabled={currentQuestionIndex === 0}
                             >
-                                <img src={backArrow} alt='back arrow' /> Previous
+                                <img src={backArrow} alt='back arrow' className='w-10 h-10'/> Previous
                             </button>
 
                             <button
-                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered ? '' : 'opacity-50 cursor-not-allowed'} font-semibold`}
+                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${!isCurrentQuestionAnswered() && !isLastQuestionAnswered ? 'opacity-50 cursor-not-allowed':''} font-semibold`}
                                 onClick={handleNext}
-                                disabled={!(currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered)}
+                                disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
                             >
                                 Next Step <img src={arrow} alt='arrow' />
                             </button>
