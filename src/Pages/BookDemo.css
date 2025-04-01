@@ -5,10 +5,17 @@
     margin-left: auto;
 } */
 .left-container {
-    background-image: url("../assets//Background.jpeg");
-    width: 100vw;
+    background-image: url("../assets/Background.jpeg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* height: 100vh; */
+    /* min-height: 800px; */
+    /* max-height: 2560px; */
 }
-.btn-option{
+
+
+.btn-option {
     color: white;
     background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
 }
@@ -55,6 +62,7 @@
         font-size: 16px;
         color: #26203B;
     }
+
     .logo-right {
         margin-left: 138px;
         margin-top: 50px;

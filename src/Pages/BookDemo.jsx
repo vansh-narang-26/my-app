@@ -9,14 +9,13 @@ import reuters from "../assets/reuters.svg"
 import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
+import backArrow from "../assets/Vector.svg"
 import "../Pages/Button.css"
 import { motion } from 'framer-motion';
 import moment from 'moment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-// import { DemoItem } from '@mui/x-date-pickers/internals/demo';
-// import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import dayjs from 'dayjs';
 import styled from "styled-components";
 import { useMediaQuery } from '@mui/material';
@@ -40,8 +39,8 @@ const questionsData = [
     { id: 2, text: "How many technical teams will be working with NexaStack?", options: ["0-10", "11-50", "51-100", "More Than 100", "Only Me"] },
     { id: 3, text: "Does your team have in-house AI/ML expertise, or do you need support?", options: ["We have an in-house AI/ML team", "We need external AI/ML support", "Need additional support", "Not sure yet, exploring options"] },
     { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDRP", "HIPAA", "None", "Not Sure"] },
-    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"] },
-    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Others (Please Specify)"] },
+    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
+    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Others (Please Specify)"], hasOther: true },
     { id: 7, text: "Are there specific AI models you plan to operate using NexaStack?", options: ["LLMs (Large Language Models)", "Vision Models", "Recommendation Systems", "Speech & Audio Models", "Custom AI/ML Models", "Not Sure, Need Guidance"] },
 ];
 const IndustryList = [
@@ -78,16 +77,18 @@ const IndustryList = [
 ];
 
 const BookDemo = () => {
-    var todayDate = new Date().toISOString().slice(0, 10);
+    var todayDate = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+    // console.log(todayDate);
     const isDesktop = useMediaQuery('(min-width:768px)');
     const [value, setValue] = React.useState(dayjs(todayDate));
     const [selectedAnswers, setSelectedAnswers] = useState({});
-    const [currentStep, setCurrentStep] = useState(3);
+    const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
+    const [otherText, setOtherText] = useState('');
+    const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    // const [selectedValue, setSelectedValue] = useState('');
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
-    // const [loading, setLoading] = useState(false)
+    const [answeredQuestions, setAnsweredQuestions] = useState([]); // Track which questions have been answered
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -97,38 +98,129 @@ const BookDemo = () => {
         department: ''
     });
     const [formErrors, setFormErrors] = useState({});
-    // console.log(todayDate);
 
+    // Handle selection of an answer
     const handleAnswer = useCallback((questionId, option) => {
-        setPendingAnswer({ questionId, option });
-        // setLoading(false)
+        const currentQuestion = questionsData.find(q => q.id === questionId);
 
-        setTimeout(() => {
-            setSelectedAnswers((prev) => ({
-                ...prev,
-                [questionId]: option
-            }));
+        if (currentQuestion.multiSelect) {
+            setMultiSelectAnswers(prev => {
+                const selections = prev[questionId] || [];
 
+                if (selections.includes(option)) {
+                    const updated = selections.filter(item => item !== option);
+                    return { ...prev, [questionId]: updated };
+                } else {
+                    return { ...prev, [questionId]: [...selections, option] };
+                }
+            });
 
-            setPendingAnswer(null);
-            // setLoading(true)
-
-            if (currentQuestionIndex < questionsData.length - 1) {
-                setCurrentQuestionIndex(prev => prev + 1);
+            if (!answeredQuestions.includes(currentQuestionIndex) &&
+                (multiSelectAnswers[questionId]?.length > 0 || !multiSelectAnswers[questionId])) {
+                setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
 
-            else if (currentQuestionIndex === questionsData.length - 1) {
-                setIsLastQuestionAnswered(true);
+            if (!multiSelectAnswers[questionId] || multiSelectAnswers[questionId].length === 0) {
+                if (currentQuestionIndex < questionsData.length - 1) {
+                    setTimeout(() => {
+                        setCurrentQuestionIndex(prev => prev + 1);
+                    }, 500);
+                } else if (currentQuestionIndex === questionsData.length - 1) {
+                    setIsLastQuestionAnswered(true);
+                }
             }
-        }, 500);
-    }, [currentQuestionIndex]);
+        } else if (currentQuestion.hasOther && option === "Others (Please Specify)") {
+            setPendingAnswer({ questionId, option });
 
-    const handleNext = () => {
+            setTimeout(() => {
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: option
+                }));
 
-        if (Object.keys(selectedAnswers).length === questionsData.length) {
-            setCurrentStep(prevStep => prevStep + 1);
+                if (!answeredQuestions.includes(currentQuestionIndex)) {
+                    setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
+                }
+
+                setPendingAnswer(null);
+            }, 500);
+        } else {
+            setPendingAnswer({ questionId, option });
+
+            setTimeout(() => {
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: option
+                }));
+
+                if (!answeredQuestions.includes(currentQuestionIndex)) {
+                    setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
+                }
+
+                setPendingAnswer(null);
+
+                if (currentQuestionIndex < questionsData.length - 1) {
+                    setCurrentQuestionIndex(prev => prev + 1);
+                } else if (currentQuestionIndex === questionsData.length - 1) {
+                    setIsLastQuestionAnswered(true);
+                }
+            }, 500);
+        }
+    }, [currentQuestionIndex, answeredQuestions, multiSelectAnswers]);
+
+    const handleOtherTextChange = (e) => {
+        setOtherText(e.target.value);
+    };
+
+    const handlePrevious = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(prev => prev - 1);
         }
     };
+
+    // const handlePreviousStep = () => {
+    //     setCurrentStep(prev => prev - 1);
+    // };
+
+    const handleNext = () => {
+        const allQuestionsAnswered = questionsData.every(question => {
+            if (question.multiSelect) {
+                return multiSelectAnswers[question.id]?.length > 0;
+            } else if (question.id === 6 && selectedAnswers[question.id] === "Others (Please Specify)") {
+                //Added bcs if there the option is other please specify (it was not coming in selected answers)
+                setSelectedAnswers(prev => ({ ...prev, 6: selectedAnswers[question.id] }));
+                return otherText.trim() !== '';
+            } else {
+                return selectedAnswers[question.id];
+            }
+        });
+
+        if (allQuestionsAnswered) {
+            if (currentQuestionIndex === questionsData.length - 1) {
+                // If already on the last question, move to the next step
+                setCurrentStep(prevStep => prevStep + 1);
+            } else {
+                // Move to the last question if all questions are answered
+                setCurrentQuestionIndex(questionsData.length - 1);
+            }
+        }
+        else {
+            const firstUnansweredIndex = questionsData.findIndex(question => {
+                if (question.multiSelect) {
+                    return !multiSelectAnswers[question.id] || multiSelectAnswers[question.id].length === 0;
+                } else if (question.id === 6 && selectedAnswers[question.id] === "Others (Please Specify)") {
+                    return otherText.trim() === '';
+                } else {
+                    return !selectedAnswers[question.id];
+                }
+            });
+
+            if (firstUnansweredIndex !== -1) {
+                setCurrentQuestionIndex(firstUnansweredIndex);
+            }
+        }
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -136,6 +228,7 @@ const BookDemo = () => {
             [name]: value
         }));
 
+        // Clearing errors when user starts typing
         if (formErrors[name]) {
             setFormErrors(prev => ({
                 ...prev,
@@ -145,10 +238,20 @@ const BookDemo = () => {
 
         if (name === 'firstName' || name === 'lastName') {
             const regex = /^[a-zA-Z\s]+$/;
-            if (!regex.test(value)) {
+            if (!regex.test(value) && value.length > 0) {
                 setFormErrors(prev => ({
                     ...prev,
                     [name]: 'Only alphabets are allowed.'
+                }));
+            }
+        }
+        if (name === 'email' && value.length > 0) {
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (!emailRegex.test(value)) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    [name]: 'Please enter a valid email address.'
                 }));
             }
         }
@@ -157,7 +260,6 @@ const BookDemo = () => {
     const validateForm = () => {
         const errors = {};
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
         Object.keys(formData).forEach(key => {
             if (!formData[key].trim()) {
@@ -195,7 +297,6 @@ const BookDemo = () => {
         return timeSlots;
     };
 
-
     const date = new Date();
     const formattedTime = new Intl.DateTimeFormat('en-US', {
         hour: 'numeric',
@@ -203,16 +304,8 @@ const BookDemo = () => {
         hour12: true
     }).format(date);
 
-    // console.log(date.getDate()); //27
-    // console.log("Value is",value.$d) //28
     const val = value.$d;
-    const showDate = val.toDateString()
-    // const month= showDate.toDateString()
-    //console.log(showDate)
-    // const newDate = val.getDate()
-
-
-    // console.log(newDate) //28
+    const showDate = val.toDateString();
 
     const formatSelectedSlot = (date, slot) => {
         const startTime = moment(slot, 'hh:mm A');
@@ -228,18 +321,43 @@ const BookDemo = () => {
     useEffect(() => {
         const selectedDay = val.getDay();
         const selectedDate = moment(val);
+        const currentTime = moment();
 
-        if (selectedDay === 0 || selectedDay === 6) {
-            setSlots([]);
-        } else if (selectedDate.isSame(date, 'day')) {
-            const generatedSlots = intervals(formattedTime, '08:00 PM');
-            setSlots(generatedSlots);
-        } else {
-            const generatedSlots = intervals('08:00 AM', '08:00 PM');
-            setSlots(generatedSlots);
-        }
-    },[value,formattedTime]);
+        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 });
+        const endOfDay = moment().set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM
 
+        const updateAvailableSlots = () => {
+            let generatedSlots = [];
+
+            if (selectedDay === 0 || selectedDay === 6) {
+                setSlots([]);
+            } else if (selectedDate.isSame(currentTime, 'day')) {
+                // If selected date is today, check current time
+                if (currentTime.isBefore(startOfDay) || currentTime.isAfter(endOfDay)) {
+                    // Before 8:00 AM or after 8:00 PM → Show full slots
+                    generatedSlots = intervals('08:00 AM', '08:00 PM');
+                } else {
+                    const formattedCurrentTime = moment(currentTime).add(30 - (currentTime.minute() % 30), 'minutes').format('hh:mm A');
+                    generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
+                }
+            } else {
+                generatedSlots = intervals('08:00 AM', '08:00 PM');
+            }
+
+            setSlots(generatedSlots);
+
+            // If selected slot is now in the past, clear it
+            if (selectedSlot && moment(selectedSlot, 'hh:mm A').isBefore(currentTime)) {
+                setSelectedSlot(null);
+            }
+        };
+
+        updateAvailableSlots();
+
+        const intervalId = setInterval(updateAvailableSlots, 60000);
+
+        return () => clearInterval(intervalId);
+    }, [value, selectedSlot]);
 
 
     const handleSlotSelection = (time) => {
@@ -247,7 +365,60 @@ const BookDemo = () => {
             setSelectedSlot(time);
         }
     };
-    const progress = (Object.keys(selectedAnswers).length / questionsData.length) * 100;
+
+    // Calculate progress based on the highest answered question index
+    const progress = currentQuestionIndex > 0
+    ? ((currentQuestionIndex + 1) / questionsData.length) * 100
+    : 0
+
+    const getContainerStyles = () => {
+        if (!slots || slots.length === 0) {
+            return {
+                height: '80px',
+                width: '150px',
+                overflowY: 'hidden'
+            };
+        }
+
+        if (slots.length <= 3) {
+            return {
+                height: `${Math.max(80, slots.length * 60)}px`,
+                width: '180px',
+                overflowY: slots.length > 1 ? 'scroll' : 'hidden'
+            };
+        }
+
+        return {
+            height: '300px',
+            width: '200px',
+            overflowY: 'scroll'
+        };
+    };
+
+    // Check if current question is answered
+    // const isCurrentQuestionAnswered = () => {
+    //     const currentQuestion = questionsData[currentQuestionIndex];
+
+    //     if (currentQuestion.multiSelect) {
+    //         return multiSelectAnswers[currentQuestion.id]?.length > 0;
+    //     } else if (currentQuestion.id === 6 && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
+    //         return otherText.trim() !== '';
+    //     } else {
+    //         return !!selectedAnswers[currentQuestion.id];
+    //     }
+    // };
+
+    const handleSubmitBooking = () => {
+        // For backend (need to see)
+        console.log("Form Data:", formData);
+        console.log("Selected Answers:", selectedAnswers);
+        console.log("Multi-Select Answers:", multiSelectAnswers);
+        console.log("Other Text:", otherText);
+        console.log("Selected Date:", showDate);
+        console.log("Selected Slot:", selectedSlot);
+
+        alert("Demo booking submitted successfully!");
+    };
 
     return (
         <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
@@ -304,7 +475,7 @@ const BookDemo = () => {
                             <h1 className='md:text-[28px] lg:text-[32px] xl:text-[27px] flex justify-center md:justify-normal md:ml-16 xl:ml-12 w-full'>Customize your 30-Minute Demo</h1>
                             <p className='text-[#727272] ml-2 items-center justify-center md:ml-16 xl:ml-12 2xl:ml-12 flex md:items-start md:justify-normal md:text-[20px] lg:text-[24px] text-[18px] xl:text-[22px] font-normal w-full'>Setup your primary focus and customize the demo accordingly.</p>
                         </div>
-                        <div className='w-full mx-auto items-center'>
+                        <div className='w-full max-w-full px-4 md:px-8 xl:px-8 2xl:px-10'>
                             <ProgressBar
                                 bgcolor="#0066FF"
                                 progress={Math.round(progress)}
@@ -314,7 +485,6 @@ const BookDemo = () => {
                         <div className="w-full mt-14">
                             <div key={questionsData[currentQuestionIndex].id} className="mb-6 flex flex-col items-start mx-auto">
                                 <motion.div
-                                    // key={id}
                                     initial="hidden"
                                     animate="visible"
                                     variants={optionVariants}
@@ -325,31 +495,118 @@ const BookDemo = () => {
                                     </h2>
                                 </motion.div>
                                 <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center ml-3 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
-                                    {questionsData[currentQuestionIndex].options.map((option) => (
-                                        <motion.div
-                                            key={option}
-                                            initial="hidden"
-                                            animate="visible"
-                                            variants={optionVariants}
-                                            // custom={index}
-                                            className='delay-100 transition duration-150 ease-in-out'
-                                        >
-                                            <button
-                                                className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
-                                              ${selectedAnswers[questionsData[currentQuestionIndex].id] === option ? "btn-option" :
-                                                        pendingAnswer && pendingAnswer.option === option ? "btn-option" :
-                                                            "bg-[#F6F6F6]"}`}
-                                                onClick={() => handleAnswer(questionsData[currentQuestionIndex].id, option)}
-                                                disabled={pendingAnswer !== null}
+                                    {questionsData[currentQuestionIndex].options.map((option) => {
+                                        const isMultiSelect = questionsData[currentQuestionIndex].multiSelect;
+                                        const currentQuestionId = questionsData[currentQuestionIndex].id;
+
+
+                                        let isSelected = false;
+                                        if (isMultiSelect) {
+                                            isSelected = multiSelectAnswers[currentQuestionId]?.includes(option);
+                                        } else {
+                                            isSelected = selectedAnswers[currentQuestionId] === option;
+                                        }
+                                        // console.log("printing option",isSelected)
+                                        return (
+                                            <motion.div
+                                                key={option}
+                                                initial="hidden"
+                                                animate="visible"
+                                                variants={optionVariants}
+                                                className='delay-100 transition duration-150 ease-in-out'
                                             >
-                                                {option}
-                                            </button>
-                                        </motion.div>
-                                    ))}
+                                                <button
+                                                    className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
+                                                    ${isSelected ? "btn-option" :
+                                                            pendingAnswer && pendingAnswer.option === option ? "btn-option" :
+                                                                "bg-[#F6F6F6]"}`}
+                                                    onClick={() => handleAnswer(currentQuestionId, option)}
+                                                    disabled={pendingAnswer !== null}
+                                                >
+                                                    {option}
+                                                </button>
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
+                                {questionsData[currentQuestionIndex].id === 6 &&
+                                    selectedAnswers[6] === "Others (Please Specify)" && (
+                                        <div className="w-full space-x-10 mb-6 px-2 md:px-0">
+                                            {otherText && (
+                                                <h1 className="mb-2 text-gray-700 font-semibold">
+                                                    {otherText}
+                                                </h1>
+                                            )}
+                                            <input
+                                                maxLength={100}
+                                                type="text"
+                                                className="w-full max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
+                                                placeholder="Please specify your use case"
+                                                value={otherText}
+                                                onChange={handleOtherTextChange}
+                                            />
+                                            <button
+                                                className={`w-[180px] btn-next mt-2 px-4 ${otherText.trim() ? '' : 'opacity-50 cursor-not-allowed'}`}
+                                                onClick={() => {
+                                                    if (otherText.trim()) {
+                                                        setMultiSelectAnswers(prev => ({
+                                                            ...prev,
+                                                            6: [...(prev[6] || []).filter(opt => opt !== selectedAnswers[6]), otherText.trim()]
+                                                        }));
+                                                        setSelectedAnswers(prev => ({
+                                                            ...prev,
+                                                            6: otherText.trim()
+                                                        }));
+                                                        handleNext();
+                                                    }
+                                                    //handleNext()
+                                                }}
+                                                disabled={!otherText.trim()}
+                                            >
+                                                Save & Continue
+                                            </button>
+                                        </div>
+                                    )}
+                                {/* Display selected multi-select options, including "Others" */}
+                                {questionsData[currentQuestionIndex].multiSelect &&
+                                    multiSelectAnswers[questionsData[currentQuestionIndex].id]?.length > 0 && (
+                                        <div className="ml-3 xl:ml-12 mb-4 w-full max-w-lg">
+                                            <p className="text-sm text-gray-600 mb-2">Selected options:</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {multiSelectAnswers[questionsData[currentQuestionIndex].id].map(option => (
+                                                    <span
+                                                        key={option}
+                                                        className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full flex items-center"
+                                                    >
+                                                        {option}
+                                                        <button
+                                                            className="ml-2 text-blue-800 hover:text-blue-500"
+                                                            onClick={() => {
+                                                                setMultiSelectAnswers(prev => ({
+                                                                    ...prev,
+                                                                    [questionsData[currentQuestionIndex].id]: prev[questionsData[currentQuestionIndex].id].filter(item => item !== option)
+                                                                }));
+                                                            }}
+                                                        >
+                                                            X
+                                                        </button>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                             </div>
                         </div>
-                        <div className='text-white flex justify-end items-center mr-6 mt-10 md:items-center md:justify-end md:mr-20 md:mt-24 xl:mr-14'>
+
+                        <div className='flex justify-between items-center mt-10 lg:mx-2 xl:mx-7 px-1 py-2'>
+                            <button
+                                className={`flex gap-x-2 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
+                                onClick={handlePrevious}
+                                disabled={currentQuestionIndex === 0}
+                            >
+                                <img src={backArrow} alt='back arrow' /> Previous
+                            </button>
+
                             <button
                                 className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === questionsData.length - 1 && isLastQuestionAnswered ? '' : 'opacity-50 cursor-not-allowed'} font-semibold`}
                                 onClick={handleNext}
@@ -363,137 +620,138 @@ const BookDemo = () => {
 
                 {/* Step 2 */}
                 {currentStep === 2 && (
-                  <div className='flex items-center w-full flex-col md:items-start'>
-                  <div className='customise-container items-start flex flex-col md:ml-10 mt-6 md:mt-20'>
-                      <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
-                      <p className='text-[#727272] md:-ml-0 md:w-full md:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
-                  </div>
-                  <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-10 2xl:gap-x-4'>
-                      <div className='flex flex-col items-start w-full md:w-5/12'>
-                          <label>
-                              First Name <StyledSpan>*</StyledSpan>
-                          </label>
-                          <input
-                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              type="text"
-                              name="firstName"
-                              value={formData.firstName}
-                              onChange={handleInputChange}
-                              autoComplete="off"
-                              placeholder="Please enter your First Name"
-                          />
-                          {formErrors.firstName && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.firstName}</p>
-                          )}
-                      </div>
-                      <div className='flex flex-col items-start w-full md:w-5/12'>
-                          <label>
-                              Last Name <StyledSpan>*</StyledSpan>
-                          </label>
-                          <input
-                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              type="text"
-                              name="lastName"
-                              value={formData.lastName}
-                              onChange={handleInputChange}
-                              autoComplete="off"
-                              placeholder="Please enter your Last Name"
-                          />
-                          {formErrors.lastName && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.lastName}</p>
-                          )}
-                      </div>
-                  </div>
-                  <div className='flex flex-col md:flex-row mt-3 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 2xl:gap-x-4 md:mt-0'>
-                      <div className='flex flex-col items-start w-full md:w-5/12'>
-                          <label>
-                              Business Email ID <StyledSpan>*</StyledSpan>
-                          </label>
-                          <input
-                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              type="email"
-                              name="email"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              autoComplete="off"
-                              placeholder="Please enter your email id"
-                          />
-                          {formErrors.email && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.email}</p>
-                          )}
-                      </div>
-                      <div className='flex flex-col items-start w-full md:w-5/12'>
-                          <label>
-                              Company Name <StyledSpan>*</StyledSpan>
-                          </label>
-                          <input
-                              className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              type="text"
-                              name="companyName"
-                              value={formData.companyName}
-                              onChange={handleInputChange}
-                              autoComplete="off"
-                              placeholder="Please enter your company Name"
-                          />
-                          {formErrors.companyName && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.companyName}</p>
-                          )}
-                      </div>
-                  </div>
-                  <div className='flex flex-col w-11/12 gap-y-5 md:ml-10 md:gap-y-10 mt-5 md:mt-0'>
-                      <div className='flex flex-col items-start md:w-11/12 w-full md:ml-2 xl:ml-0 lg:ml-0'>
-                          <label>
-                              Industry Belongs To <StyledSpan>*</StyledSpan>
-                          </label>
-                          <select
-                              className={`scrollbar-hide p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              name="industry"
-                              value={formData.industry}
-                              onChange={handleInputChange}
-                          >
-                              <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
-                              {IndustryList.map((ind) => (
-                                  <option key={ind.value} value={ind.value}>
-                                      {ind.label}
-                                  </option>
-                              ))}
-                          </select>
-                          {formErrors.industry && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
-                          )}
-                      </div>
-                      <div className='flex flex-col items-start md:w-11/12 w-full md:ml-2 xl:ml-0 lg:ml-0'>
-                          <label>
-                              Department / Team <StyledSpan>*</StyledSpan>
-                          </label>
-                          <select
-                              className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
-                              name="department"
-                              value={formData.department}
-                              onChange={handleInputChange}
-                          >
-                              <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
-                              {dept.map((dept) => (
-                                  <option key={dept.value} value={dept.value}>
-                                      {dept.label}
-                                  </option>
-                              ))}
-                          </select>
-                          {formErrors.department && (
-                              <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
-                          )}
-                      </div>
-                  </div>
-                  <div className='flex justify-end items-center w-full mt-10'>
-                      <button
-                          className='btn-next flex gap-x-2 md:gap-x-6 items-center md:mr-16 lg:mr-32 xl:mr-16 2xl:mr-24 font-semibold'
-                          onClick={handleNextStep}
-                      >
-                          Next Step <img src={arrow} alt='arrow' />
-                      </button>
-                  </div>
-              </div>
-              
+                    <div className='flex items-center w-full flex-col md:items-start'>
+                        <div className='customise-container items-start flex flex-col md:ml-10 mt-6 md:mt-20'>
+                            <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
+                            <p className='text-[#727272] md:-ml-0 w-full md:text-start md:w-full md:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
+                        </div>
+                        <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-10 2xl:gap-x-4'>
+                            <div className='flex flex-col items-start w-full md:w-1/2'>
+                                <label>
+                                    First Name <StyledSpan>*</StyledSpan>
+                                </label>
+                                <input
+                                    maxLength={12}
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    type="text"
+                                    name="firstName"
+                                    value={formData.firstName}
+                                    onChange={handleInputChange}
+                                    autoComplete="off"
+                                    placeholder="Please enter your First Name"
+                                />
+                                {formErrors.firstName && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.firstName}</p>
+                                )}
+                            </div>
+                            <div className='flex flex-col items-start w-full md:w-1/2'>
+                                <label>
+                                    Last Name <StyledSpan>*</StyledSpan>
+                                </label>
+                                <input
+                                    maxLength={12}
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    type="text"
+                                    name="lastName"
+                                    value={formData.lastName}
+                                    onChange={handleInputChange}
+                                    autoComplete="off"
+                                    placeholder="Please enter your Last Name"
+                                />
+                                {formErrors.lastName && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.lastName}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className='flex flex-col md:flex-row mt-3 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 2xl:gap-x-4 md:mt-0'>
+                            <div className='flex flex-col items-start w-full md:w-1/2'>
+                                <label>
+                                    Business Email ID <StyledSpan>*</StyledSpan>
+                                </label>
+                                <input
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    autoComplete="off"
+                                    placeholder="Please enter your email id"
+                                />
+                                {formErrors.email && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.email}</p>
+                                )}
+                            </div>
+                            <div className='flex flex-col items-start w-full md:w-1/2'>
+                                <label>
+                                    Company Name <StyledSpan>*</StyledSpan>
+                                </label>
+                                <input
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    type="text"
+                                    name="companyName"
+                                    value={formData.companyName}
+                                    onChange={handleInputChange}
+                                    autoComplete="off"
+                                    placeholder="Please enter your company Name"
+                                />
+                                {formErrors.companyName && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.companyName}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className='flex flex-col w-11/12 gap-y-5 md:ml-10 md:gap-y-10 mt-5 md:mt-0'>
+                            <div className='flex flex-col items-start w-full md:w-full'>
+                                <label>
+                                    Industry Belongs To <StyledSpan>*</StyledSpan>
+                                </label>
+                                <select
+                                    className={`scrollbar-hide p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    name="industry"
+                                    value={formData.industry}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
+                                    {IndustryList.map((ind) => (
+                                        <option key={ind.value} value={ind.value}>
+                                            {ind.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                {formErrors.industry && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
+                                )}
+                            </div>
+                            <div className='flex flex-col items-start w-full md:w-full'>
+                                <label>
+                                    Department / Team <StyledSpan>*</StyledSpan>
+                                </label>
+                                <select
+                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    name="department"
+                                    value={formData.department}
+                                    onChange={handleInputChange}
+                                >
+                                    <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
+                                    {dept.map((dept) => (
+                                        <option key={dept.value} value={dept.value}>
+                                            {dept.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                {formErrors.department && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
+                                )}
+                            </div>
+                        </div>
+                        <div className='flex justify-end items-center w-full mt-10'>
+                            <button
+                                className='btn-next flex gap-x-2 md:gap-x-6 items-center mr-2 mb-2 md:mr-6 lg:mr-16 xl:mr-4 2xl:mr-12 font-semibold'
+                                onClick={handleNextStep}
+                            >
+                                Next Step <img src={arrow} alt='arrow' />
+                            </button>
+                        </div>
+                    </div>
                 )}
 
                 {/* Step 3 */}
@@ -524,8 +782,8 @@ const BookDemo = () => {
                                                     textAlign: 'center',
                                                 },
                                                 '& .MuiDayCalendar-header': {
-                                                    gap: '30px',
-                                                    fontWeight: 700,
+                                                    fontWeight: 'bold !important', // Bold weekdays
+                                                    color: 'black !important',
                                                 },
                                                 '& .MuiPickersDay-root': {
                                                     marginX: '28px',
@@ -546,7 +804,7 @@ const BookDemo = () => {
                                                     marginX: '10px',
                                                 },
                                                 '& .MuiDayCalendar-header': {
-                                                    fontWeight:'bold !important',
+                                                    fontWeight: 'bold !important',
                                                     color: 'black !important',
                                                     gap: '17px',
                                                 },
@@ -595,7 +853,7 @@ const BookDemo = () => {
                                                 // },
                                                 '& .MuiPickersCalendarHeader-label': {
                                                     fontSize: '20px',
-                                                    width:"100%"
+                                                    width: "100%"
                                                     // marginLeft: '0px'
                                                 },
                                                 '& .Mui-selected': {
@@ -615,11 +873,7 @@ const BookDemo = () => {
                                                 Available Time Slots
                                             </h2>
                                             <div className='overflow-hidden flex items-center mx-auto'>
-                                                <div className={`${slots && slots.length > 0
-                                                    ? 'h-[300px] w-[200px] overflow-y-scroll'
-                                                    : 'h-[80px] w-[150px]'} 
-                                                    `}>
-
+                                                <div style={getContainerStyles()}>
                                                     {slots && slots.length > 0 ? (
                                                         <div className='space-y-6 p-2'>
                                                             {slots.map((time, index) => (
@@ -627,7 +881,8 @@ const BookDemo = () => {
                                                                     key={index}
                                                                     className={`w-full py-3 text-center rounded-xl border hover:bg-[#093179] hover:text-white transition-colors duration-200 ${selectedSlot === time
                                                                         ? 'bg-[#093179] text-white'
-                                                                        : 'bg-white text-black'}`}
+                                                                        : 'bg-white text-black'
+                                                                        }`}
                                                                     onClick={() => handleSlotSelection(time)}
                                                                 >
                                                                     {time}
@@ -654,7 +909,7 @@ const BookDemo = () => {
                             </p>
                             <p className='text-[14px]'>Timezone: GMT+5:30 India/Asia</p>
                         </div>
-                        <div className='text-white flex justify-center items-center mt-10 md:items-center md:justify-end md:mr-20 md:-mt-4'>
+                        <div className='text-white mb-2 flex justify-center items-center mt-10 md:items-center md:justify-end md:mr-20 md:-mt-4'>
                             <button className='btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold'>
                                 Book Demo <img src={arrow} alt='arrow' />
                             </button>
