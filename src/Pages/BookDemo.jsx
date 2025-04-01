@@ -9,7 +9,7 @@ import reuters from "../assets/reuters.svg"
 import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
-import backArrow from "../assets/back.png"
+import backArrow from "../assets/back.jpg"
 import "../Pages/Button.css"
 import { motion } from 'framer-motion';
 import moment from 'moment';
@@ -385,54 +385,57 @@ const BookDemo = () => {
     };
 
     useEffect(() => {
-        const selectedDay = val.getDay();
-        const selectedDate = moment(val);
-        const currentTime = moment();
-
-        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 });
+        const selectedDay = val.getDay(); // Get the day of the week
+        const selectedDate = moment(val); // The selected date
+        const currentTime = moment(); // Current time
+    
+        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 }); // 8:00 AM
         const endOfDay = moment().set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM
-
+    
         const updateAvailableSlots = () => {
             let generatedSlots = [];
-
-            if (selectedDay === 0 || selectedDay === 6) {
-                setSlots([]);
-            } else if (selectedDate.isSame(currentTime, 'day')) {
-                // If selected date is today, check current time
-                if (currentTime.isBefore(startOfDay) || currentTime.isAfter(endOfDay)) {
-                    // Before 8:00 AM or after 8:00 PM → Show full slots
-                    generatedSlots = intervals('08:00 AM', '08:00 PM');
+    
+            if (selectedDate.isSame(currentTime, 'day')) {
+                // If the selected date is today
+                if (currentTime.isAfter(endOfDay)) {
+                    // If the current time is after 8:00 PM, clear slots
+                    setSlots([]);
                 } else {
-                    const formattedCurrentTime = moment(currentTime)
-                        .add(30 - (currentTime.minute() % 30), 'minutes')
+                    // For the remaining time of the day, calculate slots starting from the next available time
+                    const formattedCurrentTime = currentTime
+                        .add(30 - (currentTime.minute() % 30), 'minutes') // Round to next available slot
                         .format('hh:mm A');
                     generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
                 }
-
-                // Clear the selected slot only if it's today AND in the past
+    
+                // Clear the selected slot if it's today and in the past
                 if (
                     selectedSlot &&
-                    selectedDate.isSame(currentTime, 'day') &&
                     moment(selectedSlot, 'hh:mm A').isBefore(currentTime)
                 ) {
                     setSelectedSlot(null);
                 }
+            } else if (selectedDay === 0 || selectedDay === 6) {
+                // If the day is Sunday or Saturday (weekend), no slots
+                setSlots([]);
             } else {
+                // For future days, generate slots from the start to the end of the day
                 generatedSlots = intervals('08:00 AM', '08:00 PM');
             }
-
-            setSlots(generatedSlots);
+    
+            setSlots(generatedSlots); // Update state with generated slots
         };
-
-        updateAvailableSlots();
-
-        // Set up the interval
+    
+        updateAvailableSlots(); // Run the function initially
+    
+        // Set up the interval to update slots every minute
         const intervalId = setInterval(() => {
             updateAvailableSlots();
-        }, 60000); // Every minute
-
-        return () => clearInterval(intervalId);
+        }, 60000);
+    
+        return () => clearInterval(intervalId); // Clean up the interval on unmount
     }, [value, selectedSlot]);
+    
 
 
     const handleSlotSelection = (time) => {
@@ -670,17 +673,17 @@ const BookDemo = () => {
                             </div>
                         </div>
 
-                        <div className='flex justify-end gap-x-10 items-center mt-10 lg:mx-2 xl:mx-7 px-3 py-2'>
+                        <div className='flex justify-end gap-x-4 md:gap-x-1  items-center mt-10 lg:mx-2 xl:mx-7 px-2 py-2'>
                             <button
-                                className={`btn-next flex gap-x-2 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
+                                className={`btn-next1 flex gap-x-1 md:gap-x-6 md:w-44 w-40  items-center font-normal xl:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
                                 disabled={currentQuestionIndex === 0}
                             >
-                                <img src={backArrow} alt='back arrow' className='w-10 h-10'/> Previous
+                                <img src={arrow} alt='back arrow' className=''/> Previous
                             </button>
 
                             <button
-                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${!isCurrentQuestionAnswered() && !isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect? 'opacity-50 cursor-not-allowed':''} font-semibold`}
+                                className={`btn-next flex gap-x-2 md:gap-x-6 md:w-42 w-44 items-center font-normal xl:text-[16px] 2xl:text-[18px] ${!isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect? 'opacity-50 cursor-not-allowed':''} font-semibold`}
                                 onClick={handleNext}
                                 disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
                             >
