@@ -675,7 +675,7 @@ const BookDemo = () => {
 
                         <div className='flex justify-end gap-x-4 md:gap-x-1  items-center mt-10 lg:mx-2 xl:mx-7 px-2 py-2'>
                             <button
-                                className={`btn-next1 flex gap-x-1 md:gap-x-6 md:w-44 w-40  items-center font-normal xl:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
+                                className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-46 w-[166px]  items-center font-normal xl:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
                                 disabled={currentQuestionIndex === 0}
                             >
@@ -683,7 +683,7 @@ const BookDemo = () => {
                             </button>
 
                             <button
-                                className={`btn-next flex gap-x-2 md:gap-x-6 md:w-42 w-44 items-center font-normal xl:text-[16px] 2xl:text-[18px] ${!isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect? 'opacity-50 cursor-not-allowed':''} font-semibold`}
+                                className={`btn-next flex gap-x-2 md:gap-x-6 md:w-48 w-44 items-center font-normal xl:text-[16px] 2xl:text-[18px] ${!isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect? 'opacity-50 cursor-not-allowed':''} font-semibold`}
                                 onClick={handleNext}
                                 disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
                             >
