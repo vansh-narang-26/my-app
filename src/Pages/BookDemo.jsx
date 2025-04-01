@@ -193,36 +193,40 @@ const BookDemo = () => {
     const handleNext = () => {
         const currentQuestion = questionsData[currentQuestionIndex];
         let canProceed = false;
-
+    
+        // Check if the current question has been answered
         if (currentQuestion.multiSelect) {
-            // For multi-select questions wala
+            // For multi-select questions
             canProceed = multiSelectAnswers[currentQuestion.id]?.length > 0;
         } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
             // For "Others" option
             canProceed = otherText.trim() !== '';
         } else {
-            //Normal flow wala
+            // Normal single-answer flow
             canProceed = !!selectedAnswers[currentQuestion.id];
         }
-
-        if (canProceed) {
-            console.log(progress)
-            if (progress === 100 && currentQuestionIndex === questionsData.length - 1) {
-                setCurrentStep(prevStep => prevStep + 1);
-            } else {
-                //finding the next unanswered question
-                const nextUnansweredIndex = findNextUnansweredQuestion();
-                if (nextUnansweredIndex !== -1) {
-                    setCurrentQuestionIndex(nextUnansweredIndex);
-                } else {
-                    //proceeding to next step
-                    setCurrentStep(prevStep => prevStep + 1);
-                }
-            }
-        } else {
+    
+        if (!canProceed) {
             alert("Please answer the current question to proceed.");
+            return;
+        }
+    
+        // If on the last question and all are answered, move to the next step
+        if (currentQuestionIndex === questionsData.length - 1) {
+            setCurrentStep(prevStep => prevStep + 1);
+           // setProgress(100); // Progress for completion
+        } else {
+            // If not the last question, find the next unanswered question
+            const nextUnansweredIndex = findNextUnansweredQuestion();
+            if (nextUnansweredIndex !== -1) {
+                setCurrentQuestionIndex(nextUnansweredIndex);
+            } else {
+                // If all questions are answered, proceed to the next step
+                setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            }
         }
     };
+    
     const findNextUnansweredQuestion = () => {
         for (let i = 0; i < questionsData.length; i++) {
             const question = questionsData[i];
@@ -340,7 +344,7 @@ const BookDemo = () => {
     const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
 
 
-    
+
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
 
@@ -676,7 +680,7 @@ const BookDemo = () => {
                             </button>
 
                             <button
-                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${!isCurrentQuestionAnswered() && !isLastQuestionAnswered ? 'opacity-50 cursor-not-allowed':''} font-semibold`}
+                                className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${!isCurrentQuestionAnswered() && !isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect? 'opacity-50 cursor-not-allowed':''} font-semibold`}
                                 onClick={handleNext}
                                 disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
                             >
