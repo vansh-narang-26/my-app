@@ -236,17 +236,17 @@ const BookDemo = () => {
             }));
         }
 
-        if (name === 'firstName' || name === 'lastName') {
-            const regex = /^[a-zA-Z\s]+$/;
-            if (!regex.test(value) && value.length > 0) {
-                setFormErrors(prev => ({
-                    ...prev,
-                    [name]: 'Only alphabets are allowed.'
-                }));
-            }
-        }
+        // if (name === 'firstName' || name === 'lastName') {
+        //     const regex = /^[a-zA-Z\s]+$/;
+        //     if (!regex.test(value) && value.length > 0) {
+        //         setFormErrors(prev => ({
+        //             ...prev,
+        //             [name]: 'Only English alphabets are allowed.'
+        //         }));
+        //     }
+        // }
         if (name === 'email' && value.length > 0) {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
 
             if (!emailRegex.test(value)) {
                 setFormErrors(prev => ({
@@ -255,25 +255,59 @@ const BookDemo = () => {
                 }));
             }
         }
+        // if (name === 'companyName') {
+        //     const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
+        //     if (!companyNameRegex.test(value) && value.length > 0) {
+        //         setFormErrors(prev => ({
+        //             ...prev,
+        //             [name]: 'Company name should not contain special characters.'
+        //         }));
+        //     }
+        // }
+        if (name === 'firstName' || name === 'lastName' || name === 'companyName') {
+            const maxLength = 50;
+            if (value.length >= maxLength) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    [name]: `This field should not exceed ${maxLength} characters.`
+                }));
+            }
+            const regex = /^[a-zA-Z\s]+$/;
+            if (!regex.test(value) && value.length > 0) {
+                setFormErrors(prev => ({
+                    ...prev,
+                    [name]: 'Only English alphabets are allowed.'
+                }));
+            }
+        }
+        
     };
 
     const validateForm = () => {
         const errors = {};
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const nameRegex = /^[a-zA-Z\s]+$/;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
+        const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
+        const maxLength = 50;
 
         Object.keys(formData).forEach(key => {
             if (!formData[key].trim()) {
                 errors[key] = 'This field is required';
+            } else if ((key === 'firstName' || key === 'lastName' || key === 'companyName') && formData[key].length >= maxLength) {
+                errors[key] = `This field should not exceed ${maxLength} characters.`;
+            } else if ((key === 'firstName' || key === 'lastName') && !nameRegex.test(formData[key])) {
+                errors[key] = 'Only alphabets are allowed';
+            } else if (key === 'email' && !emailRegex.test(formData[key])) {
+                errors[key] = 'Please enter a valid email address';
+            } else if (key === 'companyName' && !companyNameRegex.test(formData[key])) {
+                errors[key] = 'Company name should not contain special characters';
             }
         });
-        if (formData.email && !emailRegex.test(formData.email)) {
-            errors.email = 'Please enter a valid email address';
-        }
+
 
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
-    };
-
+    }
     const handleNextStep = () => {
         if (validateForm()) {
             setCurrentStep(3);
@@ -337,19 +371,25 @@ const BookDemo = () => {
                     // Before 8:00 AM or after 8:00 PM → Show full slots
                     generatedSlots = intervals('08:00 AM', '08:00 PM');
                 } else {
-                    const formattedCurrentTime = moment(currentTime).add(30 - (currentTime.minute() % 30), 'minutes').format('hh:mm A');
+                    const formattedCurrentTime = moment(currentTime)
+                        .add(30 - (currentTime.minute() % 30), 'minutes')
+                        .format('hh:mm A');
                     generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
+                }
+
+                // Clear the selected slot only if it's today AND in the past
+                if (
+                    selectedSlot &&
+                    selectedDate.isSame(currentTime, 'day') &&
+                    moment(selectedSlot, 'hh:mm A').isBefore(currentTime)
+                ) {
+                    setSelectedSlot(null);
                 }
             } else {
                 generatedSlots = intervals('08:00 AM', '08:00 PM');
             }
 
             setSlots(generatedSlots);
-
-            // If selected slot is now in the past, clear it
-            if (selectedSlot && moment(selectedSlot, 'hh:mm A').isBefore(currentTime)) {
-                setSelectedSlot(null);
-            }
         };
 
         updateAvailableSlots();
@@ -360,6 +400,7 @@ const BookDemo = () => {
     }, [value, selectedSlot]);
 
 
+
     const handleSlotSelection = (time) => {
         if (slots.includes(time)) {
             setSelectedSlot(time);
@@ -368,8 +409,8 @@ const BookDemo = () => {
 
     // Calculate progress based on the highest answered question index
     const progress = currentQuestionIndex > 0
-    ? ((currentQuestionIndex + 1) / questionsData.length) * 100
-    : 0
+        ? ((currentQuestionIndex + 1) / questionsData.length) * 100
+        : 0
 
     const getContainerStyles = () => {
         if (!slots || slots.length === 0) {
@@ -448,7 +489,7 @@ const BookDemo = () => {
                 <div className='flex justify-center sm:text-start mt-10 md:mt-24 w-full xl:justify-start xl:ml-16'>
                     <h3 className='text-[#333B52] text-[13px] md:text-[18.9px] 2xl:text-[18.9px] flex text-center'>Trusted by over Top AI companies of all size</h3>
                 </div>
-                <div className='lg:ml-14 md:mt-4 mt-10 mb-8 w-full xl:ml-5 2xl:ml-6'>
+                <div className='lg:ml-14 md:mt-4 mt-10 mb-8 w-full xl:ml-5 2xl:ml-6 xl:px-2 2xl:px-0'>
                     <div className='grid grid-cols-4 gap-x-0 sm:gap-x-10 xl:w-full xl:gap-x-0'>
                         <img src={zoom} alt='zoom' className='' />
                         <img src={reuters} alt='reuters' className='' />
@@ -473,7 +514,7 @@ const BookDemo = () => {
                     <div className='w-full'>
                         <div className='customise-container items-center xl:items-start flex flex-col md:mt-20 mt-6 max-w-full'>
                             <h1 className='md:text-[28px] lg:text-[32px] xl:text-[27px] flex justify-center md:justify-normal md:ml-16 xl:ml-12 w-full'>Customize your 30-Minute Demo</h1>
-                            <p className='text-[#727272] ml-2 items-center justify-center md:ml-16 xl:ml-12 2xl:ml-12 flex md:items-start md:justify-normal md:text-[20px] lg:text-[24px] text-[18px] xl:text-[22px] font-normal w-full'>Setup your primary focus and customize the demo accordingly.</p>
+                            <p className='text-[#727272] ml-0 px-1 items-center justify-center md:px-2 xl:px-4 md:ml-12 xl:ml-8 2xl:ml-8 flex md:items-start md:justify-normal md:text-[20px] lg:text-[24px] text-[18px] xl:text-[20px] font-normal w-full'>Setup your primary focus and customize the demo accordingly.</p>
                         </div>
                         <div className='w-full max-w-full px-4 md:px-8 xl:px-8 2xl:px-10'>
                             <ProgressBar
@@ -490,11 +531,11 @@ const BookDemo = () => {
                                     variants={optionVariants}
                                     className='delay-100 transition duration-150 ease-in-out'
                                 >
-                                    <h2 className="font-semibold mb-2 text-start ml-4 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
+                                    <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
                                         {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
                                     </h2>
                                 </motion.div>
-                                <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center ml-3 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
+                                <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
                                     {questionsData[currentQuestionIndex].options.map((option) => {
                                         const isMultiSelect = questionsData[currentQuestionIndex].multiSelect;
                                         const currentQuestionId = questionsData[currentQuestionIndex].id;
@@ -598,7 +639,7 @@ const BookDemo = () => {
                             </div>
                         </div>
 
-                        <div className='flex justify-between items-center mt-10 lg:mx-2 xl:mx-7 px-1 py-2'>
+                        <div className='flex justify-between items-center mt-10 lg:mx-2 xl:mx-7 px-3 py-2'>
                             <button
                                 className={`flex gap-x-2 items-center font-normal xl:text-[16px] 2xl:text-[16px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
@@ -621,9 +662,9 @@ const BookDemo = () => {
                 {/* Step 2 */}
                 {currentStep === 2 && (
                     <div className='flex items-center w-full flex-col md:items-start'>
-                        <div className='customise-container items-start flex flex-col md:ml-10 mt-6 md:mt-20'>
+                        <div className='customise-container items-start flex flex-col md:px-10 mt-6 md:mt-20'>
                             <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
-                            <p className='text-[#727272] md:-ml-0 w-full md:text-start md:w-full md:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
+                            <p className='text-[#727272] w-full md:text-start md:w-full md:text-[22px] lg:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
                         </div>
                         <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-10 2xl:gap-x-4'>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
@@ -631,7 +672,7 @@ const BookDemo = () => {
                                     First Name <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
-                                    maxLength={12}
+                                    maxLength={50}
                                     className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
                                     name="firstName"
@@ -649,7 +690,7 @@ const BookDemo = () => {
                                     Last Name <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
-                                    maxLength={12}
+                                    maxLength={50}
                                     className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
                                     name="lastName"
@@ -686,6 +727,7 @@ const BookDemo = () => {
                                     Company Name <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
+                                    maxLength={50}
                                     className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
                                     name="companyName"
