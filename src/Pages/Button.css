@@ -1,13 +1,4 @@
-.btn-next{
-    margin-bottom: 10px;
-    border-radius: 32.5px;
-    color: white;
-    padding: 8px 0px;
-    padding-left: 20px;
-    padding-right: 8px;
-    background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
-}
-.btn-next1{
+.btn-next {
     margin-bottom: 10px;
     border-radius: 32.5px;
     color: white;
@@ -17,8 +8,40 @@
     background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
 }
 
-.btn-next img
-{
+.btn-next1 {
+    margin-bottom: 10px;
+    border-radius: 32.5px;
+    color: white;
+    padding: 8px 0px;
+    padding-left: 10px;
+    padding-right: 30px;
+    background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
+}
+
+
+@media (min-width: 768px) {
+    .btn-next {
+        margin-bottom: 10px;
+        border-radius: 32.5px;
+        color: white;
+        padding: 13px 0px;
+        padding-left: 20px;
+        padding-right: 8px;
+        background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
+    }
+
+    .btn-next1 {
+        margin-bottom: 10px;
+        border-radius: 32.5px;
+        color: white;
+        padding: 13px 0px;
+        padding-left: 20px;
+        padding-right: 8px;
+        background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
+    }
+}
+
+.btn-next img {
     /* background:url("../assets/circle.svg"); */
     background-color: #223CB2;
     border-radius: 20px;
@@ -26,12 +49,22 @@
     align-items: end;
 }
 
-.btn-next1 img
-{
-    transform: rotate(180deg); /* Rotates the arrow by 180 degrees */
+.btn-next1 img {
+    transform: rotate(180deg);
+    /* Rotates the arrow by 180 degrees */
     /* background:url("../assets/circle.svg"); */
     background-color: #223CB2;
     border-radius: 20px;
     padding: 10px 8px;
     align-items: end;
+}
+
+.btn-save{
+        margin-bottom: 10px;
+        border-radius: 32.5px;
+        color: white;
+        padding: 8px 0px;
+        padding-left: 5px;
+        padding-right: 8px;
+        background: linear-gradient(180deg, #4363F8 0%, #2748E1 100%);
 }
