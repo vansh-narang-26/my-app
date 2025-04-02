@@ -9,10 +9,10 @@ import reuters from "../assets/reuters.svg"
 import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
-import backArrow from "../assets/Vector.svg"
 import "../Pages/Button.css"
 import { motion } from 'framer-motion';
 import moment from 'moment';
+import 'moment-timezone'; 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -20,6 +20,8 @@ import dayjs from 'dayjs';
 import styled from "styled-components";
 import { useMediaQuery } from '@mui/material';
 import ProgressBar from '../Components/ProgressBar'
+
+
 
 const StyledSpan = styled.span`
   color: red;
@@ -75,6 +77,205 @@ const IndustryList = [
     { value: "Wholesale and Distribution", label: "Wholesale and Distribution", },
     { value: "Other", label: "Other" },
 ];
+const countries = [
+    { value: "Afghanistan", label: "Afghanistan" },
+    { value: "Albania", label: "Albania" },
+    { value: "Algeria", label: "Algeria" },
+    { value: "Andorra", label: "Andorra" },
+    { value: "Angola", label: "Angola" },
+    { value: "Antigua and Barbuda", label: "Antigua and Barbuda" },
+    { value: "Argentina", label: "Argentina" },
+    { value: "Armenia", label: "Armenia" },
+    { value: "Australia", label: "Australia" },
+    { value: "Austria", label: "Austria" },
+    { value: "Azerbaijan", label: "Azerbaijan" },
+    { value: "Bahamas", label: "Bahamas" },
+    { value: "Bahrain", label: "Bahrain" },
+    { value: "Bangladesh", label: "Bangladesh" },
+    { value: "Barbados", label: "Barbados" },
+    { value: "Belarus", label: "Belarus" },
+    { value: "Belgium", label: "Belgium" },
+    { value: "Belize", label: "Belize" },
+    { value: "Benin", label: "Benin" },
+    { value: "Bhutan", label: "Bhutan" },
+    { value: "Bolivia", label: "Bolivia" },
+    { value: "Bosnia and Herzegovina", label: "Bosnia and Herzegovina" },
+    { value: "Botswana", label: "Botswana" },
+    { value: "Brazil", label: "Brazil" },
+    { value: "Brunei", label: "Brunei" },
+    { value: "Bulgaria", label: "Bulgaria" },
+    { value: "Burkina Faso", label: "Burkina Faso" },
+    { value: "Burundi", label: "Burundi" },
+    { value: "Cabo Verde", label: "Cabo Verde" },
+    { value: "Cambodia", label: "Cambodia" },
+    { value: "Cameroon", label: "Cameroon" },
+    { value: "Canada", label: "Canada" },
+    { value: "Central African Republic", label: "Central African Republic" },
+    { value: "Chad", label: "Chad" },
+    { value: "Chile", label: "Chile" },
+    { value: "China", label: "China" },
+    { value: "Colombia", label: "Colombia" },
+    { value: "Comoros", label: "Comoros" },
+    { value: "Congo", label: "Congo" },
+    { value: "Costa Rica", label: "Costa Rica" },
+    { value: "Croatia", label: "Croatia" },
+    { value: "Cuba", label: "Cuba" },
+    { value: "Cyprus", label: "Cyprus" },
+    { value: "Czech Republic", label: "Czech Republic" },
+    { value: "Denmark", label: "Denmark" },
+    { value: "Djibouti", label: "Djibouti" },
+    { value: "Dominica", label: "Dominica" },
+    { value: "Dominican Republic", label: "Dominican Republic" },
+    { value: "Ecuador", label: "Ecuador" },
+    { value: "Egypt", label: "Egypt" },
+    { value: "El Salvador", label: "El Salvador" },
+    { value: "Equatorial Guinea", label: "Equatorial Guinea" },
+    { value: "Eritrea", label: "Eritrea" },
+    { value: "Estonia", label: "Estonia" },
+    { value: "Eswatini", label: "Eswatini" },
+    { value: "Ethiopia", label: "Ethiopia" },
+    { value: "Fiji", label: "Fiji" },
+    { value: "Finland", label: "Finland" },
+    { value: "France", label: "France" },
+    { value: "Gabon", label: "Gabon" },
+    { value: "Gambia", label: "Gambia" },
+    { value: "Georgia", label: "Georgia" },
+    { value: "Germany", label: "Germany" },
+    { value: "Ghana", label: "Ghana" },
+    { value: "Greece", label: "Greece" },
+    { value: "Grenada", label: "Grenada" },
+    { value: "Guatemala", label: "Guatemala" },
+    { value: "Guinea", label: "Guinea" },
+    { value: "Guinea-Bissau", label: "Guinea-Bissau" },
+    { value: "Guyana", label: "Guyana" },
+    { value: "Haiti", label: "Haiti" },
+    { value: "Honduras", label: "Honduras" },
+    { value: "Hungary", label: "Hungary" },
+    { value: "Iceland", label: "Iceland" },
+    { value: "India", label: "India" },
+    { value: "Indonesia", label: "Indonesia" },
+    { value: "Iran", label: "Iran" },
+    { value: "Iraq", label: "Iraq" },
+    { value: "Ireland", label: "Ireland" },
+    { value: "Israel", label: "Israel" },
+    { value: "Italy", label: "Italy" },
+    { value: "Jamaica", label: "Jamaica" },
+    { value: "Japan", label: "Japan" },
+    { value: "Jordan", label: "Jordan" },
+    { value: "Kazakhstan", label: "Kazakhstan" },
+    { value: "Kenya", label: "Kenya" },
+    { value: "Kiribati", label: "Kiribati" },
+    { value: "North Korea", label: "North Korea" },
+    { value: "South Korea", label: "South Korea" },
+    { value: "Kosovo", label: "Kosovo" },
+    { value: "Kuwait", label: "Kuwait" },
+    { value: "Kyrgyzstan", label: "Kyrgyzstan" },
+    { value: "Laos", label: "Laos" },
+    { value: "Latvia", label: "Latvia" },
+    { value: "Lebanon", label: "Lebanon" },
+    { value: "Lesotho", label: "Lesotho" },
+    { value: "Liberia", label: "Liberia" },
+    { value: "Libya", label: "Libya" },
+    { value: "Liechtenstein", label: "Liechtenstein" },
+    { value: "Lithuania", label: "Lithuania" },
+    { value: "Luxembourg", label: "Luxembourg" },
+    { value: "Madagascar", label: "Madagascar" },
+    { value: "Malawi", label: "Malawi" },
+    { value: "Malaysia", label: "Malaysia" },
+    { value: "Maldives", label: "Maldives" },
+    { value: "Mali", label: "Mali" },
+    { value: "Malta", label: "Malta" },
+    { value: "Marshall Islands", label: "Marshall Islands" },
+    { value: "Mauritania", label: "Mauritania" },
+    { value: "Mauritius", label: "Mauritius" },
+    { value: "Mexico", label: "Mexico" },
+    { value: "Micronesia", label: "Micronesia" },
+    { value: "Moldova", label: "Moldova" },
+    { value: "Monaco", label: "Monaco" },
+    { value: "Mongolia", label: "Mongolia" },
+    { value: "Montenegro", label: "Montenegro" },
+    { value: "Morocco", label: "Morocco" },
+    { value: "Mozambique", label: "Mozambique" },
+    { value: "Myanmar", label: "Myanmar" },
+    { value: "Namibia", label: "Namibia" },
+    { value: "Nauru", label: "Nauru" },
+    { value: "Nepal", label: "Nepal" },
+    { value: "Netherlands", label: "Netherlands" },
+    { value: "New Zealand", label: "New Zealand" },
+    { value: "Nicaragua", label: "Nicaragua" },
+    { value: "Niger", label: "Niger" },
+    { value: "Nigeria", label: "Nigeria" },
+    { value: "North Macedonia", label: "North Macedonia" },
+    { value: "Norway", label: "Norway" },
+    { value: "Oman", label: "Oman" },
+    { value: "Pakistan", label: "Pakistan" },
+    { value: "Palau", label: "Palau" },
+    { value: "Panama", label: "Panama" },
+    { value: "Papua New Guinea", label: "Papua New Guinea" },
+    { value: "Paraguay", label: "Paraguay" },
+    { value: "Peru", label: "Peru" },
+    { value: "Philippines", label: "Philippines" },
+    { value: "Poland", label: "Poland" },
+    { value: "Portugal", label: "Portugal" },
+    { value: "Qatar", label: "Qatar" },
+    { value: "Romania", label: "Romania" },
+    { value: "Russia", label: "Russia" },
+    { value: "Rwanda", label: "Rwanda" },
+    { value: "Saint Kitts and Nevis", label: "Saint Kitts and Nevis" },
+    { value: "Saint Lucia", label: "Saint Lucia" },
+    {
+        value: "Saint Vincent and the Grenadines",
+        label: "Saint Vincent and the Grenadines",
+    },
+    { value: "Samoa", label: "Samoa" },
+    { value: "San Marino", label: "San Marino" },
+    { value: "Sao Tome and Principe", label: "Sao Tome and Principe" },
+    { value: "Saudi Arabia", label: "Saudi Arabia" },
+    { value: "Senegal", label: "Senegal" },
+    { value: "Serbia", label: "Serbia" },
+    { value: "Seychelles", label: "Seychelles" },
+    { value: "Sierra Leone", label: "Sierra Leone" },
+    { value: "Singapore", label: "Singapore" },
+    { value: "Slovakia", label: "Slovakia" },
+    { value: "Slovenia", label: "Slovenia" },
+    { value: "Solomon Islands", label: "Solomon Islands" },
+    { value: "Somalia", label: "Somalia" },
+    { value: "South Africa", label: "South Africa" },
+    { value: "South Sudan", label: "South Sudan" },
+    { value: "Spain", label: "Spain" },
+    { value: "Sri Lanka", label: "Sri Lanka" },
+    { value: "Sudan", label: "Sudan" },
+    { value: "Suriname", label: "Suriname" },
+    { value: "Sweden", label: "Sweden" },
+    { value: "Switzerland", label: "Switzerland" },
+    { value: "Syria", label: "Syria" },
+    { value: "Taiwan", label: "Taiwan" },
+    { value: "Tajikistan", label: "Tajikistan" },
+    { value: "Tanzania", label: "Tanzania" },
+    { value: "Thailand", label: "Thailand" },
+    { value: "Timor-Leste", label: "Timor-Leste" },
+    { value: "Togo", label: "Togo" },
+    { value: "Tonga", label: "Tonga" },
+    { value: "Trinidad and Tobago", label: "Trinidad and Tobago" },
+    { value: "Tunisia", label: "Tunisia" },
+    { value: "Turkey", label: "Turkey" },
+    { value: "Turkmenistan", label: "Turkmenistan" },
+    { value: "Tuvalu", label: "Tuvalu" },
+    { value: "Uganda", label: "Uganda" },
+    { value: "Ukraine", label: "Ukraine" },
+    { value: "United Arab Emirates", label: "United Arab Emirates" },
+    { value: "United Kingdom", label: "United Kingdom" },
+    { value: "United States", label: "United States" },
+    { value: "Uruguay", label: "Uruguay" },
+    { value: "Uzbekistan", label: "Uzbekistan" },
+    { value: "Vanuatu", label: "Vanuatu" },
+    { value: "Vatican City", label: "Vatican City" },
+    { value: "Venezuela", label: "Venezuela" },
+    { value: "Vietnam", label: "Vietnam" },
+    { value: "Yemen", label: "Yemen" },
+    { value: "Zambia", label: "Zambia" },
+    { value: "Zimbabwe", label: "Zimbabwe" },
+];
 
 const BookDemo = () => {
     var todayDate = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -89,18 +290,30 @@ const BookDemo = () => {
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
     const [answeredQuestions, setAnsweredQuestions] = useState([]);
+    const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [showOtherInput, setShowOtherInput] = useState(false); // Multi selection ke liye
-    const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
-    const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
+    const [savedText, setSavedText] = useState('')
+    // const [formData, setFormData] = useState({ country: "" }); // State for selected country
+    const [timezone, setTimezone] = useState(""); // State for displaying timezone
+    // const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
+    // const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         email: '',
-        companyName: '',
+        country: '',
         industry: '',
         department: ''
     });
     const [formErrors, setFormErrors] = useState({});
+    const countryTimezoneMap = {
+        India: "Asia/Kolkata",
+        USA: "America/New_York",
+        UK: "Europe/London",
+        Australia: "Australia/Sydney",
+        Japan: "Asia/Tokyo",
+        // Add more countries and timezones as needed
+    };
 
     // Handle selection of an answer
     const handleAnswer = useCallback((questionId, option) => {
@@ -131,6 +344,7 @@ const BookDemo = () => {
                 [questionId]: option
             }));
             setOtherText('');
+            setSavedText('')
             setShowOtherInput(true);
 
             if (!answeredQuestions.includes(currentQuestionIndex)) {
@@ -138,7 +352,7 @@ const BookDemo = () => {
             }
         } else {
             // Visual feedback for selection
-            setActiveOptionAnimation(true);
+            //  setActiveOptionAnimation(true);
             setPendingAnswer({ questionId, option });
 
             // Normal selection handling with smooth animation
@@ -153,7 +367,7 @@ const BookDemo = () => {
                 }
 
                 setPendingAnswer(null);
-                setActiveOptionAnimation(false);
+                //   setActiveOptionAnimation(false);
 
                 // Auto-advance to next question after selection (except for multi-select)
                 if (currentQuestionIndex < questionsData.length - 1) {
@@ -174,10 +388,10 @@ const BookDemo = () => {
     const handlePrevious = () => {
         if (currentQuestionIndex > 0) {
             // Add a slight delay for animation
-            setActiveOptionAnimation(true);
+            // setActiveOptionAnimation(true);
             setTimeout(() => {
                 setCurrentQuestionIndex(prev => prev - 1);
-                setActiveOptionAnimation(false);
+                //  setActiveOptionAnimation(false);
 
                 // Clear "Other" input if moving back from question 6
                 if (currentQuestionIndex === 6 && showOtherInput) {
@@ -200,7 +414,7 @@ const BookDemo = () => {
             canProceed = multiSelectAnswers[currentQuestion.id]?.length > 0;
         } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
             // For "Others" option
-            canProceed = otherText.trim() !== '';
+            canProceed = savedText.trim() !== '';
         } else {
             // Normal single-answer flow
             canProceed = !!selectedAnswers[currentQuestion.id];
@@ -220,8 +434,8 @@ const BookDemo = () => {
             // if (nextUnansweredIndex !== -1) {
             //     setCurrentQuestionIndex(nextUnansweredIndex);
             // } else {
-                // If all questions are answered, proceed to the next question
-                setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+            // If all questions are answered, proceed to the next question
+            setCurrentQuestionIndex(prevIndex => prevIndex + 1);
             // }
         }
     };
@@ -262,35 +476,150 @@ const BookDemo = () => {
             }));
         }
 
-        // if (name === 'firstName' || name === 'lastName') {
-        //     const regex = /^[a-zA-Z\s]+$/;
-        //     if (!regex.test(value) && value.length > 0) {
-        //         setFormErrors(prev => ({
-        //             ...prev,
-        //             [name]: 'Only English alphabets are allowed.'
-        //         }));
-        //     }
-        // }
-        if (name === 'email' && value.length > 0) {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
-
-            if (!emailRegex.test(value)) {
-                setFormErrors(prev => ({
-                    ...prev,
-                    [name]: 'Please enter a valid email address.'
-                }));
+        if (name === 'country') {
+            const countryTimezoneMap = {
+                Afghanistan: "GMT+4:30 Asia/Kabul",
+                Albania: "GMT+2:00 Europe/Tirane",
+                Algeria: "GMT+1:00 Africa/Algiers",
+                Andorra: "GMT+2:00 Europe/Andorra",
+                Angola: "GMT+1:00 Africa/Luanda",
+                "Antigua and Barbuda": "GMT-4:00 America/Antigua",
+                Argentina: "GMT-3:00 America/Argentina",
+                Armenia: "GMT+4:00 Asia/Yerevan",
+                Australia: "GMT+10:00 Australia/Sydney",
+                Austria: "GMT+2:00 Europe/Vienna",
+                Azerbaijan: "GMT+4:00 Asia/Baku",
+                Bahamas: "GMT-4:00 America/Nassau",
+                Bahrain: "GMT+3:00 Asia/Bahrain",
+                Bangladesh: "GMT+6:00 Asia/Dhaka",
+                Barbados: "GMT-4:00 America/Barbados",
+                Belarus: "GMT+3:00 Europe/Minsk",
+                Belgium: "GMT+2:00 Europe/Brussels",
+                Belize: "GMT-6:00 America/Belize",
+                Benin: "GMT+1:00 Africa/Porto-Novo",
+                Bhutan: "GMT+6:00 Asia/Thimphu",
+                Bolivia: "GMT-4:00 America/La_Paz",
+                "Bosnia and Herzegovina": "GMT+2:00 Europe/Sarajevo",
+                Botswana: "GMT+2:00 Africa/Gaborone",
+                Brazil: "GMT-3:00 America/Sao_Paulo",
+                Brunei: "GMT+8:00 Asia/Brunei",
+                Bulgaria: "GMT+3:00 Europe/Sofia",
+                "Burkina Faso": "GMT+0:00 Africa/Ouagadougou",
+                Burundi: "GMT+2:00 Africa/Bujumbura",
+                "Cabo Verde": "GMT-1:00 Atlantic/Cape_Verde",
+                Cambodia: "GMT+7:00 Asia/Phnom_Penh",
+                Cameroon: "GMT+1:00 Africa/Douala",
+                Canada: "GMT-4:00 America/Toronto",
+                "Central African Republic": "GMT+1:00 Africa/Bangui",
+                Chad: "GMT+1:00 Africa/Ndjamena",
+                Chile: "GMT-4:00 America/Santiago",
+                China: "GMT+8:00 Asia/Shanghai",
+                Colombia: "GMT-5:00 America/Bogota",
+                Comoros: "GMT+3:00 Indian/Comoro",
+                Congo: "GMT+1:00 Africa/Brazzaville",
+                "Costa Rica": "GMT-6:00 America/Costa_Rica",
+                Croatia: "GMT+2:00 Europe/Zagreb",
+                Cuba: "GMT-4:00 America/Havana",
+                Cyprus: "GMT+3:00 Asia/Nicosia",
+                "Czech Republic": "GMT+2:00 Europe/Prague",
+                Denmark: "GMT+2:00 Europe/Copenhagen",
+                Djibouti: "GMT+3:00 Africa/Djibouti",
+                Dominica: "GMT-4:00 America/Dominica",
+                "Dominican Republic": "GMT-4:00 America/Santo_Domingo",
+                Ecuador: "GMT-5:00 America/Guayaquil",
+                Egypt: "GMT+2:00 Africa/Cairo",
+                "El Salvador": "GMT-6:00 America/El_Salvador",
+                "Equatorial Guinea": "GMT+1:00 Africa/Malabo",
+                Eritrea: "GMT+3:00 Africa/Asmara",
+                Estonia: "GMT+3:00 Europe/Tallinn",
+                Eswatini: "GMT+2:00 Africa/Mbabane",
+                Ethiopia: "GMT+3:00 Africa/Addis_Ababa",
+                Fiji: "GMT+12:00 Pacific/Fiji",
+                Finland: "GMT+3:00 Europe/Helsinki",
+                France: "GMT+2:00 Europe/Paris",
+                Gabon: "GMT+1:00 Africa/Libreville",
+                Gambia: "GMT+0:00 Africa/Banjul",
+                Georgia: "GMT+4:00 Asia/Tbilisi",
+                Germany: "GMT+2:00 Europe/Berlin",
+                Ghana: "GMT+0:00 Africa/Accra",
+                Greece: "GMT+3:00 Europe/Athens",
+                Grenada: "GMT-4:00 America/Grenada",
+                Guatemala: "GMT-6:00 America/Guatemala",
+                Guinea: "GMT+0:00 Africa/Conakry",
+                "Guinea-Bissau": "GMT+0:00 Africa/Bissau",
+                Guyana: "GMT-4:00 America/Guyana",
+                Haiti: "GMT-4:00 America/Port-au-Prince",
+                Honduras: "GMT-6:00 America/Tegucigalpa",
+                Hungary: "GMT+2:00 Europe/Budapest",
+                Iceland: "GMT+0:00 Atlantic/Reykjavik",
+                India: "GMT+5:30 Asia/Kolkata",
+                Indonesia: "GMT+7:00 Asia/Jakarta",
+                Iran: "GMT+4:30 Asia/Tehran",
+                Iraq: "GMT+3:00 Asia/Baghdad",
+                Ireland: "GMT+1:00 Europe/Dublin",
+                Israel: "GMT+3:00 Asia/Jerusalem",
+                Italy: "GMT+2:00 Europe/Rome",
+                Jamaica: "GMT-5:00 America/Jamaica",
+                Japan: "GMT+9:00 Asia/Tokyo",
+                Jordan: "GMT+3:00 Asia/Amman",
+                Kazakhstan: "GMT+6:00 Asia/Almaty",
+                Kenya: "GMT+3:00 Africa/Nairobi",
+                Kiribati: "GMT+14:00 Pacific/Kiritimati",
+                "North Korea": "GMT+9:00 Asia/Pyongyang",
+                "South Korea": "GMT+9:00 Asia/Seoul",
+                Kosovo: "GMT+2:00 Europe/Belgrade",
+                Kuwait: "GMT+3:00 Asia/Kuwait",
+                Kyrgyzstan: "GMT+6:00 Asia/Bishkek",
+                Laos: "GMT+7:00 Asia/Vientiane",
+                Latvia: "GMT+3:00 Europe/Riga",
+                Lebanon: "GMT+3:00 Asia/Beirut",
+                Lesotho: "GMT+2:00 Africa/Maseru",
+                Liberia: "GMT+0:00 Africa/Monrovia",
+                Libya: "GMT+2:00 Africa/Tripoli",
+                Liechtenstein: "GMT+2:00 Europe/Vaduz",
+                Lithuania: "GMT+3:00 Europe/Vilnius",
+                Luxembourg: "GMT+2:00 Europe/Luxembourg",
+                Madagascar: "GMT+3:00 Indian/Antananarivo",
+                Malawi: "GMT+2:00 Africa/Blantyre",
+                Malaysia: "GMT+8:00 Asia/Kuala_Lumpur",
+                Maldives: "GMT+5:00 Indian/Maldives",
+                Mali: "GMT+0:00 Africa/Bamako",
+                Malta: "GMT+2:00 Europe/Malta",
+                "Marshall Islands": "GMT+12:00 Pacific/Majuro",
+                Mauritania: "GMT+0:00 Africa/Nouakchott",
+                Mauritius: "GMT+4:00 Indian/Mauritius",
+                Mexico: "GMT-5:00 America/Mexico_City",
+                Micronesia: "GMT+11:00 Pacific/Pohnpei",
+                Moldova: "GMT+3:00 Europe/Chisinau",
+                Monaco: "GMT+2:00 Europe/Monaco",
+                Mongolia: "GMT+8:00 Asia/Ulaanbaatar",
+                Montenegro: "GMT+2:00 Europe/Podgorica",
+                Morocco: "GMT+1:00 Africa/Casablanca",
+                Mozambique: "GMT+2:00 Africa/Maputo",
+                Myanmar: "GMT+6:30 Asia/Yangon",
+                Namibia: "GMT+2:00 Africa/Windhoek",
+                Nauru: "GMT+12:00 Pacific/Nauru",
+                Nepal: "GMT+5:45 Asia/Kathmandu",
+                Netherlands: "GMT+2:00 Europe/Amsterdam",
+                "New Zealand": "GMT+12:00 Pacific/Auckland",
+                Nicaragua: "GMT-6:00 America/Managua",
+                Niger: "GMT+1:00 Africa/Niamey",
+                Nigeria: "GMT+1:00 Africa/Lagos",
+                "North Macedonia": "GMT+2:00 Europe/Skopje",
+                Norway: "GMT+2:00 Europe/Oslo",
+                Oman: "GMT+4:00 Asia/Muscat",
+                Pakistan: "GMT+5:00 Asia/Karachi",
+                Palau: "GMT+9:00 Pacific/Palau",
+                Panama: "GMT-5:00 America/Panama",
+                "Papua New Guinea": "GMT+10:00 Pacific/Port_Moresby",
+                Paraguay: "GMT-4:00 America/Asuncion",
+                Peru:"",
             }
+
+            const timezone = countryTimezoneMap[value] || "Timezone not available";
+            setTimezone(timezone); // Set the timezone in state
         }
-        // if (name === 'companyName') {
-        //     const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
-        //     if (!companyNameRegex.test(value) && value.length > 0) {
-        //         setFormErrors(prev => ({
-        //             ...prev,
-        //             [name]: 'Company name should not contain special characters.'
-        //         }));
-        //     }
-        // }
-        if (name === 'firstName' || name === 'lastName' || name === 'companyName') {
+        if (name === 'firstName' || name === 'lastName') {
             const maxLength = 50;
             if (value.length >= maxLength) {
                 setFormErrors(prev => ({
@@ -305,6 +634,7 @@ const BookDemo = () => {
                     [name]: 'Only English alphabets are allowed.'
                 }));
             }
+
         }
 
     };
@@ -313,21 +643,22 @@ const BookDemo = () => {
         const errors = {};
         const nameRegex = /^[a-zA-Z\s]+$/;
         const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
-        const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
+        // const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
         const maxLength = 50;
 
         Object.keys(formData).forEach(key => {
             if (!formData[key].trim()) {
                 errors[key] = 'This field is required';
-            } else if ((key === 'firstName' || key === 'lastName' || key === 'companyName') && formData[key].length >= maxLength) {
+            } else if ((key === 'firstName' || key === 'lastName') && formData[key].length >= maxLength) {
                 errors[key] = `This field should not exceed ${maxLength} characters.`;
             } else if ((key === 'firstName' || key === 'lastName') && !nameRegex.test(formData[key])) {
                 errors[key] = 'Only alphabets are allowed';
             } else if (key === 'email' && !emailRegex.test(formData[key])) {
                 errors[key] = 'Please enter a valid email address';
-            } else if (key === 'companyName' && !companyNameRegex.test(formData[key])) {
-                errors[key] = 'Company name should not contain special characters';
             }
+            // else if (key === 'companyName' && !companyNameRegex.test(formData[key])) {
+            //     errors[key] = 'Company name should not contain special characters';
+            // }
         });
 
 
@@ -340,34 +671,46 @@ const BookDemo = () => {
         }
     };
 
-    const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
+    // const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
 
 
 
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [slotslength, selectedSlotslength] = useState(0)
 
-    const intervals = (startString, endString) => {
-        const start = moment(startString, 'hh:mm a');
-        const end = moment(endString, 'hh:mm a');
-        start.minutes(Math.ceil(start.minutes() / 30) * 30);
-
+    const intervals = (startString, endString, timezone) => {
+        const start = moment.tz(startString, 'hh:mm a', timezone);
+        const end = moment.tz(endString, 'hh:mm a', timezone);
+        start.minutes(Math.ceil(start.minutes() / 30) * 30); // Round to the next 30-minute mark
+    
+        const indiaStart = moment.tz('08:00 AM', 'hh:mm a', 'Asia/Kolkata'); // India's start time
+        const indiaEnd = moment.tz('08:30 PM', 'hh:mm a', 'Asia/Kolkata'); // India's end time
+    
         const timeSlots = [];
-
+    
         while (start <= end) {
-            timeSlots.push(start.format('hh:mm a'));
-            start.add(30, 'minutes');
+            // Convert slot to India timezone
+            const slotInIndia = start.clone().tz('Asia/Kolkata');
+    
+            // Check if slot falls within India's valid time range
+            if (slotInIndia.isBetween(indiaStart, indiaEnd, null, '[)')) {
+                timeSlots.push(start.format('hh:mm a')); // Add the slot in the original timezone
+            }
+    
+            start.add(30, 'minutes'); // Increment by 30 minutes
         }
-
+    
         return timeSlots;
     };
+    
 
-    const date = new Date();
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
-        hour: 'numeric',
-        minute: 'numeric',
-        hour12: true
-    }).format(date);
+    // const date = new Date();
+    // const formattedTime = new Intl.DateTimeFormat('en-US', {
+    //     hour: 'numeric',
+    //     minute: 'numeric',
+    //     hour12: true
+    // }).format(date);
 
     const val = value.$d;
     const showDate = val.toDateString();
@@ -385,54 +728,58 @@ const BookDemo = () => {
 
     useEffect(() => {
         const selectedDay = val.getDay(); // Get the day of the week
-        const selectedDate = moment(val); 
-        const currentTime = moment();
+        const selectedDate = moment(val);
+        const currentTime = moment(); // Current time in GMT
 
-        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 }); 
-        const endOfDay = moment().set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM
+        // Get the timezone of the selected country
+        const timezone = countryTimezoneMap[formData.country] || "GMT";
+
+        // Convert current time to the selected country's timezone
+        const localTime = currentTime.tz(timezone);
+        const endOfDay = moment.tz(timezone).set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM local time
 
         const updateAvailableSlots = () => {
             let generatedSlots = [];
 
-            if (selectedDate.isSame(currentTime, 'day')) {
-                // If day is today
-                if (currentTime.isAfter(endOfDay)) {
-                    // If the current time is after 8:00 PM then empty slots
-                    setSlots([]);
+            if (selectedDate.isSame(localTime, 'day')) {
+                // Today in the selected timezone
+                if (localTime.isAfter(endOfDay)) {
+                    setSlots([]); // No slots available after 8:00 PM local time
                 } else {
-                    // For the remaining time of the day, calculate slots starting from the next available time
-                    const formattedCurrentTime = currentTime
-                        .add(1-(currentTime.minute() % 30), 'minutes') // Round to next available slot
+                    const formattedCurrentTime = localTime
+                        .add(1 - (localTime.minute() % 30), 'minutes') // Next available time slot
                         .format('hh:mm A');
-                    generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
+                    generatedSlots = intervals(formattedCurrentTime, '08:00 PM', timezone);
                 }
 
-                // Clear the selected slot if it's today and in the past
+                // Clear invalid selected slot
                 if (
                     selectedSlot &&
-                    moment(selectedSlot, 'hh:mm A').isBefore(currentTime)
+                    moment(selectedSlot, 'hh:mm A').isBefore(localTime)
                 ) {
                     setSelectedSlot(null);
                 }
             } else if (selectedDay === 0 || selectedDay === 6) {
-                // no slots for weekends
+                // No slots for weekends
                 setSlots([]);
             } else {
-                // For future days generating slots
-                generatedSlots = intervals('08:00 AM', '08:00 PM');
+                // Future slots for weekdays
+                generatedSlots = intervals('08:00 AM', '08:00 PM', timezone);
             }
-            console.log(generatedSlots)
-            setSlots(generatedSlots); 
+
+            setSlots(generatedSlots);
+            selectedSlotslength(generatedSlots.length); // Track slot count
         };
 
-        updateAvailableSlots(); 
+        updateAvailableSlots();
 
         const intervalId = setInterval(() => {
             updateAvailableSlots();
         }, 60000);
 
-        return () => clearInterval(intervalId); 
-    }, [value, selectedSlot]);
+        return () => clearInterval(intervalId);
+    }, [val, selectedSlot, formData.country]);
+
 
 
 
@@ -482,17 +829,17 @@ const BookDemo = () => {
         }
     };
 
-    const handleSubmitBooking = () => {
-        // For backend (need to see)
-        console.log("Form Data:", formData);
-        console.log("Selected Answers:", selectedAnswers);
-        console.log("Multi-Select Answers:", multiSelectAnswers);
-        console.log("Other Text:", otherText);
-        console.log("Selected Date:", showDate);
-        console.log("Selected Slot:", selectedSlot);
+    // const handleSubmitBooking = () => {
+    //     // For backend (need to see)
+    //     console.log("Form Data:", formData);
+    //     console.log("Selected Answers:", selectedAnswers);
+    //     console.log("Multi-Select Answers:", multiSelectAnswers);
+    //     console.log("Other Text:", otherText);
+    //     console.log("Selected Date:", showDate);
+    //     console.log("Selected Slot:", selectedSlot);
 
-        alert("Demo booking submitted successfully!");
-    };
+    //     alert("Demo booking submitted successfully!");
+    // };
 
     return (
         <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
@@ -589,7 +936,7 @@ const BookDemo = () => {
                                                 className='delay-100 transition duration-150 ease-in-out'
                                             >
                                                 <button
-                                                    className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
+                                                    className={`px-4 py-2 md:px-8 md:py-3 lg:px-7 xl:px-7 2xl:px-8 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
                     ${isSelected ? "btn-option" :
                                                             pendingAnswer?.option === option ? "btn-option" :
                                                                 "bg-[#F6F6F6]"}`}
@@ -605,35 +952,40 @@ const BookDemo = () => {
                                 </div>
                                 {questionsData?.[currentQuestionIndex]?.id === 6 &&
                                     selectedAnswers?.[6] === "Others (Please Specify)" && (
-                                        <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-0">
-                                            {otherText && (
-                                                <h1 className="mx-auto mb-2 text-gray-700 font-semibold break-words w-full max-w-lg">
-                                                    {otherText || "No additional text provided"}
+                                        <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-14 flex flex-col md:flex-row items-center">
+                                            {savedText ? (
+                                                <h1 className="mx-auto px-2 text-gray-700 font-semibold break-words w-full text-start md:text-center xl:text-end max-w-lg ">
+                                                    {savedText || "No additional text provided"}
                                                 </h1>
+                                            ) : (
+                                                <input
+                                                    maxLength={100}
+                                                    type="text"
+                                                    className="lg:w-full w-60 max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
+                                                    placeholder="Please specify your use case"
+                                                    value={otherText || ""}
+                                                    onChange={handleOtherTextChange}
+                                                />
                                             )}
-                                            <input
-                                                maxLength={100}
-                                                type="text"
-                                                className="lg:w-full w-60 max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
-                                                placeholder="Please specify your use case"
-                                                value={otherText || ""}
-                                                onChange={handleOtherTextChange}
-                                            />
-                                            <button
-                                                className={`w-[180px] btn-save mt-2 px-4 ${otherText?.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
-                                                onClick={() => {
-                                                    if (otherText?.trim()) {
-                                                        setSelectedAnswers(prev => ({
-                                                            ...prev,
-                                                            6: "Others (Please Specify)",
-                                                        }));
-                                                        handleNext();
-                                                    }
-                                                }}
-                                                disabled={!otherText?.trim()}
-                                            >
-                                                Save & Continue
-                                            </button>
+                                            {!savedText && (
+                                                <button
+                                                    className={`lg:mb-10 w-[200px] btn-save mt-2 px-4 ${otherText?.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
+                                                    onClick={() => {
+                                                        if (otherText?.trim()) {
+                                                            setSavedText(otherText?.trim()); // Save the text
+                                                            setSelectedAnswers(prev => ({
+                                                                ...prev,
+                                                                6: "Others (Please Specify)",
+                                                            }));
+                                                            setIsNextEnabled(true)
+                                                        }
+                                                    }}
+                                                    disabled={!otherText?.trim()}
+                                                >
+                                                    Save & Continue
+                                                </button>
+                                            )}
+
                                         </div>
                                     )}
 
@@ -652,9 +1004,9 @@ const BookDemo = () => {
 
                             <button
 
-                                className={`  btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect ? 'opacity-50 cursor-not-allowed' : ''} font-semibold`}
+                                className={`  btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isNextEnabled && !isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect ? 'opacity-50 cursor-not-allowed' : ''} font-semibold`}
                                 onClick={handleNext}
-                                disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
+                                disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered && isNextEnabled}
                             >
                                 Next Step <img src={arrow} alt='arrow' />
                             </button>
@@ -727,20 +1079,23 @@ const BookDemo = () => {
                             </div>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
                                 <label>
-                                    Company Name <StyledSpan>*</StyledSpan>
+                                    Country<StyledSpan>*</StyledSpan>
                                 </label>
-                                <input
-                                    maxLength={50}
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.companyName ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    type="text"
-                                    name="companyName"
-                                    value={formData.companyName}
+                                <select
+                                    className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.country ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    name="country"
+                                    value={formData.country}
                                     onChange={handleInputChange}
-                                    autoComplete="off"
-                                    placeholder="Please enter your company Name"
-                                />
-                                {formErrors.companyName && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.companyName}</p>
+                                >
+                                    <option value="" className='text-[#9C9AA5]'>Select your Country</option>
+                                    {countries.map((count) => (
+                                        <option key={count.value} value={count.value}>
+                                            {count.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                {formErrors.country && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.country}</p>
                                 )}
                             </div>
                         </div>
@@ -750,7 +1105,7 @@ const BookDemo = () => {
                                     Industry Belongs To <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`scrollbar-hide p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="industry"
                                     value={formData.industry}
                                     onChange={handleInputChange}
@@ -771,7 +1126,7 @@ const BookDemo = () => {
                                     Department / Team <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`p-2 md:px-3 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="department"
                                     value={formData.department}
                                     onChange={handleInputChange}
@@ -833,12 +1188,11 @@ const BookDemo = () => {
                                                 '& .MuiPickersCalendarHeader-label': {
                                                     fontSize: '24px',
                                                     fontWeight: 'bold !important',
-                                                    textAlign: 'center',
                                                 },
-                                                '& .MuiDayCalendar-header': {
-                                                    fontWeight: 'bold !important', // Bold weekdays
-                                                    color: 'black !important',
-                                                },
+                                                // '& .MuiDayCalendar-header': {
+                                                //     fontWeight: 'bold !important', // Bold weekdays
+                                                //     color: 'black !important',
+                                                // },
                                                 '& .MuiPickersDay-root': {
                                                     marginX: '28px',
                                                     // gap:"45px",
@@ -861,12 +1215,13 @@ const BookDemo = () => {
                                                     fontWeight: 'bold !important',
                                                     color: 'black !important',
                                                     gap: '17px',
-                                                },
-                                                '& .MuiPickersCalendarHeader-label': {
                                                     fontSize: '24px',
                                                 },
+                                                // '& .MuiPickersCalendarHeader-label': {
+                                                //     fontSize: '24px',
+                                                // },
                                                 '& .MuiPickersArrowSwitcher-root': {
-                                                    marginRight: '105px'
+                                                    marginRight: '80px'
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -920,8 +1275,9 @@ const BookDemo = () => {
                                             }}
                                         />
                                     )}
-                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-12 xl:ml-0 2xl:ml-12 "></div>
-                                    <div className='flex flex-col items-center w-7/12 md:w-5/12 xl:w-4/12 2xl:w-5/12'>
+                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-12 "></div>
+                                    <div className='flex flex-col items-center w-7/12 md:w-5/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
+                                        {/* do changes in aove div item center if large space between calendar and slots */}
                                         <div className='w-full max-w-[300px] md:mb-4 flex flex-col'>
                                             <h2 className='text-[18px] md:text-2xl font-semibold text-gray-700 mb-7 mt-4 md:mt-0'>
                                                 Available Time Slots
@@ -961,7 +1317,7 @@ const BookDemo = () => {
                             <p className='text-[#333333] font-medium md:text-[22px] text-[18px] '>
                                 {selectedSlot ? formatSelectedSlot(showDate, selectedSlot) : ''}
                             </p>
-                            <p className='text-[14px]'>Timezone: GMT+5:30 India/Asia</p>
+                            <p className="text-[14px]">Timezone: {timezone}</p>
                         </div>
                         <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 px-2 lg:mx-2'>
                             <button
