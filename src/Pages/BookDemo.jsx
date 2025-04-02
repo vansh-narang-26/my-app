@@ -183,7 +183,7 @@ const BookDemo = () => {
                 if (currentQuestionIndex === 6 && showOtherInput) {
                     setShowOtherInput(false);
                 }
-            }, 200);
+            }, 100);
         }
     };
     const handlePreviousStep = () => {
@@ -214,39 +214,38 @@ const BookDemo = () => {
         // If on the last question and all are answered, move to the next step
         if (currentQuestionIndex === questionsData.length - 1) {
             setCurrentStep(prevStep => prevStep + 1);
-            // setProgress(100); // Progress for completion
         } else {
             // If not the last question, find the next unanswered question
-            const nextUnansweredIndex = findNextUnansweredQuestion();
-            if (nextUnansweredIndex !== -1) {
-                setCurrentQuestionIndex(nextUnansweredIndex);
-            } else {
-                // If all questions are answered, proceed to the next step
+            // const nextUnansweredIndex = findNextUnansweredQuestion();
+            // if (nextUnansweredIndex !== -1) {
+            //     setCurrentQuestionIndex(nextUnansweredIndex);
+            // } else {
+                // If all questions are answered, proceed to the next question
                 setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-            }
+            // }
         }
     };
 
-    const findNextUnansweredQuestion = () => {
-        for (let i = 0; i < questionsData.length; i++) {
-            const question = questionsData[i];
-            let isAnswered = false;
+    // const findNextUnansweredQuestion = () => {
+    //     for (let i = 0; i < questionsData.length; i++) {
+    //         const question = questionsData[i];
+    //         let isAnswered = false;
 
-            if (question.multiSelect) {
-                isAnswered = multiSelectAnswers[question.id]?.length > 0;
-            } else if (question.hasOther && selectedAnswers[question.id] === "Others (Please Specify)") {
-                isAnswered = otherText.trim() !== '';
-            } else {
-                isAnswered = !!selectedAnswers[question.id];
-            }
+    //         if (question.multiSelect) {
+    //             isAnswered = multiSelectAnswers[question.id]?.length > 0;
+    //         } else if (question.hasOther && selectedAnswers[question.id] === "Others (Please Specify)") {
+    //             isAnswered = otherText.trim() !== '';
+    //         } else {
+    //             isAnswered = !!selectedAnswers[question.id];
+    //         }
 
-            if (!isAnswered) {
-                return i;
-            }
-        }
+    //         if (!isAnswered) {
+    //             return i;
+    //         }
+    //     }
 
-        return -1;
-    };
+    //     return -1;
+    // };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -386,24 +385,24 @@ const BookDemo = () => {
 
     useEffect(() => {
         const selectedDay = val.getDay(); // Get the day of the week
-        const selectedDate = moment(val); // The selected date
-        const currentTime = moment(); // Current time
+        const selectedDate = moment(val); 
+        const currentTime = moment();
 
-        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 }); // 8:00 AM
+        const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 }); 
         const endOfDay = moment().set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM
 
         const updateAvailableSlots = () => {
             let generatedSlots = [];
 
             if (selectedDate.isSame(currentTime, 'day')) {
-                // If the selected date is today
+                // If day is today
                 if (currentTime.isAfter(endOfDay)) {
-                    // If the current time is after 8:00 PM, clear slots
+                    // If the current time is after 8:00 PM then empty slots
                     setSlots([]);
                 } else {
                     // For the remaining time of the day, calculate slots starting from the next available time
                     const formattedCurrentTime = currentTime
-                        .add(30 - (currentTime.minute() % 30), 'minutes') // Round to next available slot
+                        .add(1-(currentTime.minute() % 30), 'minutes') // Round to next available slot
                         .format('hh:mm A');
                     generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
                 }
@@ -416,24 +415,23 @@ const BookDemo = () => {
                     setSelectedSlot(null);
                 }
             } else if (selectedDay === 0 || selectedDay === 6) {
-                // If the day is Sunday or Saturday (weekend), no slots
+                // no slots for weekends
                 setSlots([]);
             } else {
-                // For future days, generate slots from the start to the end of the day
+                // For future days generating slots
                 generatedSlots = intervals('08:00 AM', '08:00 PM');
             }
-
-            setSlots(generatedSlots); // Update state with generated slots
+            console.log(generatedSlots)
+            setSlots(generatedSlots); 
         };
 
-        updateAvailableSlots(); // Run the function initially
+        updateAvailableSlots(); 
 
-        // Set up the interval to update slots every minute
         const intervalId = setInterval(() => {
             updateAvailableSlots();
         }, 60000);
 
-        return () => clearInterval(intervalId); // Clean up the interval on unmount
+        return () => clearInterval(intervalId); 
     }, [value, selectedSlot]);
 
 
@@ -566,25 +564,25 @@ const BookDemo = () => {
                                     variants={optionVariants}
                                     className='delay-100 transition duration-150 ease-in-out'
                                 >
-                                    <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
-                                        {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
-                                    </h2>
+                                    {questionsData[currentQuestionIndex] && (
+                                        <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
+                                            {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
+                                        </h2>
+                                    )}
+
                                 </motion.div>
                                 <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
-                                    {questionsData[currentQuestionIndex].options.map((option) => {
-                                        const isMultiSelect = questionsData[currentQuestionIndex].multiSelect;
-                                        const currentQuestionId = questionsData[currentQuestionIndex].id;
+                                    {questionsData[currentQuestionIndex]?.options?.map((option) => {
+                                        const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect || false;
+                                        const currentQuestionId = questionsData[currentQuestionIndex]?.id || 0;
 
+                                        const isSelected = isMultiSelect
+                                            ? multiSelectAnswers[currentQuestionId]?.includes(option) || false
+                                            : selectedAnswers[currentQuestionId] === option || false;
 
-                                        let isSelected = false;
-                                        if (isMultiSelect) {
-                                            isSelected = multiSelectAnswers[currentQuestionId]?.includes(option);
-                                        } else {
-                                            isSelected = selectedAnswers[currentQuestionId] === option;
-                                        }
                                         return (
                                             <motion.div
-                                                key={option}
+                                                key={option || "unknown-option"}
                                                 initial="hidden"
                                                 animate="visible"
                                                 variants={optionVariants}
@@ -592,53 +590,54 @@ const BookDemo = () => {
                                             >
                                                 <button
                                                     className={`px-4 py-2 md:px-8 md:py-3 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
-                                                    ${isSelected ? "btn-option" :
-                                                            pendingAnswer && pendingAnswer.option === option ? "btn-option" :
+                    ${isSelected ? "btn-option" :
+                                                            pendingAnswer?.option === option ? "btn-option" :
                                                                 "bg-[#F6F6F6]"}`}
                                                     onClick={() => handleAnswer(currentQuestionId, option)}
                                                     disabled={pendingAnswer !== null && !isSelected && selectedAnswers[currentQuestionId]}
                                                 >
-                                                    {option}
+                                                    {option || "Option not available"}
                                                 </button>
                                             </motion.div>
                                         );
                                     })}
+
                                 </div>
-                                {questionsData[currentQuestionIndex].id === 6 &&
-                                    selectedAnswers[6] === "Others (Please Specify)" && (
+                                {questionsData?.[currentQuestionIndex]?.id === 6 &&
+                                    selectedAnswers?.[6] === "Others (Please Specify)" && (
                                         <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-0">
                                             {otherText && (
                                                 <h1 className="mx-auto mb-2 text-gray-700 font-semibold break-words w-full max-w-lg">
-                                                    {otherText}
+                                                    {otherText || "No additional text provided"}
                                                 </h1>
                                             )}
                                             <input
                                                 maxLength={100}
                                                 type="text"
-                                                className="lg:w-full w-60 max-w-lg p-3  border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
+                                                className="lg:w-full w-60 max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
                                                 placeholder="Please specify your use case"
-                                                value={otherText}
+                                                value={otherText || ""}
                                                 onChange={handleOtherTextChange}
                                             />
                                             <button
-                                                className={`w-[180px] btn-save mt-2 px-4 ${otherText.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
+                                                className={`w-[180px] btn-save mt-2 px-4 ${otherText?.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
                                                 onClick={() => {
-                                                    if (otherText.trim()) {
+                                                    if (otherText?.trim()) {
                                                         setSelectedAnswers(prev => ({
                                                             ...prev,
-                                                            6: "Others (Please Specify)", // Keeps "Others" visually selected
+                                                            6: "Others (Please Specify)",
                                                         }));
-                                                        // setOtherText('')
                                                         handleNext();
                                                     }
-                                                    //handleNext()
                                                 }}
-                                                disabled={!otherText.trim()}
+                                                disabled={!otherText?.trim()}
                                             >
                                                 Save & Continue
                                             </button>
                                         </div>
                                     )}
+
+
                             </div>
                         </div>
 
@@ -652,7 +651,7 @@ const BookDemo = () => {
                             </button>
 
                             <button
-                          
+
                                 className={`  btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect ? 'opacity-50 cursor-not-allowed' : ''} font-semibold`}
                                 onClick={handleNext}
                                 disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered}
@@ -792,14 +791,14 @@ const BookDemo = () => {
 
                         <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-0 md:mt-8 gap-x-3 lg:mr-4 px-2 xl:px-0 '>
                             <button
-                            
+
                                 className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[14px] md:text-[16px] 2xl:text-[18px] font-semibold`}
                                 onClick={handlePreviousStep}
                             >
                                 <img src={arrow} alt='arrow' /> Previous
                             </button>
                             <button
-                        
+
                                 className='btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px]'
                                 onClick={handleNextStep}
                             >
@@ -818,7 +817,7 @@ const BookDemo = () => {
                         </div>
                         <div className='flex mt-10 items-center'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 md:ml-8">
+                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 xl:mr-14">
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
@@ -830,7 +829,7 @@ const BookDemo = () => {
                                             // }}
                                             className="w-full md:max-w-lg max-w-sm"
                                             sx={{
-                                                width: '500px',
+                                                width: '390px',
                                                 '& .MuiPickersCalendarHeader-label': {
                                                     fontSize: '24px',
                                                     fontWeight: 'bold !important',
@@ -921,8 +920,8 @@ const BookDemo = () => {
                                             }}
                                         />
                                     )}
-                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 "></div>
-                                    <div className='flex flex-col items-center w-7/12'>
+                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-12 xl:ml-0 2xl:ml-12 "></div>
+                                    <div className='flex flex-col items-center w-7/12 md:w-5/12 xl:w-4/12 2xl:w-5/12'>
                                         <div className='w-full max-w-[300px] md:mb-4 flex flex-col'>
                                             <h2 className='text-[18px] md:text-2xl font-semibold text-gray-700 mb-7 mt-4 md:mt-0'>
                                                 Available Time Slots
@@ -964,8 +963,8 @@ const BookDemo = () => {
                             </p>
                             <p className='text-[14px]'>Timezone: GMT+5:30 India/Asia</p>
                         </div>
-                        <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-end items-center mt-10 md:-mt-4 gap-x-2 px-2 lg:mx-2'>
-                        <button
+                        <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 px-2 lg:mx-2'>
+                            <button
                                 className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[14px] md:text-[16px] 2xl:text-[18px] font-semibold`}
                                 onClick={handlePreviousStep}
                             >
