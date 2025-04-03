@@ -481,7 +481,7 @@ const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
     const [otherText, setOtherText] = useState('');
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState(3);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
@@ -713,7 +713,7 @@ const BookDemo = () => {
 
     const validateForm = () => {
         const errors = {};
-        const nameRegex = /^[a-zA-Z\s]+$/;
+        const nameRegex = /^[a-zA-Z]+$/;
         const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
         // const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
         const maxLength = 50;
@@ -1155,7 +1155,7 @@ const BookDemo = () => {
                             </div>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
                                 <label>
-                                    Country<StyledSpan>*</StyledSpan>
+                                    Country <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
                                     className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.country ? 'border-red-500' : 'border-[#465FF166]'}`}
@@ -1248,7 +1248,7 @@ const BookDemo = () => {
                         </div>
                         <div className='flex mt-10 items-center w-full'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className={`flex flex-col md:flex-row items-center justify-between w-full mx-auto sm:ml-4 lg:ml-7 xl:ml-7 2xl:ml-0 ml-0}`}>
+                                <div className={`flex flex-col md:flex-row items-center justify-between w-full mx-auto sm:ml-4 lg:ml-7 xl:ml-7 2xl:px-7 2xl:ml-0 ml-0}`}>
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
@@ -1256,7 +1256,7 @@ const BookDemo = () => {
                                             disablePast
                                             dayOfWeekFormatter={(date) => {
                                                 // Format the date using Day.js adapter
-                                                return date.format('dd'); // 'dd' gives the first two letters of the weekday (e.g., 'Mo', 'Tu')
+                                                return date.format('ddd'); // 'dd' gives the first two letters of the weekday (e.g., 'Mo', 'Tu')
                                             }}
                                             className="w-full"
                                             sx={{
@@ -1309,23 +1309,10 @@ const BookDemo = () => {
                                                 '& .MuiPickersCalendarHeader-switchViewButton': {
                                                     display: 'none',
                                                 },
-                                                // '& .MuiDayCalendar-weekContainer': {
-                                                //     justifyContent: 'center',
-                                                // },
                                                 '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
                                                     marginX: '16px',
                                                     marginY: '2px'
                                                 },
-                                                // '& .MuiDayCalendar-header': {
-                                                //     gridTemplateColumns: 'repeat(7, 1fr)',
-                                                //     fontWeight: 'bold !important',
-                                                //     color: 'black !important',
-                                                //     gap: '17px',
-                                                //     fontSize: '24px',
-                                                // },
-                                                // '& .MuiPickersCalendarHeader-label': {
-                                                //     fontSize: '24px',
-                                                // },
                                                 '& .MuiPickersArrowSwitcher-root': {
                                                     marginRight: '110px'
                                                 },
@@ -1357,19 +1344,14 @@ const BookDemo = () => {
                                                 '& .MuiPickersCalendarHeader-switchViewButton': {
                                                     display: 'none',
                                                 },
-                                                // '& .MuiDayCalendar-weekContainer': {
-                                                //     justifyContent: 'center',
-                                                // },
-                                                // '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
-                                                //     marginX: '0px',
-                                                // },
-                                                // "& .MuiDayCalendar-header":{
-                                                //     marginRight:'10px',
-                                                // },
+                                                '& .MuiDayCalendar-header':{
+                                                    fontWeight: 'bold !important',
+                                                    color: 'black !important',
+                                                },
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    fontSize: '20px',
-                                                    paddingRight: '40px',
-                                                    width: "100%",
+                                                    //month names
+                                                    fontSize: '20px !important',
+                                                    fontWeight: 'bold !important',
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -1382,7 +1364,7 @@ const BookDemo = () => {
                                         />
                                     )}
                                     <div className="md:h-[280px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-0 "></div>
-                                    <div className='flex flex-col items-center w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12'>
+                                    <div className='flex flex-col items-center w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
                                         <h2 className='text-[18px] lg:text-xl md:text-2xl font-semibold text-gray-700 mb-4 md:mb-3 mt-4 md:mt-0'>
                                             Available Time Slots
                                         </h2>
