@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import styled from "styled-components";
 import { useMediaQuery } from '@mui/material';
 import ProgressBar from '../Components/ProgressBar'
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 const StyledSpan = styled.span`
   color: red;
@@ -37,9 +38,9 @@ const questionsData = [
     { id: 1, text: "Which segment does your company belongs to?", options: ["Startup", "Scale Startup", "SME", "Mid Enterprises", "Large Enterprises", "Public Sector", "Non-Profit Organizations"] },
     { id: 2, text: "How many technical teams will be working with NexaStack?", options: ["0-10", "11-50", "51-100", "More Than 100", "Only Me"] },
     { id: 3, text: "Does your team have in-house AI/ML expertise, or do you need support?", options: ["We have an in-house AI/ML team", "We need external AI/ML support", "Need additional support", "Not sure yet, exploring options"] },
-    { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDRP", "HIPAA", "None", "Not Sure"] },
-    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
-    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Others (Please Specify)"], hasOther: true },
+    { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDPR", "HIPAA", "None", "Not Sure"] },
+    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon Web Services (AWS) ", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
+    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Other (Please Specify)"], hasOther: true },
     { id: 7, text: "Are there specific AI models you plan to operate using NexaStack?", options: ["LLMs (Large Language Models)", "Vision Models", "Recommendation Systems", "Speech & Audio Models", "Custom AI/ML Models", "Not Sure, Need Guidance"] },
 ];
 const IndustryList = [
@@ -273,8 +274,206 @@ const countries = [
     { value: "Zambia", label: "Zambia" },
     { value: "Zimbabwe", label: "Zimbabwe" },
 ];
+const countryTimezoneMap = {
+    Afghanistan: "GMT+4:30 Asia/Kabul",
+    Albania: "GMT+2:00 Europe/Tirane",
+    Algeria: "GMT+1:00 Africa/Algiers",
+    Andorra: "GMT+2:00 Europe/Andorra",
+    Angola: "GMT+1:00 Africa/Luanda",
+    "Antigua and Barbuda": "GMT-4:00 America/Antigua",
+    Argentina: "GMT-3:00 America/Argentina",
+    Armenia: "GMT+4:00 Asia/Yerevan",
+    Australia: "GMT+10:00 Australia/Sydney",
+    Austria: "GMT+2:00 Europe/Vienna",
+    Azerbaijan: "GMT+4:00 Asia/Baku",
+    Bahamas: "GMT-4:00 America/Nassau",
+    Bahrain: "GMT+3:00 Asia/Bahrain",
+    Bangladesh: "GMT+6:00 Asia/Dhaka",
+    Barbados: "GMT-4:00 America/Barbados",
+    Belarus: "GMT+3:00 Europe/Minsk",
+    Belgium: "GMT+2:00 Europe/Brussels",
+    Belize: "GMT-6:00 America/Belize",
+    Benin: "GMT+1:00 Africa/Porto-Novo",
+    Bhutan: "GMT+6:00 Asia/Thimphu",
+    Bolivia: "GMT-4:00 America/La_Paz",
+    "Bosnia and Herzegovina": "GMT+2:00 Europe/Sarajevo",
+    Botswana: "GMT+2:00 Africa/Gaborone",
+    Brazil: "GMT-3:00 America/Sao_Paulo",
+    Brunei: "GMT+8:00 Asia/Brunei",
+    Bulgaria: "GMT+3:00 Europe/Sofia",
+    "Burkina Faso": "GMT+0:00 Africa/Ouagadougou",
+    Burundi: "GMT+2:00 Africa/Bujumbura",
+    "Cabo Verde": "GMT-1:00 Atlantic/Cape_Verde",
+    Cambodia: "GMT+7:00 Asia/Phnom_Penh",
+    Cameroon: "GMT+1:00 Africa/Douala",
+    Canada: "GMT-4:00 America/Toronto",
+    "Central African Republic": "GMT+1:00 Africa/Bangui",
+    Chad: "GMT+1:00 Africa/Ndjamena",
+    Chile: "GMT-4:00 America/Santiago",
+    China: "GMT+8:00 Asia/Shanghai",
+    Colombia: "GMT-5:00 America/Bogota",
+    Comoros: "GMT+3:00 Indian/Comoro",
+    Congo: "GMT+1:00 Africa/Brazzaville",
+    "Costa Rica": "GMT-6:00 America/Costa_Rica",
+    Croatia: "GMT+2:00 Europe/Zagreb",
+    Cuba: "GMT-4:00 America/Havana",
+    Cyprus: "GMT+3:00 Asia/Nicosia",
+    "Czech Republic": "GMT+2:00 Europe/Prague",
+    Denmark: "GMT+2:00 Europe/Copenhagen",
+    Djibouti: "GMT+3:00 Africa/Djibouti",
+    Dominica: "GMT-4:00 America/Dominica",
+    "Dominican Republic": "GMT-4:00 America/Santo_Domingo",
+    Ecuador: "GMT-5:00 America/Guayaquil",
+    Egypt: "GMT+2:00 Africa/Cairo",
+    "El Salvador": "GMT-6:00 America/El_Salvador",
+    "Equatorial Guinea": "GMT+1:00 Africa/Malabo",
+    Eritrea: "GMT+3:00 Africa/Asmara",
+    Estonia: "GMT+3:00 Europe/Tallinn",
+    Eswatini: "GMT+2:00 Africa/Mbabane",
+    Ethiopia: "GMT+3:00 Africa/Addis_Ababa",
+    Fiji: "GMT+12:00 Pacific/Fiji",
+    Finland: "GMT+3:00 Europe/Helsinki",
+    France: "GMT+2:00 Europe/Paris",
+    Gabon: "GMT+1:00 Africa/Libreville",
+    Gambia: "GMT+0:00 Africa/Banjul",
+    Georgia: "GMT+4:00 Asia/Tbilisi",
+    Germany: "GMT+2:00 Europe/Berlin",
+    Ghana: "GMT+0:00 Africa/Accra",
+    Greece: "GMT+3:00 Europe/Athens",
+    Grenada: "GMT-4:00 America/Grenada",
+    Guatemala: "GMT-6:00 America/Guatemala",
+    Guinea: "GMT+0:00 Africa/Conakry",
+    "Guinea-Bissau": "GMT+0:00 Africa/Bissau",
+    Guyana: "GMT-4:00 America/Guyana",
+    Haiti: "GMT-4:00 America/Port-au-Prince",
+    Honduras: "GMT-6:00 America/Tegucigalpa",
+    Hungary: "GMT+2:00 Europe/Budapest",
+    Iceland: "GMT+0:00 Atlantic/Reykjavik",
+    India: "GMT+5:30 Asia/Kolkata",
+    Indonesia: "GMT+7:00 Asia/Jakarta",
+    Iran: "GMT+4:30 Asia/Tehran",
+    Iraq: "GMT+3:00 Asia/Baghdad",
+    Ireland: "GMT+1:00 Europe/Dublin",
+    Israel: "GMT+3:00 Asia/Jerusalem",
+    Italy: "GMT+2:00 Europe/Rome",
+    Jamaica: "GMT-5:00 America/Jamaica",
+    Japan: "GMT+9:00 Asia/Tokyo",
+    Jordan: "GMT+3:00 Asia/Amman",
+    Kazakhstan: "GMT+6:00 Asia/Almaty",
+    Kenya: "GMT+3:00 Africa/Nairobi",
+    Kiribati: "GMT+14:00 Pacific/Kiritimati",
+    "North Korea": "GMT+9:00 Asia/Pyongyang",
+    "South Korea": "GMT+9:00 Asia/Seoul",
+    Kosovo: "GMT+2:00 Europe/Belgrade",
+    Kuwait: "GMT+3:00 Asia/Kuwait",
+    Kyrgyzstan: "GMT+6:00 Asia/Bishkek",
+    Laos: "GMT+7:00 Asia/Vientiane",
+    Latvia: "GMT+3:00 Europe/Riga",
+    Lebanon: "GMT+3:00 Asia/Beirut",
+    Lesotho: "GMT+2:00 Africa/Maseru",
+    Liberia: "GMT+0:00 Africa/Monrovia",
+    Libya: "GMT+2:00 Africa/Tripoli",
+    Liechtenstein: "GMT+2:00 Europe/Vaduz",
+    Lithuania: "GMT+3:00 Europe/Vilnius",
+    Luxembourg: "GMT+2:00 Europe/Luxembourg",
+    Madagascar: "GMT+3:00 Indian/Antananarivo",
+    Malawi: "GMT+2:00 Africa/Blantyre",
+    Malaysia: "GMT+8:00 Asia/Kuala_Lumpur",
+    Maldives: "GMT+5:00 Indian/Maldives",
+    Mali: "GMT+0:00 Africa/Bamako",
+    Malta: "GMT+2:00 Europe/Malta",
+    "Marshall Islands": "GMT+12:00 Pacific/Majuro",
+    Mauritania: "GMT+0:00 Africa/Nouakchott",
+    Mauritius: "GMT+4:00 Indian/Mauritius",
+    Mexico: "GMT-5:00 America/Mexico_City",
+    Micronesia: "GMT+11:00 Pacific/Pohnpei",
+    Moldova: "GMT+3:00 Europe/Chisinau",
+    Monaco: "GMT+2:00 Europe/Monaco",
+    Mongolia: "GMT+8:00 Asia/Ulaanbaatar",
+    Montenegro: "GMT+2:00 Europe/Podgorica",
+    Morocco: "GMT+1:00 Africa/Casablanca",
+    Mozambique: "GMT+2:00 Africa/Maputo",
+    Myanmar: "GMT+6:30 Asia/Yangon",
+    Namibia: "GMT+2:00 Africa/Windhoek",
+    Nauru: "GMT+12:00 Pacific/Nauru",
+    Nepal: "GMT+5:45 Asia/Kathmandu",
+    Netherlands: "GMT+2:00 Europe/Amsterdam",
+    "New Zealand": "GMT+12:00 Pacific/Auckland",
+    Nicaragua: "GMT-6:00 America/Managua",
+    Niger: "GMT+1:00 Africa/Niamey",
+    Nigeria: "GMT+1:00 Africa/Lagos",
+    "North Macedonia": "GMT+2:00 Europe/Skopje",
+    Norway: "GMT+2:00 Europe/Oslo",
+    Oman: "GMT+4:00 Asia/Muscat",
+    Pakistan: "GMT+5:00 Asia/Karachi",
+    Palau: "GMT+9:00 Pacific/Palau",
+    Panama: "GMT-5:00 America/Panama",
+    "Papua New Guinea": "GMT+10:00 Pacific/Port_Moresby",
+    Paraguay: "GMT-4:00 America/Asuncion",
+    Peru: "GMT-5:00 America/Lima",
+    Philippines: "GMT+8:00 Asia/Manila",
+    Poland: "GMT+2:00 Europe/Warsaw",
+    Portugal: "GMT+0:00 Europe/Lisbon",
+    Qatar: "GMT+3:00 Asia/Qatar",
+    Romania: "GMT+3:00 Europe/Bucharest",
+    Russia: "GMT+3:00 Europe/Moscow",
+    Rwanda: "GMT+2:00 Africa/Kigali",
+    "Saint Kitts and Nevis": "GMT-4:00 America/St_Kitts",
+    "Saint Lucia": "GMT-4:00 America/St_Lucia",
+    "Saint Vincent and the Grenadines": "GMT-4:00 America/St_Vincent",
+    Samoa: "GMT+13:00 Pacific/Apia",
+    "San Marino": "GMT+2:00 Europe/San_Marino",
+    "Sao Tome and Principe": "GMT+0:00 Africa/Sao_Tome",
+    "Saudi Arabia": "GMT+3:00 Asia/Riyadh",
+    Senegal: "GMT+0:00 Africa/Dakar",
+    Serbia: "GMT+2:00 Europe/Belgrade",
+    Seychelles: "GMT+4:00 Indian/Mahe",
+    "Sierra Leone": "GMT+0:00 Africa/Freetown",
+    Singapore: "GMT+8:00 Asia/Singapore",
+    Slovakia: "GMT+2:00 Europe/Bratislava",
+    Slovenia: "GMT+2:00 Europe/Ljubljana",
+    "Solomon Islands": "GMT+11:00 Pacific/Guadalcanal",
+    Somalia: "GMT+3:00 Africa/Mogadishu",
+    "South Africa": "GMT+2:00 Africa/Johannesburg",
+    "South Sudan": "GMT+3:00 Africa/Juba",
+    Spain: "GMT+2:00 Europe/Madrid",
+    "Sri Lanka": "GMT+5:30 Asia/Colombo",
+    Sudan: "GMT+2:00 Africa/Khartoum",
+    Suriname: "GMT-3:00 America/Paramaribo",
+    Sweden: "GMT+2:00 Europe/Stockholm",
+    Switzerland: "GMT+2:00 Europe/Zurich",
+    Syria: "GMT+3:00 Asia/Damascus",
+    Taiwan: "GMT+8:00 Asia/Taipei",
+    Tajikistan: "GMT+5:00 Asia/Dushanbe",
+    Tanzania: "GMT+3:00 Africa/Dar_es_Salaam",
+    Thailand: "GMT+7:00 Asia/Bangkok",
+    "Timor-Leste": "GMT+9:00 Asia/Dili",
+    Togo: "GMT+0:00 Africa/Lome",
+    Tonga: "GMT+13:00 Pacific/Tongatapu",
+    "Trinidad and Tobago": "GMT-4:00 America/Port_of_Spain",
+    Tunisia: "GMT+1:00 Africa/Tunis",
+    Turkey: "GMT+3:00 Europe/Istanbul",
+    Turkmenistan: "GMT+5:00 Asia/Ashgabat",
+    Tuvalu: "GMT+12:00 Pacific/Funafuti",
+    Uganda: "GMT+3:00 Africa/Kampala",
+    Ukraine: "GMT+3:00 Europe/Kiev",
+    "United Arab Emirates": "GMT+4:00 Asia/Dubai",
+    "United Kingdom": "GMT+1:00 Europe/London",
+    "United States": "GMT-5:00 America/New_York",
+    Uruguay: "GMT-3:00 America/Montevideo",
+    Uzbekistan: "GMT+5:00 Asia/Tashkent",
+    Vanuatu: "GMT+11:00 Pacific/Efate",
+    "Vatican City": "GMT+2:00 Europe/Vatican",
+    Venezuela: "GMT-4:00 America/Caracas",
+    Vietnam: "GMT+7:00 Asia/Ho_Chi_Minh",
+    Yemen: "GMT+3:00 Asia/Aden",
+    Zambia: "GMT+2:00 Africa/Lusaka",
+    Zimbabwe: "GMT+2:00 Africa/Harare",
+}
 
 const BookDemo = () => {
+    const [userTimezone, setUserTimezone] = useState("GMT+5:30 India/Asia"); // Default to Indian timezone
+    const [timezoneOffset, setTimezoneOffset] = useState(0); // Difference in minutes between user timezone and IST
     var todayDate = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
     // console.log(todayDate);
     const isDesktop = useMediaQuery('(min-width:768px)');
@@ -282,14 +481,14 @@ const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
     const [otherText, setOtherText] = useState('');
-    const [currentStep, setCurrentStep] = useState(3);
+    const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
     const [answeredQuestions, setAnsweredQuestions] = useState([]);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [showOtherInput, setShowOtherInput] = useState(false); // Multi selection ke liye
-    const [savedText, setSavedText] = useState('')
+    // const [savedText, setSavedText] = useState('')
     // const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
     // const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
     const [formData, setFormData] = useState({
@@ -302,7 +501,7 @@ const BookDemo = () => {
     });
     const [formErrors, setFormErrors] = useState({});
 
-    // Handle selection of an answer
+    // Handling selection of an answer
     const handleAnswer = useCallback((questionId, option) => {
         const currentQuestion = questionsData.find(q => q.id === questionId);
 
@@ -312,33 +511,30 @@ const BookDemo = () => {
                 const selections = prev[questionId] || [];
 
                 if (selections.includes(option)) {
-                    // Remove if already selected
                     return { ...prev, [questionId]: selections.filter(item => item !== option) };
                 } else {
-                    // Add new selection
+                    // Adding new
                     return { ...prev, [questionId]: [...selections, option] };
                 }
             });
 
-            // Update answered questions tracking
+            //Update
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
-        } else if (currentQuestion.hasOther && option === "Others (Please Specify)") {
+        } else if (currentQuestion.hasOther && option === "Other (Please Specify)") {
             // Handling "Others" option in question 6
             setSelectedAnswers(prev => ({
                 ...prev,
                 [questionId]: option
             }));
             setOtherText('');
-            setSavedText('')
             setShowOtherInput(true);
 
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
         } else {
-            // Visual feedback for selection
             //  setActiveOptionAnimation(true);
             setPendingAnswer({ questionId, option });
 
@@ -366,6 +562,7 @@ const BookDemo = () => {
                 }
             }, 100);
         }
+        // eslint-disable-next-line
     }, [currentQuestionIndex, answeredQuestions, multiSelectAnswers]);
 
     const handleOtherTextChange = (e) => {
@@ -399,19 +596,18 @@ const BookDemo = () => {
         if (currentQuestion.multiSelect) {
             // For multi-select questions
             canProceed = multiSelectAnswers[currentQuestion.id]?.length > 0;
-        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
-            // For "Others" option
-            canProceed = savedText.trim() !== '';
-        } else {
-            // Normal single-answer flow
-            canProceed = !!selectedAnswers[currentQuestion.id];
-        }
-
+        } else
+            if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Other (Please Specify)") {
+                // For "Others" option
+                canProceed = otherText.trim() !== '';
+            } else {
+                // Normal single-answer flow
+                canProceed = !!selectedAnswers[currentQuestion.id];
+            }
         if (!canProceed) {
-            alert("Please answer the current question to proceed.");
+            // alert("Please answer the current question to proceed.");
             return;
         }
-
         // If on the last question and all are answered, move to the next step
         if (currentQuestionIndex === questionsData.length - 1) {
             setCurrentStep(prevStep => prevStep + 1);
@@ -434,7 +630,7 @@ const BookDemo = () => {
 
     //         if (question.multiSelect) {
     //             isAnswered = multiSelectAnswers[question.id]?.length > 0;
-    //         } else if (question.hasOther && selectedAnswers[question.id] === "Others (Please Specify)") {
+    //         } else if (question.hasOther && selectedAnswers[question.id] === "Other (Please Specify)") {
     //             isAnswered = otherText.trim() !== '';
     //         } else {
     //             isAnswered = !!selectedAnswers[question.id];
@@ -462,6 +658,8 @@ const BookDemo = () => {
                 [name]: ''
             }));
         }
+
+        // Handle name validation
         if (name === 'firstName' || name === 'lastName') {
             const maxLength = 50;
             if (value.length >= maxLength) {
@@ -479,11 +677,41 @@ const BookDemo = () => {
             }
         }
 
+        // Set timezone when country is selected
+        if (name === 'country' && value) {
+            const selectedTimezone = countryTimezoneMap[value] || "GMT+5:30 India/Asia";
+            setUserTimezone(selectedTimezone);
+
+            // Calculate offset between IST and selected timezone
+            calculateTimezoneOffset(selectedTimezone);
+        }
+    };
+    const calculateTimezoneOffset = (timezoneString) => {
+        // Parse the GMT offset from the timezone string (e.g., "GMT+4:30 Asia/Kabul")
+        const gmtMatch = timezoneString.match(/GMT([+-])(\d+):(\d+)/);
+
+        if (!gmtMatch) {
+            setTimezoneOffset(0);
+            return;
+        }
+
+        const sign = gmtMatch[1] === '+' ? 1 : -1;
+        const hours = parseInt(gmtMatch[2]);
+        const minutes = parseInt(gmtMatch[3]);
+
+        // Calculate total minutes offset
+        const userOffset = sign * (hours * 60 + minutes);
+
+        // IST is GMT+5:30 = +330 minutes
+        const istOffset = 330;
+
+        // Difference between user timezone and IST
+        setTimezoneOffset(userOffset - istOffset);
     };
 
     const validateForm = () => {
         const errors = {};
-        const nameRegex = /^[a-zA-Z\s]+$/;
+        const nameRegex = /^[a-zA-Z]+$/;
         const emailRegex = /^[a-zA-Z0-9._%+-]+@([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
         // const companyNameRegex = /^[a-zA-Z0-9\s]+$/;
         const maxLength = 50;
@@ -519,22 +747,32 @@ const BookDemo = () => {
 
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
-    const [slotslength, selectedSlotslength] = useState(0)
+    // const [slotslength, selectedSlotslength] = useState(0)
 
     const intervals = (startString, endString) => {
-        const start = moment(startString, 'hh:mm a');
-        const end = moment(endString, 'hh:mm a');
-        start.minutes(Math.ceil(start.minutes() / 30) * 30);
+        // These are in IST
+        const istStart = moment(startString, 'hh:mm a');
+        const istEnd = moment(endString, 'hh:mm a');
+
+        istStart.minutes(Math.ceil(istStart.minutes() / 30) * 30);
 
         const timeSlots = [];
 
-        while (start <= end) {
-            timeSlots.push(start.format('hh:mm a'));
-            start.add(30, 'minutes');
+        while (istStart <= istEnd) {
+            // Convert ist time to client local time
+            const localTime = moment(istStart).add(timezoneOffset, 'minutes');
+
+            timeSlots.push({
+                istTime: istStart.format('hh:mm a'), // SOrginal ist
+                localTime: localTime.format('hh:mm a') // local time of client
+            });
+
+            istStart.add(30, 'minutes');
         }
 
         return timeSlots;
     };
+
 
     // const date = new Date();
     // const formattedTime = new Intl.DateTimeFormat('en-US', {
@@ -546,60 +784,79 @@ const BookDemo = () => {
     const val = value.$d;
     const showDate = val.toDateString();
 
+    // The dates which are selected they are formatted with these functions
     const formatSelectedSlot = (date, slot) => {
-        const startTime = moment(slot, 'hh:mm A');
-        const endTime = moment(startTime).add(30, 'minutes');
+        if (!slot) return '';
+
+        const startTimeLocal = moment(slot.localTime, 'hh:mm A');
+        const endTimeLocal = moment(startTimeLocal).add(30, 'minutes');
+
+        // const startTimeIST = moment(slot.istTime, 'hh:mm A');
+        // const endTimeIST = moment(startTimeIST).add(30, 'minutes');
 
         const formattedDate = moment(date).format('Do MMMM YYYY');
-        const formattedStartTime = startTime.format('h:mmA');
-        const formattedEndTime = endTime.format('h:mmA');
+        const formattedStartTimeLocal = startTimeLocal.format('h:mmA');
+        const formattedEndTimeLocal = endTimeLocal.format('h:mmA');
 
-        return `${formattedDate} | ${formattedStartTime} - ${formattedEndTime}`;
+        // const formattedStartTimeIST = startTimeIST.format('h:mmA');
+        // const formattedEndTimeIST = endTimeIST.format('h:mmA');
+
+        return `${formattedDate} | ${formattedStartTimeLocal} - ${formattedEndTimeLocal} (${userTimezone})`;
+    };
+    const getISTTimeDisplay = (slot) => {
+        if (!slot) return '';
+
+        const startTimeIST = moment(slot.istTime, 'hh:mm A');
+        const endTimeIST = moment(startTimeIST).add(30, 'minutes');
+
+        const formattedStartTimeIST = startTimeIST.format('h:mmA');
+        const formattedEndTimeIST = endTimeIST.format('h:mmA');
+
+        return `${formattedStartTimeIST} - ${formattedEndTimeIST} (GMT+5:30 India/Asia)`;
     };
 
     useEffect(() => {
-        const selectedDay = val.getDay(); // Get the day of the week
-        const selectedDate = moment(val);
-        const currentTime = moment();
+        const selectedDay = val.getDay();
 
-        //  const startOfDay = moment().set({ hour: 8, minute: 0, second: 0 }); 
-        const endOfDay = moment().set({ hour: 20, minute: 0, second: 0 }); // 8:00 PM
+        // Converting selected date to Indian time
+        const selectedDateLocal = moment(val);
+        const selectedDateIST = moment(selectedDateLocal).subtract(timezoneOffset, 'minutes');
+
+        // Current time (for past)
+        const currentTimeIST = moment().utcOffset(330);
+
+        // Business hours in IST (8:30 to 8:30 for Indian)
+        // const istStartOfDay = moment().utcOffset(330).set({ hour: 8, minute: 0, second: 0 });
+        const istEndOfDay = moment().utcOffset(330).set({ hour: 20, minute: 0, second: 0 });
 
         const updateAvailableSlots = () => {
             let generatedSlots = [];
 
-            if (selectedDate.isSame(currentTime, 'day')) {
-                // If day is today
-                if (currentTime.isAfter(endOfDay)) {
-                    // If the current time is after 8:00 PM then empty slots
+            if (selectedDateIST.isSame(currentTimeIST, 'day')) {
+                // Today in IST timezone
+                if (currentTimeIST.isAfter(istEndOfDay)) {
                     setSlots([]);
                 } else {
-                    // For the remaining time of the day, calculate slots starting from the next available time
-                    const formattedCurrentTime = currentTime
-                        .add(1 - (currentTime.minute() % 30), 'minutes') // Round to next available slot
+                    const formattedCurrentTimeIST = moment(currentTimeIST)
+                        .add(1 - (currentTimeIST.minute() % 30), 'minutes')
                         .format('hh:mm A');
-                    generatedSlots = intervals(formattedCurrentTime, '08:00 PM');
+                    generatedSlots = intervals(formattedCurrentTimeIST, '08:00 PM');
                 }
 
-                // Clear the selected slot if it's today and in the past
-                if (
-                    selectedSlot &&
-                    moment(selectedSlot, 'hh:mm A').isBefore(currentTime)
-                ) {
+                //Clear the selected slot if it's today and in the past
+                if (selectedSlot &&
+                    moment(selectedSlot.istTime, 'hh:mm A').isBefore(currentTimeIST)) {
                     setSelectedSlot(null);
                 }
             } else if (selectedDay === 0 || selectedDay === 6) {
-                // no slots for weekends
                 setSlots([]);
             } else {
-                // For future days generating slots
+                // For future days generating slots for full business hours
                 generatedSlots = intervals('08:00 AM', '08:00 PM');
             }
 
             setSlots(generatedSlots);
-            selectedSlotslength(generatedSlots.length)
-            // console.log(slotslength)
-            // console.log(generatedSlots)
+            // selectedSlotslength(generatedSlots.length);
         };
 
         updateAvailableSlots();
@@ -609,24 +866,26 @@ const BookDemo = () => {
         }, 60000);
 
         return () => clearInterval(intervalId);
-    }, [val, selectedSlot]);
+        // eslint-disable-next-line
+    }, [val, selectedSlot, timezoneOffset]);
 
 
 
-    const handleSlotSelection = (time) => {
-        if (slots.includes(time)) {
-            setSelectedSlot(time);
-        }
+    const handleSlotSelection = (slot) => {
+        setSelectedSlot(slot);
     };
 
-    const progress = currentQuestionIndex > 0
-        ? ((currentQuestionIndex + 1) / questionsData.length) * 100
-        : 0
+    const progress = currentQuestionIndex >= 0
+        ? Math.min(((currentQuestionIndex + 1) / questionsData.length) * 100, 100)
+        : 0;
 
     const getContainerStyles = () => {
+        // Check if we're on a mobile device (could use a more robust check in a real app)
+        const isMobile = window.innerWidth < 768; // Common breakpoint for mobile
+
         if (!slots || slots.length === 0) {
             return {
-                height: '80px',
+                height: isMobile ? '80px' : '260px', // 80px on phone, 300px otherwise
                 width: '150px',
                 overflowY: 'hidden'
             };
@@ -641,23 +900,31 @@ const BookDemo = () => {
         }
 
         return {
-            height: '300px',
+            height: '260px',
             width: '200px',
             overflowY: 'scroll'
         };
     };
 
     const isCurrentQuestionAnswered = () => {
-        const currentQuestion = questionsData[currentQuestionIndex];
+        const currentQuestion = questionsData?.[currentQuestionIndex];
+
+        if (!currentQuestion) {
+            // If currentQuestion is undefined, return false to avoid errors
+            return false;
+        }
 
         if (currentQuestion.multiSelect) {
-            return multiSelectAnswers[currentQuestion.id]?.length > 0;
-        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
-            return otherText.trim() !== '';
-        } else {
-            return !!selectedAnswers[currentQuestion.id];
+            return multiSelectAnswers?.[currentQuestion.id]?.length > 0 || false;
         }
+        // If currentQuestion.hasOther condition is uncommented in the future:
+        // else if (currentQuestion.hasOther && selectedAnswers?.[currentQuestion.id] === "Other (Please Specify)") {
+        //     return otherText?.trim() !== '';
+        // }
+
+        return !!selectedAnswers?.[currentQuestion.id];
     };
+
 
     // const handleSubmitBooking = () => {
     //     // For backend (need to see)
@@ -692,9 +959,9 @@ const BookDemo = () => {
                     </div>
                 </div>
                 <div className='flex flex-col md:flex md:flex-row mt-16 md:gap-x-12 xl:gap-x-2 2xl:gap-x-4 gap-y-5 items-center justify-center w-full md:items-start lg:ml-16 xl:ml-16 2xl:mt-20 2xl:ml-[68px] xl:justify-start xl:items-start'>
-                    <img src={grdp} alt='grdp' className='w-[170px] xl:w-[170px] 2xl:w-[160px]' />
-                    <img src={soc} alt='soc' className='w-[170px] xl:w-[170px] 2xl:w-[160px]' />
-                    <img src={iso} alt='iso' className='w-[220px] xl:w-[200px] xl:h-[22px] 2xl:w-[220px]' />
+                    <img src={grdp} alt='grdp' className='w-[170px] xl:w-[130px] 2xl:w-[160px]' />
+                    <img src={soc} alt='soc' className='w-[170px] xl:w-[130px] 2xl:w-[160px]' />
+                    <img src={iso} alt='iso' className='w-[220px] xl:w-[178px] 2xl:w-[220px]' />
                 </div>
                 <div className='flex justify-center sm:text-start mt-10 md:mt-24 w-full xl:justify-start xl:ml-16'>
                     <h3 className='text-[#333B52] text-[13px] md:text-[18.9px] 2xl:text-[18.9px] flex text-center'>Trusted by over Top AI companies of all size</h3>
@@ -734,93 +1001,72 @@ const BookDemo = () => {
                             />
                         </div>
                         <div className="w-full mt-14">
-                            <div key={questionsData[currentQuestionIndex].id} className="mb-6 flex flex-col items-start mx-auto">
-                                <motion.div
-                                    initial="hidden"
-                                    animate="visible"
-                                    variants={optionVariants}
-                                    className='delay-100 transition duration-150 ease-in-out'
-                                >
-                                    {questionsData[currentQuestionIndex] && (
-                                        <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
-                                            {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
-                                        </h2>
-                                    )}
+                            {currentQuestionIndex >= 0 && currentQuestionIndex < questionsData.length && (
+                                <div key={questionsData?.[currentQuestionIndex]?.id} className="mb-6 flex flex-col items-start mx-auto">
+                                    <motion.div
+                                        initial="hidden"
+                                        animate="visible"
+                                        variants={optionVariants}
+                                        className="delay-100 transition duration-150 ease-in-out"
+                                    >
+                                        {questionsData[currentQuestionIndex] && (
+                                            <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
+                                                {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
+                                            </h2>
+                                        )}
+                                    </motion.div>
+                                    <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
+                                        {questionsData[currentQuestionIndex]?.options?.map((option) => {
+                                            const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect || false;
+                                            const currentQuestionId = questionsData[currentQuestionIndex]?.id || 0;
 
-                                </motion.div>
-                                <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
-                                    {questionsData[currentQuestionIndex]?.options?.map((option) => {
-                                        const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect || false;
-                                        const currentQuestionId = questionsData[currentQuestionIndex]?.id || 0;
+                                            const isSelected = isMultiSelect
+                                                ? multiSelectAnswers[currentQuestionId]?.includes(option) || false
+                                                : selectedAnswers[currentQuestionId] === option || false;
 
-                                        const isSelected = isMultiSelect
-                                            ? multiSelectAnswers[currentQuestionId]?.includes(option) || false
-                                            : selectedAnswers[currentQuestionId] === option || false;
-
-                                        return (
-                                            <motion.div
-                                                key={option || "unknown-option"}
-                                                initial="hidden"
-                                                animate="visible"
-                                                variants={optionVariants}
-                                                className='delay-100 transition duration-150 ease-in-out'
-                                            >
-                                                <button
-                                                    className={`px-4 py-2 md:px-8 md:py-3 lg:px-7 xl:px-7 2xl:px-8 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm
-                    ${isSelected ? "btn-option" :
-                                                            pendingAnswer?.option === option ? "btn-option" :
-                                                                "bg-[#F6F6F6]"}`}
-                                                    onClick={() => handleAnswer(currentQuestionId, option)}
-                                                    disabled={pendingAnswer !== null && !isSelected && selectedAnswers[currentQuestionId]}
+                                            return (
+                                                <motion.div
+                                                    key={option || "unknown-option"}
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                    variants={optionVariants}
+                                                    className="delay-100 transition duration-150 ease-in-out"
                                                 >
-                                                    {option || "Option not available"}
-                                                </button>
-                                            </motion.div>
-                                        );
-                                    })}
-
-                                </div>
-                                {questionsData?.[currentQuestionIndex]?.id === 6 &&
-                                    selectedAnswers?.[6] === "Others (Please Specify)" && (
-                                        <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-14 flex flex-col md:flex-row items-center">
-                                            {savedText ? (
-                                                <h1 className="mx-auto px-2 text-gray-700 font-semibold break-words w-full text-start md:text-center xl:text-end max-w-lg ">
-                                                    {savedText || "No additional text provided"}
-                                                </h1>
-                                            ) : (
+                                                    <button
+                                                        className={`px-4 py-2 md:px-8 md:py-3 lg:px-7 xl:px-7 2xl:px-8 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm ${isSelected ? "btn-option" : pendingAnswer?.option === option ? "btn-option" : "bg-[#F6F6F6]"
+                                                            }`}
+                                                        onClick={() => handleAnswer(currentQuestionId, option)}
+                                                        disabled={pendingAnswer !== null && !isSelected && selectedAnswers[currentQuestionId]}
+                                                    >
+                                                        {option || "Option not available"}
+                                                    </button>
+                                                </motion.div>
+                                            );
+                                        })}
+                                    </div>
+                                    {questionsData[currentQuestionIndex]?.id === 6 &&
+                                        selectedAnswers?.[6] === "Other (Please Specify)" && (
+                                            <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-14 flex flex-col md:flex-row items-center">
                                                 <input
                                                     maxLength={100}
                                                     type="text"
-                                                    className="lg:w-full w-60 max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
                                                     placeholder="Please specify your use case"
                                                     value={otherText || ""}
-                                                    onChange={handleOtherTextChange}
-                                                />
-                                            )}
-                                            {!savedText && (
-                                                <button
-                                                    className={`lg:mb-10 w-[200px] btn-save mt-2 px-4 ${otherText?.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
-                                                    onClick={() => {
-                                                        if (otherText?.trim()) {
-                                                            setSavedText(otherText?.trim()); // Save the text
-                                                            setSelectedAnswers(prev => ({
-                                                                ...prev,
-                                                                6: "Others (Please Specify)",
-                                                            }));
-                                                            setIsNextEnabled(true)
-                                                        }
+                                                    onChange={(e) => {
+                                                        handleOtherTextChange(e);
+                                                        setSelectedAnswers((prev) => ({
+                                                            ...prev,
+                                                            6: "Other (Please Specify)",
+                                                        }));
+                                                        setIsNextEnabled(true); // Enable the "Next Step" button
                                                     }}
-                                                    disabled={!otherText?.trim()}
-                                                >
-                                                    Save & Continue
-                                                </button>
-                                            )}
+                                                />
+                                            </div>
+                                        )}
+                                </div>
+                            )}
 
-                                        </div>
-                                    )}
-
-
-                            </div>
                         </div>
 
                         <div className='xl:fixed xl:bottom-0 xl:right-0 flex justify-end gap-x-4 md:gap-x-2 items-center mt-10 lg:mx-2 px-2 py-2'>
@@ -836,7 +1082,7 @@ const BookDemo = () => {
 
                                 className={`  btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isNextEnabled && !isLastQuestionAnswered && !questionsData[currentQuestionIndex]?.multiSelect ? 'opacity-50 cursor-not-allowed' : ''} font-semibold`}
                                 onClick={handleNext}
-                                disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered && isNextEnabled}
+                                disabled={!isCurrentQuestionAnswered() && !isLastQuestionAnswered && !isNextEnabled}
                             >
                                 Next Step <img src={arrow} alt='arrow' />
                             </button>
@@ -909,7 +1155,7 @@ const BookDemo = () => {
                             </div>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
                                 <label>
-                                    Country<StyledSpan>*</StyledSpan>
+                                    Country <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
                                     className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.country ? 'border-red-500' : 'border-[#465FF166]'}`}
@@ -997,37 +1243,65 @@ const BookDemo = () => {
                 {currentStep === 3 && (
                     <div className='w-full'>
                         <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
-                            <h1 className='md:text-[32px] flex mx-auto md:ml-12'>Book Demo</h1>
-                            <p className='text-[#727272] flex md:ml-12 md:w-full md:text-[24px] font-normal mx-auto'>Please pick your suitable date and time slot for the demo.</p>
+                            <h1 className='md:text-[32px] flex mx-auto md:ml-[52px]'>Book Demo</h1>
+                            <p className='text-[#727272] flex md:ml-[52px] md:w-full md:text-[24px] font-normal mx-auto'>Please pick your suitable date and time slot for the demo.</p>
                         </div>
-                        <div className='flex mt-10 items-center'>
+                        <div className='flex mt-10 items-center w-full'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className="flex flex-col md:flex-row items-center justify-between w-full mx-auto ml-0 xl:mr-14">
+                                <div className={`flex flex-col md:flex-row items-center justify-between w-full mx-auto sm:ml-4 lg:ml-7 xl:ml-7 2xl:px-7 2xl:ml-0 ml-0}`}>
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
                                             onChange={(newValue) => setValue(newValue)}
                                             disablePast
-                                            // dayOfWeekFormatter={(day) => {
-                                            //     const abbreviatedDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-                                            //     return abbreviatedDays[day]; // Map day index (0-6) to weekday names
-                                            // }}
-                                            className="w-full md:max-w-lg max-w-sm"
+                                            dayOfWeekFormatter={(date) => {
+                                                // Format the date using Day.js adapter
+                                                return date.format('ddd'); // 'dd' gives the first two letters of the weekday (e.g., 'Mo', 'Tu')
+                                            }}
+                                            className="w-full"
                                             sx={{
-                                                width: '390px',
+                                                width: {
+                                                    sm: '430px', // For tablets
+                                                    md: '550px', // For desktops
+                                                    // '2xl': '900px',
+                                                },
+                                                height: "650px",
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    fontSize: '24px',
+                                                    paddingRight: "20px",
+                                                    fontSize: '24px !important',
                                                     fontWeight: 'bold !important',
                                                 },
-                                                // '& .MuiDayCalendar-header': {
-                                                //     fontWeight: 'bold !important', // Bold weekdays
-                                                //     color: 'black !important',
-                                                // },
-                                                '& .MuiPickersDay-root': {
-                                                    marginX: '28px',
-                                                    // gap:"45px",
+                                                '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel': {
+                                                    //for weekdays mond,tu
+                                                    paddingX: "31px",
+                                                    color: '#333333 !important',
+                                                    fontSize: '16px !important',
+                                                    fontWeight: "600 !important",
+                                                },
+                                                '& .MuiDayCalendar-header': {
+                                                    marginX: "6px",
                                                     fontWeight: 'bold !important',
                                                     color: 'black !important',
+                                                    fontSize: '30px !important',
+                                                    display: 'grid',
+                                                    gridTemplateColumns: 'repeat(7, 1fr)',
+                                                    // textAlign: 'center',
+                                                },
+                                                '& .MuiDayCalendar-weekContainer': {
+                                                    paddingY: "2px",
+                                                    display: 'grid !important',
+                                                    gridTemplateColumns: 'repeat(7, 1fr) !important',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                },
+                                                '& .MuiPickersDay-root': {
+                                                    // paddingY:"17px",
+                                                    fontSize: '18px',
+                                                    fontWeight: '!important',
+                                                    color: '#666666 !important', // (for dates color)
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
                                                     '&:hover': {
                                                         backgroundColor: '#E6F2FF',
                                                     },
@@ -1035,23 +1309,15 @@ const BookDemo = () => {
                                                 '& .MuiPickersCalendarHeader-switchViewButton': {
                                                     display: 'none',
                                                 },
-                                                '& .MuiDayCalendar-weekContainer': {
-                                                    justifyContent: 'center',
-                                                },
                                                 '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
-                                                    marginX: '10px',
+                                                    marginX: '16px',
+                                                    marginY: '2px'
                                                 },
-                                                '& .MuiDayCalendar-header': {
-                                                    fontWeight: 'bold !important',
-                                                    color: 'black !important',
-                                                    gap: '17px',
-                                                    fontSize: '24px',
-                                                },
-                                                // '& .MuiPickersCalendarHeader-label': {
-                                                //     fontSize: '24px',
-                                                // },
                                                 '& .MuiPickersArrowSwitcher-root': {
-                                                    marginRight: '80px'
+                                                    marginRight: '110px',
+                                                    '@media (max-width: 768px)': { // Adjust this width for tablet breakpoints
+                                                        marginRight: "98px", // Reduced margin for tablet view
+                                                    },
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -1060,7 +1326,8 @@ const BookDemo = () => {
                                                         backgroundColor: '#FF3333 !important',
                                                     },
                                                 },
-                                            }}
+                                            }
+                                            }
                                         />
 
 
@@ -1068,12 +1335,14 @@ const BookDemo = () => {
                                         <DateCalendar
                                             disablePast
                                             onChange={(newValue) => setValue(newValue)}
-                                            className="w-full md:max-w-lg max-w-sm"
+                                            className="w-full"
                                             sx={{
                                                 width: '280px',
                                                 height: '450px',
                                                 '& .MuiPickersDay-root': {
                                                     marginX: '3px',
+                                                    color: '#666666 !important',
+                                                    fontWeight: '700 !important',
                                                     '&:hover': {
                                                         backgroundColor: '#E6F2FF',
                                                     },
@@ -1081,19 +1350,19 @@ const BookDemo = () => {
                                                 '& .MuiPickersCalendarHeader-switchViewButton': {
                                                     display: 'none',
                                                 },
-                                                // '& .MuiDayCalendar-weekContainer': {
-                                                //     justifyContent: 'center',
-                                                // },
-                                                // '& .MuiPickersDay-root:not(.MuiPickersDay-weekend)': {
-                                                //     marginX: '0px',
-                                                // },
-                                                // "& .MuiDayCalendar-header":{
-                                                //     marginRight:'10px',
-                                                // },
+                                                '& .MuiDayCalendar-header': {
+                                                    fontWeight: 'bold !important',
+                                                    color: '#666666 !important',
+                                                },
+                                                '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel': {
+                                                    color: '#333333 !important',
+                                                    fontSize: '12px !important',
+                                                    fontWeight: "700 !important",
+                                                },
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    fontSize: '20px',
-                                                    width: "100%"
-                                                    // marginLeft: '0px'
+                                                    //month names
+                                                    fontSize: '20px !important',
+                                                    fontWeight: 'bold !important',
                                                 },
                                                 '& .Mui-selected': {
                                                     backgroundColor: '#FB3F4A !important',
@@ -1105,32 +1374,31 @@ const BookDemo = () => {
                                             }}
                                         />
                                     )}
-                                    <div className="md:h-[400px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-12 "></div>
-                                    <div className='flex flex-col items-center w-7/12 md:w-5/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
-                                    {/* do changes in aove div item center if large space between calendar and slots */}
-                                        <div className='w-full max-w-[300px] md:mb-4 flex flex-col'>
-                                            <h2 className='text-[18px] md:text-2xl font-semibold text-gray-700 mb-7 mt-4 md:mt-0'>
-                                                Available Time Slots
-                                            </h2>
-                                            <div className='overflow-hidden flex items-center mx-auto'>
+                                    <div className="md:h-[280px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-0 "></div>
+                                    <div className='flex flex-col items-center w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
+                                        <h2 className='text-[18px] lg:text-xl md:text-2xl font-semibold text-gray-700 mb-4 md:mb-3 mt-4 md:mt-0'>
+                                            Available Time Slots
+                                        </h2>
+                                        <div className='w-full max-w-[300px] flex flex-col'>
+                                            <div className='overflow-auto flex items-center justify-center mx-auto' >
                                                 <div style={getContainerStyles()}>
                                                     {slots && slots.length > 0 ? (
-                                                        <div className='space-y-6 p-2'>
+                                                        <div className='space-y-4 md:space-y-6 p-2'>
                                                             {slots.map((time, index) => (
                                                                 <button
                                                                     key={index}
-                                                                    className={`w-full py-3 text-center rounded-xl border hover:bg-[#093179] hover:text-white transition-colors duration-200 ${selectedSlot === time
+                                                                    className={`w-full py-2 md:py-3 text-center rounded-xl border hover:bg-[#093179] hover:text-white transition-colors duration-200 ${selectedSlot && selectedSlot.istTime === time.istTime
                                                                         ? 'bg-[#093179] text-white'
                                                                         : 'bg-white text-black'
                                                                         }`}
                                                                     onClick={() => handleSlotSelection(time)}
                                                                 >
-                                                                    {time}
+                                                                    {time.localTime}
                                                                 </button>
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        <div className='text-center py-4 text-gray-500'>
+                                                        <div className='text-center py-4 text-gray-500 w-full'>
                                                             No time slots available
                                                         </div>
                                                     )}
@@ -1147,7 +1415,12 @@ const BookDemo = () => {
                             <p className='text-[#333333] font-medium md:text-[22px] text-[18px] '>
                                 {selectedSlot ? formatSelectedSlot(showDate, selectedSlot) : ''}
                             </p>
-                            <p className='text-[14px]'>Timezone: GMT+5:30 India/Asia</p>
+                            {selectedSlot && (
+                                <p className='text-[#333333] font-medium md:text-[16px] text-[14px] mt-1'>
+                                    Indian time: {getISTTimeDisplay(selectedSlot)}
+                                </p>
+                            )}
+                            <p className='text-[14px]'>Timezone: {userTimezone}</p>
                         </div>
                         <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 px-2 lg:mx-2'>
                             <button
@@ -1183,200 +1456,3 @@ const optionVariants = {
     })
 
 };
-
-const countryTimezoneMap = {
-  Afghanistan: "GMT+4:30 Asia/Kabul",
-  Albania: "GMT+2:00 Europe/Tirane",
-  Algeria: "GMT+1:00 Africa/Algiers",
-  Andorra: "GMT+2:00 Europe/Andorra",
-  Angola: "GMT+1:00 Africa/Luanda",
-  "Antigua and Barbuda": "GMT-4:00 America/Antigua",
-  Argentina: "GMT-3:00 America/Argentina",
-  Armenia: "GMT+4:00 Asia/Yerevan",
-  Australia: "GMT+10:00 Australia/Sydney",
-  Austria: "GMT+2:00 Europe/Vienna",
-  Azerbaijan: "GMT+4:00 Asia/Baku",
-  Bahamas: "GMT-4:00 America/Nassau",
-  Bahrain: "GMT+3:00 Asia/Bahrain",
-  Bangladesh: "GMT+6:00 Asia/Dhaka",
-  Barbados: "GMT-4:00 America/Barbados",
-  Belarus: "GMT+3:00 Europe/Minsk",
-  Belgium: "GMT+2:00 Europe/Brussels",
-  Belize: "GMT-6:00 America/Belize",
-  Benin: "GMT+1:00 Africa/Porto-Novo",
-  Bhutan: "GMT+6:00 Asia/Thimphu",
-  Bolivia: "GMT-4:00 America/La_Paz",
-  "Bosnia and Herzegovina": "GMT+2:00 Europe/Sarajevo",
-  Botswana: "GMT+2:00 Africa/Gaborone",
-  Brazil: "GMT-3:00 America/Sao_Paulo",
-  Brunei: "GMT+8:00 Asia/Brunei",
-  Bulgaria: "GMT+3:00 Europe/Sofia",
-  "Burkina Faso": "GMT+0:00 Africa/Ouagadougou",
-  Burundi: "GMT+2:00 Africa/Bujumbura",
-  "Cabo Verde": "GMT-1:00 Atlantic/Cape_Verde",
-  Cambodia: "GMT+7:00 Asia/Phnom_Penh",
-  Cameroon: "GMT+1:00 Africa/Douala",
-  Canada: "GMT-4:00 America/Toronto",
-  "Central African Republic": "GMT+1:00 Africa/Bangui",
-  Chad: "GMT+1:00 Africa/Ndjamena",
-  Chile: "GMT-4:00 America/Santiago",
-  China: "GMT+8:00 Asia/Shanghai",
-  Colombia: "GMT-5:00 America/Bogota",
-  Comoros: "GMT+3:00 Indian/Comoro",
-  Congo: "GMT+1:00 Africa/Brazzaville",
-  "Costa Rica": "GMT-6:00 America/Costa_Rica",
-  Croatia: "GMT+2:00 Europe/Zagreb",
-  Cuba: "GMT-4:00 America/Havana",
-  Cyprus: "GMT+3:00 Asia/Nicosia",
-  "Czech Republic": "GMT+2:00 Europe/Prague",
-  Denmark: "GMT+2:00 Europe/Copenhagen",
-  Djibouti: "GMT+3:00 Africa/Djibouti",
-  Dominica: "GMT-4:00 America/Dominica",
-  "Dominican Republic": "GMT-4:00 America/Santo_Domingo",
-  Ecuador: "GMT-5:00 America/Guayaquil",
-  Egypt: "GMT+2:00 Africa/Cairo",
-  "El Salvador": "GMT-6:00 America/El_Salvador",
-  "Equatorial Guinea": "GMT+1:00 Africa/Malabo",
-  Eritrea: "GMT+3:00 Africa/Asmara",
-  Estonia: "GMT+3:00 Europe/Tallinn",
-  Eswatini: "GMT+2:00 Africa/Mbabane",
-  Ethiopia: "GMT+3:00 Africa/Addis_Ababa",
-  Fiji: "GMT+12:00 Pacific/Fiji",
-  Finland: "GMT+3:00 Europe/Helsinki",
-  France: "GMT+2:00 Europe/Paris",
-  Gabon: "GMT+1:00 Africa/Libreville",
-  Gambia: "GMT+0:00 Africa/Banjul",
-  Georgia: "GMT+4:00 Asia/Tbilisi",
-  Germany: "GMT+2:00 Europe/Berlin",
-  Ghana: "GMT+0:00 Africa/Accra",
-  Greece: "GMT+3:00 Europe/Athens",
-  Grenada: "GMT-4:00 America/Grenada",
-  Guatemala: "GMT-6:00 America/Guatemala",
-  Guinea: "GMT+0:00 Africa/Conakry",
-  "Guinea-Bissau": "GMT+0:00 Africa/Bissau",
-  Guyana: "GMT-4:00 America/Guyana",
-  Haiti: "GMT-4:00 America/Port-au-Prince",
-  Honduras: "GMT-6:00 America/Tegucigalpa",
-  Hungary: "GMT+2:00 Europe/Budapest",
-  Iceland: "GMT+0:00 Atlantic/Reykjavik",
-  India: "GMT+5:30 Asia/Kolkata",
-  Indonesia: "GMT+7:00 Asia/Jakarta",
-  Iran: "GMT+4:30 Asia/Tehran",
-  Iraq: "GMT+3:00 Asia/Baghdad",
-  Ireland: "GMT+1:00 Europe/Dublin",
-  Israel: "GMT+3:00 Asia/Jerusalem",
-  Italy: "GMT+2:00 Europe/Rome",
-  Jamaica: "GMT-5:00 America/Jamaica",
-  Japan: "GMT+9:00 Asia/Tokyo",
-  Jordan: "GMT+3:00 Asia/Amman",
-  Kazakhstan: "GMT+6:00 Asia/Almaty",
-  Kenya: "GMT+3:00 Africa/Nairobi",
-  Kiribati: "GMT+14:00 Pacific/Kiritimati",
-  "North Korea": "GMT+9:00 Asia/Pyongyang",
-  "South Korea": "GMT+9:00 Asia/Seoul",
-  Kosovo: "GMT+2:00 Europe/Belgrade",
-  Kuwait: "GMT+3:00 Asia/Kuwait",
-  Kyrgyzstan: "GMT+6:00 Asia/Bishkek",
-  Laos: "GMT+7:00 Asia/Vientiane",
-  Latvia: "GMT+3:00 Europe/Riga",
-  Lebanon: "GMT+3:00 Asia/Beirut",
-  Lesotho: "GMT+2:00 Africa/Maseru",
-  Liberia: "GMT+0:00 Africa/Monrovia",
-  Libya: "GMT+2:00 Africa/Tripoli",
-  Liechtenstein: "GMT+2:00 Europe/Vaduz",
-  Lithuania: "GMT+3:00 Europe/Vilnius",
-  Luxembourg: "GMT+2:00 Europe/Luxembourg",
-  Madagascar: "GMT+3:00 Indian/Antananarivo",
-  Malawi: "GMT+2:00 Africa/Blantyre",
-  Malaysia: "GMT+8:00 Asia/Kuala_Lumpur",
-  Maldives: "GMT+5:00 Indian/Maldives",
-  Mali: "GMT+0:00 Africa/Bamako",
-  Malta: "GMT+2:00 Europe/Malta",
-  "Marshall Islands": "GMT+12:00 Pacific/Majuro",
-  Mauritania: "GMT+0:00 Africa/Nouakchott",
-  Mauritius: "GMT+4:00 Indian/Mauritius",
-  Mexico: "GMT-5:00 America/Mexico_City",
-  Micronesia: "GMT+11:00 Pacific/Pohnpei",
-  Moldova: "GMT+3:00 Europe/Chisinau",
-  Monaco: "GMT+2:00 Europe/Monaco",
-  Mongolia: "GMT+8:00 Asia/Ulaanbaatar",
-  Montenegro: "GMT+2:00 Europe/Podgorica",
-  Morocco: "GMT+1:00 Africa/Casablanca",
-  Mozambique: "GMT+2:00 Africa/Maputo",
-  Myanmar: "GMT+6:30 Asia/Yangon",
-  Namibia: "GMT+2:00 Africa/Windhoek",
-  Nauru: "GMT+12:00 Pacific/Nauru",
-  Nepal: "GMT+5:45 Asia/Kathmandu",
-  Netherlands: "GMT+2:00 Europe/Amsterdam",
-  "New Zealand": "GMT+12:00 Pacific/Auckland",
-  Nicaragua: "GMT-6:00 America/Managua",
-  Niger: "GMT+1:00 Africa/Niamey",
-  Nigeria: "GMT+1:00 Africa/Lagos",
-  "North Macedonia": "GMT+2:00 Europe/Skopje",
-  Norway: "GMT+2:00 Europe/Oslo",
-  Oman: "GMT+4:00 Asia/Muscat",
-  Pakistan: "GMT+5:00 Asia/Karachi",
-  Palau: "GMT+9:00 Pacific/Palau",
-  Panama: "GMT-5:00 America/Panama",
-  "Papua New Guinea": "GMT+10:00 Pacific/Port_Moresby",
-  Paraguay: "GMT-4:00 America/Asuncion",
-  Peru: "GMT-5:00 America/Lima",
-  Philippines: "GMT+8:00 Asia/Manila",
-  Poland: "GMT+2:00 Europe/Warsaw",
-  Portugal: "GMT+0:00 Europe/Lisbon",
-  Qatar: "GMT+3:00 Asia/Qatar",
-  Romania: "GMT+3:00 Europe/Bucharest",
-  Russia: "GMT+3:00 Europe/Moscow",
-  Rwanda: "GMT+2:00 Africa/Kigali",
-  "Saint Kitts and Nevis": "GMT-4:00 America/St_Kitts",
-  "Saint Lucia": "GMT-4:00 America/St_Lucia",
-  "Saint Vincent and the Grenadines": "GMT-4:00 America/St_Vincent",
-  Samoa: "GMT+13:00 Pacific/Apia",
-  "San Marino": "GMT+2:00 Europe/San_Marino",
-  "Sao Tome and Principe": "GMT+0:00 Africa/Sao_Tome",
-  "Saudi Arabia": "GMT+3:00 Asia/Riyadh",
-  Senegal: "GMT+0:00 Africa/Dakar",
-  Serbia: "GMT+2:00 Europe/Belgrade",
-  Seychelles: "GMT+4:00 Indian/Mahe",
-  "Sierra Leone": "GMT+0:00 Africa/Freetown",
-  Singapore: "GMT+8:00 Asia/Singapore",
-  Slovakia: "GMT+2:00 Europe/Bratislava",
-  Slovenia: "GMT+2:00 Europe/Ljubljana",
-  "Solomon Islands": "GMT+11:00 Pacific/Guadalcanal",
-  Somalia: "GMT+3:00 Africa/Mogadishu",
-  "South Africa": "GMT+2:00 Africa/Johannesburg",
-  "South Sudan": "GMT+3:00 Africa/Juba",
-  Spain: "GMT+2:00 Europe/Madrid",
-  "Sri Lanka": "GMT+5:30 Asia/Colombo",
-  Sudan: "GMT+2:00 Africa/Khartoum",
-  Suriname: "GMT-3:00 America/Paramaribo",
-  Sweden: "GMT+2:00 Europe/Stockholm",
-  Switzerland: "GMT+2:00 Europe/Zurich",
-  Syria: "GMT+3:00 Asia/Damascus",
-  Taiwan: "GMT+8:00 Asia/Taipei",
-  Tajikistan: "GMT+5:00 Asia/Dushanbe",
-  Tanzania: "GMT+3:00 Africa/Dar_es_Salaam",
-  Thailand: "GMT+7:00 Asia/Bangkok",
-  "Timor-Leste": "GMT+9:00 Asia/Dili",
-  Togo: "GMT+0:00 Africa/Lome",
-  Tonga: "GMT+13:00 Pacific/Tongatapu",
-  "Trinidad and Tobago": "GMT-4:00 America/Port_of_Spain",
-  Tunisia: "GMT+1:00 Africa/Tunis",
-  Turkey: "GMT+3:00 Europe/Istanbul",
-  Turkmenistan: "GMT+5:00 Asia/Ashgabat",
-  Tuvalu: "GMT+12:00 Pacific/Funafuti",
-  Uganda: "GMT+3:00 Africa/Kampala",
-  Ukraine: "GMT+3:00 Europe/Kiev",
-  "United Arab Emirates": "GMT+4:00 Asia/Dubai",
-  "United Kingdom": "GMT+1:00 Europe/London", 
-  "United States": "GMT-5:00 America/New_York", 
-  Uruguay: "GMT-3:00 America/Montevideo",
-  Uzbekistan: "GMT+5:00 Asia/Tashkent",
-  Vanuatu: "GMT+11:00 Pacific/Efate",
-  "Vatican City": "GMT+2:00 Europe/Vatican",
-  Venezuela: "GMT-4:00 America/Caracas",
-  Vietnam: "GMT+7:00 Asia/Ho_Chi_Minh",
-  Yemen: "GMT+3:00 Asia/Aden",
-  Zambia: "GMT+2:00 Africa/Lusaka",
-  Zimbabwe: "GMT+2:00 Africa/Harare",
-}
