@@ -38,9 +38,9 @@ const questionsData = [
     { id: 1, text: "Which segment does your company belongs to?", options: ["Startup", "Scale Startup", "SME", "Mid Enterprises", "Large Enterprises", "Public Sector", "Non-Profit Organizations"] },
     { id: 2, text: "How many technical teams will be working with NexaStack?", options: ["0-10", "11-50", "51-100", "More Than 100", "Only Me"] },
     { id: 3, text: "Does your team have in-house AI/ML expertise, or do you need support?", options: ["We have an in-house AI/ML team", "We need external AI/ML support", "Need additional support", "Not sure yet, exploring options"] },
-    { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDRP", "HIPAA", "None", "Not Sure"] },
-    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
-    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Others (Please Specify)"], hasOther: true },
+    { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDPR", "HIPAA", "None", "Not Sure"] },
+    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon Web Services (AWS) ", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
+    { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Other (Please Specify)"], hasOther: true },
     { id: 7, text: "Are there specific AI models you plan to operate using NexaStack?", options: ["LLMs (Large Language Models)", "Vision Models", "Recommendation Systems", "Speech & Audio Models", "Custom AI/ML Models", "Not Sure, Need Guidance"] },
 ];
 const IndustryList = [
@@ -481,14 +481,14 @@ const BookDemo = () => {
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
     const [otherText, setOtherText] = useState('');
-    const [currentStep, setCurrentStep] = useState(3);
+    const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
     const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
     const [answeredQuestions, setAnsweredQuestions] = useState([]);
     const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [showOtherInput, setShowOtherInput] = useState(false); // Multi selection ke liye
-    const [savedText, setSavedText] = useState('')
+    // const [savedText, setSavedText] = useState('')
     // const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
     // const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
     const [formData, setFormData] = useState({
@@ -501,7 +501,7 @@ const BookDemo = () => {
     });
     const [formErrors, setFormErrors] = useState({});
 
-    // Handle selection of an answer
+    // Handling selection of an answer
     const handleAnswer = useCallback((questionId, option) => {
         const currentQuestion = questionsData.find(q => q.id === questionId);
 
@@ -523,21 +523,19 @@ const BookDemo = () => {
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
-        } else if (currentQuestion.hasOther && option === "Others (Please Specify)") {
+        } else if (currentQuestion.hasOther && option === "Other (Please Specify)") {
             // Handling "Others" option in question 6
             setSelectedAnswers(prev => ({
                 ...prev,
                 [questionId]: option
             }));
             setOtherText('');
-            setSavedText('')
             setShowOtherInput(true);
 
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
         } else {
-            // Visual feedback for selection
             //  setActiveOptionAnimation(true);
             setPendingAnswer({ questionId, option });
 
@@ -599,9 +597,9 @@ const BookDemo = () => {
         if (currentQuestion.multiSelect) {
             // For multi-select questions
             canProceed = multiSelectAnswers[currentQuestion.id]?.length > 0;
-        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
+        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Other (Please Specify)") {
             // For "Others" option
-            canProceed = savedText.trim() !== '';
+            canProceed = otherText.trim() !== '';
         } else {
             // Normal single-answer flow
             canProceed = !!selectedAnswers[currentQuestion.id];
@@ -634,7 +632,7 @@ const BookDemo = () => {
 
     //         if (question.multiSelect) {
     //             isAnswered = multiSelectAnswers[question.id]?.length > 0;
-    //         } else if (question.hasOther && selectedAnswers[question.id] === "Others (Please Specify)") {
+    //         } else if (question.hasOther && selectedAnswers[question.id] === "Other (Please Specify)") {
     //             isAnswered = otherText.trim() !== '';
     //         } else {
     //             isAnswered = !!selectedAnswers[question.id];
@@ -916,9 +914,11 @@ const BookDemo = () => {
 
         if (currentQuestion.multiSelect) {
             return multiSelectAnswers[currentQuestion.id]?.length > 0;
-        } else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Others (Please Specify)") {
-            return otherText.trim() !== '';
-        } else {
+        }
+        //  else if (currentQuestion.hasOther && selectedAnswers[currentQuestion.id] === "Other (Please Specify)") {
+        //     return otherText.trim() !== '';
+        // }
+         else {
             return !!selectedAnswers[currentQuestion.id];
         }
     };
@@ -1045,41 +1045,23 @@ const BookDemo = () => {
 
                                 </div>
                                 {questionsData?.[currentQuestionIndex]?.id === 6 &&
-                                    selectedAnswers?.[6] === "Others (Please Specify)" && (
+                                    selectedAnswers?.[6] === "Other (Please Specify)" && (
                                         <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-14 flex flex-col md:flex-row items-center">
-                                            {savedText ? (
-                                                <h1 className="mx-auto px-2 text-gray-700 font-semibold break-words w-full text-start md:text-center xl:text-end max-w-lg ">
-                                                    {savedText || "No additional text provided"}
-                                                </h1>
-                                            ) : (
-                                                <input
-                                                    maxLength={100}
-                                                    type="text"
-                                                    className="lg:w-full w-60 max-w-lg p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
-                                                    placeholder="Please specify your use case"
-                                                    value={otherText || ""}
-                                                    onChange={handleOtherTextChange}
-                                                />
-                                            )}
-                                            {!savedText && (
-                                                <button
-                                                    className={`lg:mb-10 w-[200px] btn-save mt-2 px-4 ${otherText?.trim() ? '' : 'opacity-50 cursor-not-allowed'} items-center`}
-                                                    onClick={() => {
-                                                        if (otherText?.trim()) {
-                                                            setSavedText(otherText?.trim()); // Save the text
-                                                            setSelectedAnswers(prev => ({
-                                                                ...prev,
-                                                                6: "Others (Please Specify)",
-                                                            }));
-                                                            setIsNextEnabled(true)
-                                                        }
-                                                    }}
-                                                    disabled={!otherText?.trim()}
-                                                >
-                                                    Save & Continue
-                                                </button>
-                                            )}
-
+                                            <input
+                                                maxLength={100}
+                                                type="text"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
+                                                placeholder="Please specify your use case"
+                                                value={otherText || ""}
+                                                onChange={(e) => {
+                                                    handleOtherTextChange(e);
+                                                    setSelectedAnswers((prev) => ({
+                                                        ...prev,
+                                                        6: "Other (Please Specify)"
+                                                    }));
+                                                    setIsNextEnabled(true); // Enable the "Next Step" button
+                                                }}
+                                            />
                                         </div>
                                     )}
 
@@ -1285,7 +1267,7 @@ const BookDemo = () => {
                                                 },
                                                 height: "650px",
                                                 '& .MuiPickersCalendarHeader-label': {
-                                                    paddingRight:"20px",
+                                                    paddingRight: "20px",
                                                     fontSize: '24px !important',
                                                     fontWeight: 'bold !important',
                                                 },
