@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import "./BookDemo.css"
-import axios from "axios";
 import tick from "../assets/Ticks.svg"
 import grdp from "../assets/1.svg"
 import soc from "../assets/2.svg"
@@ -10,7 +9,6 @@ import reuters from "../assets/reuters.svg"
 import heineken from "../assets/heineken.svg"
 import logo from "../assets/NexaStack.svg"
 import arrow from "../assets/Vector.svg"
-import background from "../assets/Background.jpeg"
 import "../Pages/Button.css"
 import { motion } from 'framer-motion';
 import moment from 'moment';
@@ -26,16 +24,6 @@ import ProgressBar from '../Components/ProgressBar'
 const StyledSpan = styled.span`
   color: red;
 `;
-const questionsArray = [
-    { id: 1, text: "which_segment_does_your_company_belongs_to_" },
-    { id: 2, text: "how_many_technical_teams_will_be_working_with_nexastack_" },
-    { id: 3, text: "does_your_team_have_in_house_ai_ml_expertise__or_do_you_need_support_" },
-    { id: 4, text: "do_you_have_specific_compliance_requirements__e_g___gdpr__hipaa__" },
-    { id: 5, text: "where_do_you_plan_to_deploy_nexastack_for_unified_inference__and_what_are_your_infrastructure_needs" },
-    { id: 6, text: "what_is_your_primary_use_case_for_nexastack_" },
-    { id: 7, text: "are_there_specific_ai_models_you_plan_to_operate_using_nexastack_" }
-  ];
-  
 const dept = [
     { value: "IT", label: "IT" },
     { value: "Finance", label: "Finance" },
@@ -504,12 +492,12 @@ const BookDemo = () => {
     // const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
     // const [activeOptionAnimation, setActiveOptionAnimation] = useState(false);//Animation normal
     const [formData, setFormData] = useState({
-        firstname: '',
-        lastname: '',
+        firstName: '',
+        lastName: '',
         email: '',
         country: '',
-        industry_belongs_to: '',
-        department___team: ''
+        industry: '',
+        department: ''
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -596,15 +584,20 @@ const BookDemo = () => {
         setCurrentStep(prev => prev - 1);
     };
     const handleNext = () => {
+        // Check if all questions are answered
         const allQuestionsAnswered = answeredQuestions.length === questionsData.length;
     
-        if (allQuestionsAnswered && currentQuestionIndex === questionsData.length - 1) {
+        if (allQuestionsAnswered) {
+            // Move to Step 2 if all questions are answered
             setCurrentStep(2);
         } else if (isCurrentQuestionAnswered()) {
+            // Move to the next question
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+        } else {
+            // Alert the user to answer the current question
+            alert("Please answer the current question before proceeding.");
         }
     };
-    
     
 
 
@@ -645,7 +638,7 @@ const BookDemo = () => {
         }
 
         // Handle name validation
-        if (name === 'firstname' || name === 'lastname') {
+        if (name === 'firstName' || name === 'lastName') {
             const maxLength = 50;
             if (value.length >= maxLength) {
                 setFormErrors(prev => ({
@@ -720,95 +713,12 @@ const BookDemo = () => {
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     }
-    {
-        // "fields": [
-        //   {
-        //     "name": "which_segment_does_your_company_belongs_to_",
-        //     "value": "Startup"
-        //   },
-        //   {
-        //     "name": "how_many_technical_teams_will_be_working_with_nexastack_",
-        //     "value": "0-10"
-        //   },
-        //   {
-        //     "name": "does_your_team_have_in_house_ai_ml_expertise__or_do_you_need_support_",
-        //     "value": "We have an in-house AI/ML team"
-        //   },
-        //   {
-        //     "name": "do_you_have_specific_compliance_requirements__e_g___gdpr__hipaa__",
-        //     "value": "GDRP"
-        //   },
-        //   {
-        //     "name": "where_do_you_plan_to_deploy_nexastack_for_unified_inference__and_what_are_your_infrastructure_needs",
-        //     "value": "On-Premises – We have enterprise-grade hardware"
-        //   },
-        //   {
-        //     "name": "what_is_your_primary_use_case_for_nexastack_",
-        //     "value": "Agentic AI Development & Deployment"
-        //   },
-        //   {
-        //     "name": "are_there_specific_ai_models_you_plan_to_operate_using_nexastack_",
-        //     "value": "LLMs (Large Language Models)"
-        //   },
-        //   {
-        //     "name": "firstname",
-        //     "value": "Test"
-        //   },
-        //   {
-        //     "name": "lastname",
-        //     "value": "Nexastack"
-        //   },
-        //   {
-        //     "name": "email",
-        //     "value": "testing@xenonstack.com"
-        //   },
-        //   {
-        //     "name": "country",
-        //     "value": "India"
-        //   },
-        //   {
-        //     "name": "industry_belongs_to",
-        //     "value": "Aerospace"
-        //   },            
-        //   {
-        //     "name": "department___team",
-        //     "value": "IT (Infomation Technology)"
-        //   }
-        // ]
-      }
-    const handleNextStep = async () => {
+    const handleNextStep = () => {
         if (validateForm()) {
-            const unifiedPayload = {
-                fields: [
-                  { name: "firstname", value: formData.firstname },
-                  { name: "lastname", value: formData.lastname },
-                  { name: "email", value: formData.email },
-                  { name: "country", value: formData.country },
-                  { name: "industry_belongs_to", value: formData.industry_belongs_to },
-                  { name: "department___team", value: formData.department___team },
-                //   ...questionsArray.map(question => ({
-                //     name: question.text,
-                //     value: selectedAnswers[question.id] || ""
-                //   }))
-                ]
-            };
-            console.log(selectedAnswers)
-            console.log(formData)
-            console.log(unifiedPayload)
-    
-            try {
-                const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                });
-                console.log("Success:", response.data);
-                setCurrentStep(3);
-            } catch (error) {
-                console.error("Error during POST request:", error);
-            }
+            setCurrentStep(3);
         }
     };
+
     // const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
 
 
@@ -969,7 +879,7 @@ const BookDemo = () => {
 
         return {
             height: '260px',
-            width: '160px',
+            width: '200px',
             overflowY: 'scroll'
         };
     };
@@ -1008,21 +918,10 @@ const BookDemo = () => {
 
     return (
         <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
-           <div className='relative w-full flex flex-col items-start bg-cover bg-center bg-no-repeat lg:min-h-[850px] xl:min-h-[940px]'>
-                {/* Background Image */}
-                <img
-                    src={background}
-                    alt="background"
-                    className="absolute top-0 left-0 w-full h-full object-cover -z-10"
-                />
-                {/* Heading Section */}
+            <div className='w-full left-container flex flex-col items-start'>
                 <div className='flex flex-col items-center lg:items-start w-full xl:ml-16 2xl:ml-16 md:gap-y-1 lg:gap-y-0'>
-                    <h1 className='heading font-medium mt-[66px] text-[24px] md:text-[40px] lg:text-[54px] xl:text-[44px] 2xl:text-[54px] text-center md:text-center xl:text-start md:mb-0 w-full '>
-                        Book your <span>30-minute </span>
-                    </h1>
-                    <h1 className='font-medium text-[24px] md:mt-[-26px] xl:text-[44px] 2xl:text-[54px] mt-[-10px] sm:text-[28px] md:text-[40px] lg:text-[54px] xl:text-start text-center w-full'>
-                        NexaStack demo.
-                    </h1>
+                    <h1 className='heading text-[24px] md:text-[40px] lg:text-[54px] xl:text-[50px] 2xl:text-[64px] text-center md:text-center xl:text-start md:tracking-[-2.69px] md:mb-0 w-full'>Book your <span>30-minute </span></h1>
+                    <h1 className='font-medium text-[24px] md:mt-[-26px] xl:text-[50px] 2xl:text-[64px] mt-[-10px] sm:text-[28px] md:text-[40px] lg:text-[54px] xl:text-start text-center md:tracking-[-2.69px] w-full'>NexaStack demo.</h1>
                 </div>
                 <p className='mt-16 text-[#3E57DA] text-center xl:text-start ml-0 xl:ml-16 2xl:ml-16 tracking-[0.67px] w-full md:text-[20px] lg:text-[24px] xl:text-[24px] 2xl:text-[24px]'>WHAT TO EXPECT:</p>
                 <div className='xl:ml-16 2xl:ml-16 mt-8 space-y-2 md:space-y-3 flex items-center xl:items-start flex-col w-full text-[14px] md:text-[20px] lg:text-[24px] xl:text-[23px] 2xl:text-[18px]'>
@@ -1060,8 +959,8 @@ const BookDemo = () => {
                     </div>
                 </div>
             </div>
-            <div className='right-container w-full px-2 md:px-3'>
-                <div className='mt-20 flex items-center justify-center xl:justify-normal xl:px-14 w-full'>
+            <div className='right-container w-full'>
+                <div className='mt-20 flex items-center justify-center xl:justify-normal xl:ml-14 w-full'>
                     <img src={logo} alt='comapny-logo' className='md:w-[200px] w-[140px] items-center' />
                 </div>
 
@@ -1089,12 +988,12 @@ const BookDemo = () => {
                                         className="delay-100 transition duration-150 ease-in-out"
                                     >
                                         {questionsData[currentQuestionIndex] && (
-                                            <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-4 xl:ml-10 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
+                                            <h2 className="font-semibold mb-2 text-start px-4 xl:px-2 md:ml-8 xl:ml-12 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
                                                 {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
                                             </h2>
                                         )}
                                     </motion.div>
-                                    <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-10 my-6 lg:text-[15px] max-w-full">
+                                    <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-12 my-6 lg:text-[15px] max-w-full">
                                         {questionsData[currentQuestionIndex]?.options?.map((option) => {
                                             const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect || false;
                                             const currentQuestionId = questionsData[currentQuestionIndex]?.id || 0;
@@ -1125,7 +1024,7 @@ const BookDemo = () => {
                                     </div>
                                     {questionsData[currentQuestionIndex]?.id === 6 &&
                                         selectedAnswers?.[6] === "Other (Please Specify)" && (
-                                            <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 lg:px-6 xl:px-14 flex flex-col md:flex-row items-center">
+                                            <div className="w-full space-x-0 md:space-x-10 mb-6 px-2 md:px-14 flex flex-col md:flex-row items-center">
                                                 <input
                                                     maxLength={100}
                                                     type="text"
@@ -1148,7 +1047,7 @@ const BookDemo = () => {
 
                         </div>
 
-                        <div className='flex justify-end gap-x-2 md:gap-x-2 items-center mt-10 md:px-4 2xl:px-7 py-2'>
+                        <div className='xl:fixed xl:bottom-0 xl:right-0 flex justify-end gap-x-4 md:gap-x-2 items-center mt-10 lg:mx-2 px-2 py-2'>
                             <button
                                 className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 text-[14px] items-center font-normal md:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
@@ -1156,6 +1055,7 @@ const BookDemo = () => {
                             >
                                 <img src={arrow} alt='arrow' /> Previous
                             </button>
+
                             <button
                                 className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isCurrentQuestionAnswered() ? "opacity-50 cursor-not-allowed" : ""
                                     } font-semibold`}
@@ -1171,8 +1071,8 @@ const BookDemo = () => {
 
                 {/* Step 2 */}
                 {currentStep === 2 && (
-                    <div className='flex items-center w-full flex-col md:items-start md:px-2'>
-                        <div className='customise-container items-start flex flex-col md:px-10 mt-6 md:mt-16'>
+                    <div className='flex items-center w-full flex-col md:items-start'>
+                        <div className='customise-container items-start flex flex-col md:px-10 mt-6 md:mt-20'>
                             <h1 className='md:text-[32px] flex mx-auto md:ml-0'>Your Information</h1>
                             <p className='text-[#727272] w-full md:text-start md:w-full md:text-[22px] lg:text-[24px] font-normal'>Please provide your information and schedule the demo seamlessly.</p>
                         </div>
@@ -1183,16 +1083,16 @@ const BookDemo = () => {
                                 </label>
                                 <input
                                     maxLength={50}
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstname ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.firstName ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
-                                    name="firstname"
-                                    value={formData.firstname}
+                                    name="firstName"
+                                    value={formData.firstName}
                                     onChange={handleInputChange}
                                     autoComplete="off"
                                     placeholder="Please enter your First Name"
                                 />
                                 {formErrors.firstName && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.firstname}</p>
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.firstName}</p>
                                 )}
                             </div>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
@@ -1201,16 +1101,16 @@ const BookDemo = () => {
                                 </label>
                                 <input
                                     maxLength={50}
-                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastname ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none ${formErrors.lastName ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
-                                    name="lastname"
-                                    value={formData.lastname}
+                                    name="lastName"
+                                    value={formData.lastName}
                                     onChange={handleInputChange}
                                     autoComplete="off"
                                     placeholder="Please enter your Last Name"
                                 />
-                                {formErrors.lastname && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.lastname}</p>
+                                {formErrors.lastName && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.lastName}</p>
                                 )}
                             </div>
                         </div>
@@ -1260,9 +1160,9 @@ const BookDemo = () => {
                                     Industry Belongs To <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry_belongs_to ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    name="industry_belongs_to"
-                                    value={formData.industry_belongs_to}
+                                    className={`scrollbar-hide p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.industry ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    name="industry"
+                                    value={formData.industry}
                                     onChange={handleInputChange}
                                 >
                                     <option value="" className='text-[#9C9AA5]'>Select your Industry type</option>
@@ -1272,8 +1172,8 @@ const BookDemo = () => {
                                         </option>
                                     ))}
                                 </select>
-                                {formErrors.industry_belongs_to && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.industry_belongs_to}</p>
+                                {formErrors.industry && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.industry}</p>
                                 )}
                             </div>
                             <div className='flex flex-col items-start w-full md:w-full'>
@@ -1281,9 +1181,9 @@ const BookDemo = () => {
                                     Department / Team <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department___team ? 'border-red-500' : 'border-[#465FF166]'}`}
-                                    name="department___team"
-                                    value={formData.department___team}
+                                    className={`p-2 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black ${formErrors.department ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    name="department"
+                                    value={formData.department}
                                     onChange={handleInputChange}
                                 >
                                     <option value="" className='text-[#9C9AA5]'>Select your department/ team</option>
@@ -1293,13 +1193,13 @@ const BookDemo = () => {
                                         </option>
                                     ))}
                                 </select>
-                                {formErrors.department___team && (
-                                    <p className='text-red-500 text-sm mt-1'>{formErrors.department___team}</p>
+                                {formErrors.department && (
+                                    <p className='text-red-500 text-sm mt-1'>{formErrors.department}</p>
                                 )}
                             </div>
                         </div>
 
-                        <div className='text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-10 md:mt-8 gap-x-2 lg:mr-4 lg:px-9 xl:px-2 2xl:px-8 md:px-6 px-1 2xl:mt-10'>
+                        <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-0 md:mt-8 gap-x-3 lg:mr-4 px-2 xl:px-0 '>
                             <button
 
                                 className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[14px] md:text-[16px] 2xl:text-[18px] font-semibold`}
@@ -1321,13 +1221,13 @@ const BookDemo = () => {
                 {/* Step 3 */}
                 {currentStep === 3 && (
                     <div className='w-full'>
-                        <div className='customise-container items-start flex flex-col mt-6 md:mt-16'>
-                            <h1 className='md:text-[32px] flex mx-auto md:ml-10 2xl:ml-[52px]'>Book Demo</h1>
-                            <p className='text-[#727272] flex md:ml-10 2xl:ml-[52px] md:w-full md:text-[24px] font-normal mx-auto'>Please pick your suitable date and time slot for the demo.</p>
+                        <div className='customise-container items-start flex flex-col mt-6 md:mt-20'>
+                            <h1 className='md:text-[32px] flex mx-auto md:ml-[52px]'>Book Demo</h1>
+                            <p className='text-[#727272] flex md:ml-[52px] md:w-full md:text-[24px] font-normal mx-auto'>Please pick your suitable date and time slot for the demo.</p>
                         </div>
                         <div className='flex mt-10 items-center w-full'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className={`flex flex-col md:flex-row items-center justify-between w-full sm:ml-4 lg:ml-7 xl:ml-7 2xl:px-0 2xl:ml-12 ml-0}`}>
+                                <div className={`flex flex-col md:flex-row items-center justify-between w-full mx-auto sm:ml-4 lg:ml-7 xl:ml-7 2xl:px-7 2xl:ml-0 ml-0}`}>
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
@@ -1341,8 +1241,7 @@ const BookDemo = () => {
                                             sx={{
                                                 width: {
                                                     sm: '430px', // For tablets
-                                                    md:'473px',
-                                                    // xl: '420px', // For desktops
+                                                    md: '550px', // For desktops
                                                     // '2xl': '900px',
                                                 },
                                                 height: "650px",
@@ -1456,7 +1355,7 @@ const BookDemo = () => {
                                     )}
                                     <div className="md:h-[280px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-0 "></div>
                                     <div className='flex flex-col items-center w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
-                                        <h2 className='text-[18px] md:text-lg lg:text-xl font-semibold text-gray-700 mb-4 md:mb-3 mt-4 md:mt-0'>
+                                        <h2 className='text-[18px] lg:text-xl md:text-2xl font-semibold text-gray-700 mb-4 md:mb-3 mt-4 md:mt-0'>
                                             Available Time Slots
                                         </h2>
                                         <div className='w-full max-w-[300px] flex flex-col'>
@@ -1502,8 +1401,7 @@ const BookDemo = () => {
                             )}
                             <p className='text-[14px]'>Timezone: {userTimezone}</p>
                         </div>
-                        {/* <div className='text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-10 md:mt-8 gap-x-2 lg:mr-4 lg:px-9 xl:px-2 2xl:px-8 md:px-6 px-1 2xl:mt-10'> */}
-                        <div className='text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 2xl:px-16 2xl:mr-0 2xl:mt-10 xl:px-4 xl:mt-14 xl:mr-0 lg:px-16 lg:mr-0 md:px-4'>
+                        <div className='xl:fixed xl:bottom-0 xl:right-0 text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 px-2 lg:mx-2'>
                             <button
                                 className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[14px] md:text-[16px] 2xl:text-[18px] font-semibold`}
                                 onClick={handlePreviousStep}

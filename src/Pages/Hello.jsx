@@ -1456,3 +1456,20 @@ const optionVariants = {
     })
 
 };
+
+
+const handleNext = () => {
+    // Check if all questions are answered
+    const allQuestionsAnswered = answeredQuestions.length === questionsData.length;
+
+    if (allQuestionsAnswered && currentQuestionIndex === questionsData.length - 1) {
+        // Move to Step 2 if all questions are answered and on the last question
+        setCurrentStep(2);
+    } else if (isCurrentQuestionAnswered()) {
+        // Move to the next question
+        setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
+    } else {
+        // Alert the user to answer the current question
+        alert("Please answer the current question before proceeding.");
+    }
+};

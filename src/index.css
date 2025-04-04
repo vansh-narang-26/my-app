@@ -24,3 +24,93 @@ code {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+/* 
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'work-sans-bold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'work-sans-extrabold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-ExtraBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'work-sans-semibold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'work-sans-medium';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'work-sans-regular';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'work-sans-light';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  font-family: sans-serif;
+  font-size: 10px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+  @apply text-base leading-normal text-darkBlue bg-white m-0 overflow-x-hidden h-full p-0;
+}
+
+h1 {
+  @apply text-6xl text-darkBlue font-semibold;
+}
+
+h2 {
+  @apply text-3xl text-darkBlue font-semibold leading-short;
+}
+
+h3 {
+  @apply text-2xl text-darkBlue font-semibold leading-short;
+}
+
+h4 {
+  @apply font-medium text-darkBlue;
+}
+
+h5 {
+  @apply font-medium text-darkBlue;
+}
+
+p {
+  @apply text-lg text-lightBlue leading-tight mb-4;
+}
+
+h1, h2, h3, h4, h5 {
+  @apply mb-4;
+} */
