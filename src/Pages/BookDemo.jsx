@@ -51,7 +51,7 @@ const questionsData = [
     { id: 2, text: "How many technical teams will be working with NexaStack?", options: ["0-10", "11-50", "51-100", "More Than 100", "Only Me"] },
     { id: 3, text: "Does your team have in-house AI/ML expertise, or do you need support?", options: ["We have an in-house AI/ML team", "We need external AI/ML support", "Need additional support", "Not sure yet, exploring options"] },
     { id: 4, text: "Do you have specific compliance requirements (e.g., GDPR, HIPAA)?", options: ["GDPR", "HIPAA", "None", "Not Sure"] },
-    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises – We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon Web Services (AWS) ", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
+    { id: 5, text: "Where do you plan to deploy NexaStack for Unified Inference, and what are your infrastructure needs? (you can select multiple)", options: ["On-Premises - We have enterprise-grade hardware", "On-Premises - Need hardware recommendations", "Amazon Web Services (AWS) ", "Microsoft Azure", "Google Cloud", "Multi Cloud", "Not sure yet, need guidance"], multiSelect: true },
     { id: 6, text: "What is your primary use case for NexaStack?", options: ["Agentic AI Development & Deployment", "AI Model Inference & Optimization", "Enterprise AI Operations", "MLOps & Model Lifecycle Management", "AI-Powered Applications & Services", "Other (Please Specify)"], hasOther: true },
     { id: 7, text: "Are there specific AI models you plan to operate using NexaStack?", options: ["LLMs (Large Language Models)", "Vision Models", "Recommendation Systems", "Speech & Audio Models", "Custom AI/ML Models", "Not Sure, Need Guidance"] },
 ];
@@ -532,15 +532,15 @@ const BookDemo = () => {
 
                     setSelectedAnswers((prev) => ({
                         ...prev,
-                        [questionId]: updatedSelections.join(" "), 
+                        [questionId]: updatedSelections.join(''), 
                     }));
                     return { ...prev, [questionId]: updatedSelections };
                 } else {
                     const updatedSelections = [...selections, option];
-                 //   console.log(`Updated Selections for Question ${questionId}:`, updatedSelections);
+                //    console.log(`Updated Selections for Question ${questionId}:`, updatedSelections);
                     setSelectedAnswers((prev) => ({
                         ...prev,
-                        [questionId]: updatedSelections.join(" "), // Convert array to string
+                        [questionId]: updatedSelections.join(''), // Convert array to string
                     }));
                     return { ...prev, [questionId]: updatedSelections };
                 }
@@ -763,17 +763,32 @@ const BookDemo = () => {
                     { name: "department___team", value: formData.department___team },
                     ...questionsArray.map(question => ({
                         name: question.text,
-                        value: selectedAnswers[question.id] || ""
+                        value: selectedAnswers[question.id] || ''
                     }))
                 ]
             };
+            unifiedPayload.fields.forEach(field => {
+                console.log(`Name: ${field.name}, Value: ${field.value}, Type: ${typeof field.value}`);
+            });
+            
             console.log(unifiedPayload)
             console.log(selectedAnswers)
             // console.log(formData)
             // console.log(unifiedPayload)
 
-            try {
-                const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
+            // try {
+            //     const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         }
+            //     });
+            //     console.log("Success:", response.data);
+            //     setCurrentStep(3);
+            // } catch (error) {
+            //     console.error("Error during POST request:", error);
+            // }
+               try {
+                const response = await axios.post("http://localhost:3000/submit", unifiedPayload, {
                     headers: {
                         "Content-Type": "application/json",
                     }
