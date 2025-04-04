@@ -34,8 +34,8 @@ const questionsArray = [
     { id: 5, text: "where_do_you_plan_to_deploy_nexastack_for_unified_inference__and_what_are_your_infrastructure_needs" },
     { id: 6, text: "what_is_your_primary_use_case_for_nexastack_" },
     { id: 7, text: "are_there_specific_ai_models_you_plan_to_operate_using_nexastack_" }
-  ];
-  
+];
+
 const dept = [
     { value: "IT", label: "IT" },
     { value: "Finance", label: "Finance" },
@@ -492,13 +492,15 @@ const BookDemo = () => {
     const [value, setValue] = React.useState(dayjs(todayDate));
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
+
+
     const [otherText, setOtherText] = useState('');
     const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
-    const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
+    // const [isLastQuestionAnswered, setIsLastQuestionAnswered] = useState(false);
     const [answeredQuestions, setAnsweredQuestions] = useState([]);
-    const [isNextEnabled, setIsNextEnabled] = useState(false);
+    // const [isNextEnabled, setIsNextEnabled] = useState(false);
     const [showOtherInput, setShowOtherInput] = useState(false); // Multi selection ke liye
     // const [savedText, setSavedText] = useState('')
     // const [otherInputValue, setOtherInputValue] = useState('');// Specify Other input value ke liye
@@ -516,66 +518,94 @@ const BookDemo = () => {
     // Handling selection of an answer
     const handleAnswer = useCallback((questionId, option) => {
         const currentQuestion = questionsData.find(q => q.id === questionId);
-    
-        if (!currentQuestion) return; // Ensure valid question data exists
-    
+
+        if (!currentQuestion) return;
+
         if (currentQuestion.multiSelect) {
             // Handling multi-select questions
             setMultiSelectAnswers(prev => {
                 const selections = prev[questionId] || [];
-    
+
                 if (selections.includes(option)) {
-                    return { ...prev, [questionId]: selections.filter(item => item !== option) };
+                    // Remove the option if it's already selected
+                    const updatedSelections = selections.filter(item => item !== option);
+
+                    setSelectedAnswers((prev) => ({
+                        ...prev,
+                        [questionId]: updatedSelections.join(" "), 
+                    }));
+                    return { ...prev, [questionId]: updatedSelections };
                 } else {
-                    // Adding new selection
-                    return { ...prev, [questionId]: [...selections, option] };
+                    const updatedSelections = [...selections, option];
+                 //   console.log(`Updated Selections for Question ${questionId}:`, updatedSelections);
+                    setSelectedAnswers((prev) => ({
+                        ...prev,
+                        [questionId]: updatedSelections.join(" "), // Convert array to string
+                    }));
+                    return { ...prev, [questionId]: updatedSelections };
                 }
             });
-    
+
             // Mark question as answered
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
-        } else if (currentQuestion.hasOther && option === "Other (Please Specify)") {
-            // Handling "Others" option
+        }
+        else if (currentQuestion.hasOther && option === "Other (Please Specify)") {
+            // console.log(option)
+            // console.log(otherText)
             setSelectedAnswers(prev => ({
                 ...prev,
-                [questionId]: option
+                [questionId]: option,
             }));
             setOtherText('');
             setShowOtherInput(true);
-    
-            // Mark question as answered
+
+
             if (!answeredQuestions.includes(currentQuestionIndex)) {
                 setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
             }
-        } else {
-            // Smooth selection handling with animation
+        } 
+        else {
             setPendingAnswer({ questionId, option });
-    
+
             setTimeout(() => {
                 setSelectedAnswers(prev => ({
                     ...prev,
                     [questionId]: option
                 }));
-    
+
                 if (!answeredQuestions.includes(currentQuestionIndex)) {
                     setAnsweredQuestions(prev => [...prev, currentQuestionIndex]);
                 }
-    
+
                 setPendingAnswer(null);
-    
+
                 // Do not auto-advance to next question—wait for "Next Step" button
             }, 100);
         }
         // eslint-disable-next-line
     }, [currentQuestionIndex, answeredQuestions, multiSelectAnswers]);
-    
-    
 
+
+
+    // const handleOtherTextChange = (e) => {
+    //     setOtherText(e.target.value);
+    // };
     const handleOtherTextChange = (e) => {
-        setOtherText(e.target.value);
+        const newValue = e.target.value;
+        setOtherText(newValue); // Update otherText state only
+      //  console.log("Updated Other Text:", newValue); // Debug the current input
     };
+    const finalizeOtherText = () => {
+     //   console.log(otherText)
+        setSelectedAnswers((prev) => ({
+            ...prev,
+            6: otherText, // Push the finalized text into selectedAnswers
+        }));
+      //  console.log("Selected Answers Updated:", selectedAnswers);
+    };
+    
 
     const handlePrevious = () => {
         if (currentQuestionIndex > 0) {
@@ -597,15 +627,16 @@ const BookDemo = () => {
     };
     const handleNext = () => {
         const allQuestionsAnswered = answeredQuestions.length === questionsData.length;
-    
+
         if (allQuestionsAnswered && currentQuestionIndex === questionsData.length - 1) {
+            if(otherText !==''){
+                finalizeOtherText()
+            }
             setCurrentStep(2);
         } else if (isCurrentQuestionAnswered()) {
             setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
         }
     };
-    
-    
 
 
     // const findNextUnansweredQuestion = () => {
@@ -720,82 +751,27 @@ const BookDemo = () => {
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
     }
-    {
-        // "fields": [
-        //   {
-        //     "name": "which_segment_does_your_company_belongs_to_",
-        //     "value": "Startup"
-        //   },
-        //   {
-        //     "name": "how_many_technical_teams_will_be_working_with_nexastack_",
-        //     "value": "0-10"
-        //   },
-        //   {
-        //     "name": "does_your_team_have_in_house_ai_ml_expertise__or_do_you_need_support_",
-        //     "value": "We have an in-house AI/ML team"
-        //   },
-        //   {
-        //     "name": "do_you_have_specific_compliance_requirements__e_g___gdpr__hipaa__",
-        //     "value": "GDRP"
-        //   },
-        //   {
-        //     "name": "where_do_you_plan_to_deploy_nexastack_for_unified_inference__and_what_are_your_infrastructure_needs",
-        //     "value": "On-Premises – We have enterprise-grade hardware"
-        //   },
-        //   {
-        //     "name": "what_is_your_primary_use_case_for_nexastack_",
-        //     "value": "Agentic AI Development & Deployment"
-        //   },
-        //   {
-        //     "name": "are_there_specific_ai_models_you_plan_to_operate_using_nexastack_",
-        //     "value": "LLMs (Large Language Models)"
-        //   },
-        //   {
-        //     "name": "firstname",
-        //     "value": "Test"
-        //   },
-        //   {
-        //     "name": "lastname",
-        //     "value": "Nexastack"
-        //   },
-        //   {
-        //     "name": "email",
-        //     "value": "testing@xenonstack.com"
-        //   },
-        //   {
-        //     "name": "country",
-        //     "value": "India"
-        //   },
-        //   {
-        //     "name": "industry_belongs_to",
-        //     "value": "Aerospace"
-        //   },            
-        //   {
-        //     "name": "department___team",
-        //     "value": "IT (Infomation Technology)"
-        //   }
-        // ]
-      }
     const handleNextStep = async () => {
         if (validateForm()) {
             const unifiedPayload = {
-                fields: [
-                  { name: "firstname", value: formData.firstname },
-                  { name: "lastname", value: formData.lastname },
-                  { name: "email", value: formData.email },
-                  { name: "country", value: formData.country },
-                  { name: "industry_belongs_to", value: formData.industry_belongs_to },
-                  { name: "department___team", value: formData.department___team },
-                //   ...questionsArray.map(question => ({
-                //     name: question.text,
-                //     value: selectedAnswers[question.id] || ""
-                //   }))
+                "fields": [
+                    { name: "firstname", value: formData.firstname },
+                    { name: "lastname", value: formData.lastname },
+                    { name: "email", value: formData.email },
+                    { name: "country", value: formData.country },
+                    { name: "industry_belongs_to", value: formData.industry_belongs_to },
+                    { name: "department___team", value: formData.department___team },
+                    ...questionsArray.map(question => ({
+                        name: question.text,
+                        value: selectedAnswers[question.id] || ""
+                    }))
                 ]
             };
-            console.log(selectedAnswers)
-            console.log(formData)
             console.log(unifiedPayload)
-    
+            console.log(selectedAnswers)
+            // console.log(formData)
+            // console.log(unifiedPayload)
+
             try {
                 const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
                     headers: {
@@ -840,14 +816,6 @@ const BookDemo = () => {
 
         return timeSlots;
     };
-
-
-    // const date = new Date();
-    // const formattedTime = new Intl.DateTimeFormat('en-US', {
-    //     hour: 'numeric',
-    //     minute: 'numeric',
-    //     hour12: true
-    // }).format(date);
 
     const val = value.$d;
     const showDate = val.toDateString();
@@ -944,8 +912,8 @@ const BookDemo = () => {
     };
 
     const progress = currentQuestionIndex > 0
-    ? ((currentQuestionIndex + 1) / questionsData.length) * 100
-    : 0
+        ? ((currentQuestionIndex + 1) / questionsData.length) * 100
+        : 0
 
     const getContainerStyles = () => {
         // Check if we're on a mobile device (could use a more robust check in a real app)
@@ -961,9 +929,11 @@ const BookDemo = () => {
 
         if (slots.length <= 3) {
             return {
-                height: `${Math.max(80, slots.length * 60)}px`,
+                // height: `${Math.max(80, slots.length * 60)}px`,
+                height:isMobile? `${Math.max(80, slots.length * 60)}px`:"260px",
+                // height:"260px",
                 width: '180px',
-                overflowY: slots.length > 1 ? 'scroll' : 'hidden'
+                overflowY: isMobile ?slots.length > 1 ? 'scroll' : 'hidden': slots.length <= 1 ? 'scroll' : 'hidden'
             };
         }
 
@@ -976,9 +946,9 @@ const BookDemo = () => {
 
     const isCurrentQuestionAnswered = () => {
         const currentQuestion = questionsData?.[currentQuestionIndex];
-    
+
         if (!currentQuestion) return false;
-    
+
         if (currentQuestion.multiSelect) {
             return multiSelectAnswers?.[currentQuestion.id]?.length > 0;
         } else if (currentQuestion.hasOther && selectedAnswers?.[currentQuestion.id] === "Other (Please Specify)") {
@@ -987,28 +957,14 @@ const BookDemo = () => {
             return !!selectedAnswers?.[currentQuestion.id];
         }
     };
-    useEffect(() => {
-        setIsNextEnabled(isCurrentQuestionAnswered());
-    }, [selectedAnswers, multiSelectAnswers, otherText, currentQuestionIndex]);
-    
-    
+    // useEffect(() => {
+    //     setIsNextEnabled(isCurrentQuestionAnswered());
+    // }, [selectedAnswers, multiSelectAnswers, otherText, currentQuestionIndex]);
 
-
-    // const handleSubmitBooking = () => {
-    //     // For backend (need to see)
-    //     console.log("Form Data:", formData);
-    //     console.log("Selected Answers:", selectedAnswers);
-    //     console.log("Multi-Select Answers:", multiSelectAnswers);
-    //     console.log("Other Text:", otherText);
-    //     console.log("Selected Date:", showDate);
-    //     console.log("Selected Slot:", selectedSlot);
-
-    //     alert("Demo booking submitted successfully!");
-    // };
 
     return (
         <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
-           <div className='relative w-full flex flex-col items-start bg-cover bg-center bg-no-repeat lg:min-h-[850px] xl:min-h-[940px]'>
+            <div className='relative w-full flex flex-col items-start bg-cover bg-center bg-no-repeat lg:min-h-[850px] xl:min-h-[940px]'>
                 {/* Background Image */}
                 <img
                     src={background}
@@ -1132,14 +1088,16 @@ const BookDemo = () => {
                                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0066FF]"
                                                     placeholder="Please specify your use case"
                                                     value={otherText || ""}
-                                                    onChange={(e) => {
-                                                        handleOtherTextChange(e);
-                                                        setSelectedAnswers((prev) => ({
-                                                            ...prev,
-                                                            6: "Other (Please Specify)",
-                                                        }));
-                                                        setIsNextEnabled(true); // Enable the "Next Step" button
-                                                    }}
+                                                    // onChange={(e) => {
+                                                    //     // setOtherText(e.target.value)
+                                                    //     handleOtherTextChange(e);
+                                                    //     // setSelectedAnswers((prev) => ({
+                                                    //     //     ...prev,
+                                                    //     //     6: "Other (Please Specify)",
+                                                    //     // }));
+                                                    //     setIsNextEnabled(true); // Enable the "Next Step" button
+                                                    // }}
+                                                    onChange={handleOtherTextChange}
                                                 />
                                             </div>
                                         )}
@@ -1160,7 +1118,7 @@ const BookDemo = () => {
                                 className={`btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[14px] md:text-[16px] 2xl:text-[18px] ${!isCurrentQuestionAnswered() ? "opacity-50 cursor-not-allowed" : ""
                                     } font-semibold`}
                                 onClick={handleNext}
-                                // disabled={!isCurrentQuestionAnswered()}
+                            // disabled={!isCurrentQuestionAnswered()}
                             >
                                 Next Step <img src={arrow} alt="arrow" />
                             </button>
@@ -1341,11 +1299,15 @@ const BookDemo = () => {
                                             sx={{
                                                 width: {
                                                     sm: '430px', // For tablets
-                                                    md:'473px',
+                                                    md: '473px',
+                                                    xl:'603px'
                                                     // xl: '420px', // For desktops
                                                     // '2xl': '900px',
                                                 },
                                                 height: "650px",
+                                                '& .MuiPickersCalendarHeader-root': {
+                                                    paddingLeft:"12px",
+                                                },
                                                 '& .MuiPickersCalendarHeader-label': {
                                                     paddingRight: "20px",
                                                     fontSize: '24px !important',
@@ -1455,12 +1417,12 @@ const BookDemo = () => {
                                         />
                                     )}
                                     <div className="md:h-[280px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-0 2xl:ml-0 "></div>
-                                    <div className='flex flex-col items-center w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
-                                        <h2 className='text-[18px] md:text-lg lg:text-xl font-semibold text-gray-700 mb-4 md:mb-3 mt-4 md:mt-0'>
+                                    <div className='flex flex-col items-center justify-start w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
+                                        <h2 className='text-[18px] md:text-lg lg:text-xl font-semibold text-gray-700 mb-4 md:mb-2 md:mt-0'>
                                             Available Time Slots
                                         </h2>
                                         <div className='w-full max-w-[300px] flex flex-col'>
-                                            <div className='overflow-auto flex items-center justify-center mx-auto' >
+                                            <div className='overflow-auto flex items-start justify-center  mx-auto' >
                                                 <div style={getContainerStyles()}>
                                                     {slots && slots.length > 0 ? (
                                                         <div className='space-y-4 md:space-y-6 p-2'>
