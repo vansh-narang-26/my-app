@@ -15,6 +15,14 @@ code {
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-Bold.ttf');
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-ExtraBold.ttf');
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-SemiBold.ttf');
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-Medium.ttf');
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-Regular.ttf');
+@import url('https://www.akira.ai/hubfs/work-sans/WorkSans-Light.ttf');
+
+
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -114,3 +122,4 @@ p {
 h1, h2, h3, h4, h5 {
   @apply mb-4;
 } */
+ 

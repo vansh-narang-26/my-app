@@ -15,6 +15,9 @@ module.exports = {
       },
       colors: {
         'primary-orange': '#FF5722',
+      },
+      screens: {
+        '2xl': '1536px', // Make sure this breakpoint is defined
       }
     },
   },

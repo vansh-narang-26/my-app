@@ -27,6 +27,7 @@ const ProgressBar = ({ bgcolor, progress, height }) => {
                 {`${progress}%`} completed
             </p>
         </div>
+
     );
 };
 
