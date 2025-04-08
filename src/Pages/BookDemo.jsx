@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import "./BookDemo.css"
+import config from '../config';
 import axios from "axios";
 import tick from "../assets/Ticks.svg"
 import grdp from "../assets/1.svg"
@@ -775,22 +776,22 @@ const BookDemo = () => {
             //     console.log(`Name: ${field.name}, Value: ${field.value}, Type: ${typeof field.value}`);
             // });
 
-            // console.log(unifiedPayload)
+            console.log(unifiedPayload)
             // console.log(selectedAnswers)
             // console.log(formData)
             // console.log(unifiedPayload)
 
-            // try {
-            //     const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
-            //         headers: {
-            //             "Content-Type": "application/json",
-            //         }
-            //     });
-            //     console.log("Success:", response.data);
-            //     setCurrentStep(3);
-            // } catch (error) {
-            //     console.error("Error during POST request:", error);
-            // }
+            try {
+                const response = await axios.post(config.api_link, unifiedPayload, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    }
+                });
+                console.log("Success:", response.data);
+                setCurrentStep(3);
+            } catch (error) {
+                console.error("Error during POST request:", error);
+            }
             //    try {
             //     const response = await axios.post("http://localhost:3000/submit", unifiedPayload, {
             //         headers: {
@@ -802,7 +803,7 @@ const BookDemo = () => {
             // } catch (error) {
             //     console.error("Error during POST request:", error);
             // }
-            setCurrentStep(3);
+            // setCurrentStep(3);
         }
     };
     // const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect;
