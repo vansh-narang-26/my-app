@@ -5,18 +5,17 @@ const Modal = ({ isOpen, onClose, children, slots }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div className="modal-overlay">
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-content">
           {children}
           <button
             onClick={() => {
-              if (!slots || slots.length === 0) {
-                // Redirect to the same page
-                window.location.href = window.location.href;
-              } else {
-                // Redirect to NexaStack
+              // console.log("Slots value:", slots);
+              if (slots) {
                 window.location.href = "https://nexastack.ai/";
+              } else {
+                onClose();
               }
             }}
             className="modal-close-btn font-work-sans-regular"

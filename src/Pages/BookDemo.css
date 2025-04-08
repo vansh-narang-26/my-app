@@ -54,10 +54,10 @@
     color: #26203B;
 }
 
-@media (max-width:430px) {
+@media (max-width:768px) {
     .customise-container h1 {
         font-weight: 600;
-        font-size: 16px;
+        font-size: 20px;
         color: #26203B;
     }
 

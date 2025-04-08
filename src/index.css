@@ -122,4 +122,117 @@ p {
 h1, h2, h3, h4, h5 {
   @apply mb-4;
 } */
+@font-face {
+  font-family: 'work-sans-bold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
+ @font-face {
+  font-family: 'work-sans-extrabold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-ExtraBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
+ @font-face {
+  font-family: 'work-sans-semibold';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-SemiBold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
+ @font-face {
+  font-family: 'work-sans-medium';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Medium.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
+ @font-face {
+  font-family: 'work-sans-regular';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
+ @font-face {
+  font-family: 'work-sans-light';
+  src: url('https://www.akira.ai/hubfs/work-sans/WorkSans-Light.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+ }
  
+ 
+ html {
+  font-family: sans-serif;
+  font-size: 10px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+ }
+ 
+ body {
+  font-size: 1.6rem;
+  line-height: 1.5;
+  color: #334960;
+  background-color: #ffffff;
+  margin: 0;
+  overflow-x: hidden;
+  height: 100%;
+  padding: 0;
+ }
+ 
+ h1 {
+  color: #213047;
+  font-size: 6rem;
+  font-family: 'work-sans-semibold', sans-serif!important;
+ }
+ 
+ h2 {
+  font-size: 3.8rem;
+  color: #213047;
+  font-weight: 600;
+  line-height: 130%;
+  font-family: 'work-sans-semibold', sans-serif!important;
+ }
+ 
+ h3 {
+  color: #213047;
+  line-height: 130%;
+  font-size: 2.6rem;
+  font-family: 'work-sans-semibold', sans-serif!important;
+ }
+ 
+ h4 {
+  font-family: 'work-sans-medium', sans-serif!important;
+ }
+ 
+ h5 {
+  font-family: 'work-sans-medium', sans-serif!important;
+ }
+ 
+ h4,
+ h5,
+ span {
+  color: #213047;
+ }
+ 
+ h1,
+ h2,
+ h3,
+ h4,
+ h5 {
+  margin: 0 0 1rem;
+ }
+ 
+ p {
+  color: #002C5A;
+  font-size: 2rem;
+  line-height: 155%;
+  margin: 0 0 1rem;
+  font-family: 'work-sans-regular', sans-serif!important;
+ }
+  

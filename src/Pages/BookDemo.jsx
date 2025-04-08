@@ -495,10 +495,7 @@ const BookDemo = () => {
     const [value, setValue] = React.useState(dayjs(todayDate));
     const [selectedAnswers, setSelectedAnswers] = useState({});
     const [multiSelectAnswers, setMultiSelectAnswers] = useState({});
-
-
     const [otherText, setOtherText] = useState('');
-
     const [currentStep, setCurrentStep] = useState(1);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [pendingAnswer, setPendingAnswer] = useState(null);
@@ -774,26 +771,26 @@ const BookDemo = () => {
                     }))
                 ]
             };
-            unifiedPayload.fields.forEach(field => {
-                console.log(`Name: ${field.name}, Value: ${field.value}, Type: ${typeof field.value}`);
-            });
+            // unifiedPayload.fields.forEach(field => {
+            //     console.log(`Name: ${field.name}, Value: ${field.value}, Type: ${typeof field.value}`);
+            // });
 
-            console.log(unifiedPayload)
-            console.log(selectedAnswers)
+            // console.log(unifiedPayload)
+            // console.log(selectedAnswers)
             // console.log(formData)
             // console.log(unifiedPayload)
 
-            try {
-                const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    }
-                });
-                console.log("Success:", response.data);
-                setCurrentStep(3);
-            } catch (error) {
-                console.error("Error during POST request:", error);
-            }
+            // try {
+            //     const response = await axios.post("https://api.hsforms.com/submissions/v3/integration/submit/242072892/2fd12ce4-8805-4a13-a47e-667d985cdbd4", unifiedPayload, {
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         }
+            //     });
+            //     console.log("Success:", response.data);
+            //     setCurrentStep(3);
+            // } catch (error) {
+            //     console.error("Error during POST request:", error);
+            // }
             //    try {
             //     const response = await axios.post("http://localhost:3000/submit", unifiedPayload, {
             //         headers: {
@@ -963,7 +960,7 @@ const BookDemo = () => {
 
         return {
             height: '260px',
-            width: '160px',
+            width: '180px',
             overflowY: 'scroll'
         };
     };
@@ -989,54 +986,53 @@ const BookDemo = () => {
     return (
         <div className='w-full md:flex md:flex-col lg:flex-col xl:flex-row 2xl:flex-row justify-between mx-auto h-screen font-inter overflow-x-hidden'>
             <div
-                className={`relative w-full flex-col items-start bg-cover bg-center bg-no-repeat lg:min-h-[850px] xl:min-h-[940px] hidden lg:block "}`}
+                className={`relative w-full lg:px-4 flex-col items-start bg-cover bg-center bg-no-repeat lg:min-h-[850px] xl:min-h-[950px] hidden lg:block "}`}
             >
-                {/* Background Image */}
                 <img
                     src={background}
                     alt="background"
                     className="absolute top-0 left-0 w-full h-full object-cover -z-10"
                 />
-                {/* Heading Section */}
-                <h1 className='heading font-work-sans-semibold mt-[66px] text-[24px] md:text-[40px] lg:text-[54px] xl:text-[44px] 2xl:text-[54px] text-center md:text-center xl:text-start md:mb-0 w-full xl:ml-16'>
-                    Book your <span>30-minute</span> <br />  <h1 className="block -mt-2 md:-mt-5 xl:-mt-6">NexaStack demo.</h1>
+
+                <h1 className='heading font-work-sans-semibold mt-[66px] text-[24px] md:text-[40px] lg:text-[54px] xl:text-[44px] 2xl:text-[54px] text-center md:text-center xl:text-start md:mb-0 w-full xl:ml-28 2xl:ml-36'>
+                    Book your <span>30-minute</span> <br />  NexaStack demo
                 </h1>
 
 
-                <p className='mt-16 text-[#3E57DA] text-center text-[14px] xl:text-start ml-0 xl:ml-16 2xl:ml-16 w-full md:text-[20px] lg:text-[24px] xl:text-[20px] 2xl:text-[20px] font-work-sans-regular'>
+                <p className='mt-16 text-[#3E57DA] text-center text-[14px] xl:text-start ml-0 xl:ml-28 2xl:ml-36 w-full md:text-[20px] lg:text-[24px] xl:text-[20px] 2xl:text-[20px] font-work-sans-regular'>
                     WHAT TO EXPECT:
                 </p>
 
-                <div className='xl:ml-16 2xl:ml-16 mt-8 space-y-2 md:space-y-3 flex items-center xl:items-start flex-col w-full text-[14px] md:text-[20px] lg:text-[24px] xl:text-[23px] 2xl:text-[18px]'>
+                <div className='xl:ml-28 2xl:ml-36 mt-8 space-y-2 md:space-y-3 flex items-center xl:items-start flex-col w-full text-[14px] md:text-[20px] lg:text-[24px] xl:text-[23px] 2xl:text-[18px]'>
                     <div className='flex items-center gap-x-1 md:gap-x-3'>
-                        <img src={tick} alt='tick' />
+                        <img src={tick} alt='tick' className='mb-4' />
                         <p className='text-[#333B52] tracking-[-0.08px] font-work-sans-regular'>
                             Get a personalized demo of NexaStack
                         </p>
                     </div>
                     <div className='flex items-center gap-x-1 md:gap-x-3 '>
-                        <img src={tick} alt='tick' />
+                        <img src={tick} alt='tick' className='mb-4' />
                         <p className='text-[#333B52] tracking-[-0.08px] font-work-sans-regular'>
                             Learn about pricing for your use case
                         </p>
                     </div>
                     <div className='flex items-center gap-x-1 md:gap-x-3'>
-                        <img src={tick} alt='tick' />
+                        <img src={tick} alt='tick' className='mb-4' />
                         <p className="text-[#333B52] tracking-[-0.08px] font-work-sans-regular">
                             Hear proven customer success stories
                         </p>
                     </div>
                 </div>
 
-                <div className='flex flex-col md:flex md:flex-row mt-16 md:gap-x-12 xl:gap-x-2 2xl:gap-x-4 gap-y-5 items-center justify-center w-full md:items-start lg:ml-16 xl:ml-16 2xl:mt-20 2xl:ml-[68px] xl:justify-start xl:items-start'>
+                <div className='flex flex-col md:flex md:flex-row mt-16 md:gap-x-12 xl:gap-x-2 2xl:gap-x-4 gap-y-5 items-center justify-center w-full md:items-start lg:ml-16 xl:ml-28 2xl:mt-20 2xl:ml-36 xl:justify-start xl:items-start'>
                     <img src={grdp} alt='grdp' className='w-[170px] xl:w-[130px] 2xl:w-[160px]' />
                     <img src={soc} alt='soc' className='w-[170px] xl:w-[130px] 2xl:w-[160px]' />
                     <img src={iso} alt='iso' className='w-[220px] xl:w-[178px] 2xl:w-[220px]' />
                 </div>
-                <div className='flex justify-center sm:text-start mt-10 md:mt-24 w-full xl:justify-start xl:ml-16'>
-                    <h3 className='text-[#333B52] text-[13px] md:text-[18.9px] 2xl:text-[18.9px] flex text-center font-work-sans-semibold'>Trusted by over Top AI companies of all size</h3>
+                <div className='flex justify-center sm:text-start mt-10 md:mt-24 w-full xl:justify-start xl:ml-28 2xl:ml-36'>
+                    <h3 className='text-[#333B52] text-[13px] md:text-[18.9px] 2xl:text-[18.9px] flex text-center font-work-sans-semibold xl:mt-10 2xl:mt-28'>Trusted by over Top AI companies of all size</h3>
                 </div>
-                <div className='lg:ml-14 md:mt-4 mt-10 mb-8 w-full xl:ml-5 2xl:ml-6 xl:px-2 2xl:px-0'>
+                <div className='lg:ml-14 md:mt-4 mt-10 mb-8 w-full xl:ml-4 2xl:ml-20 xl:px-10 2xl:px-0'>
                     <div className='grid grid-cols-4 gap-x-0 sm:gap-x-10 xl:w-full xl:gap-x-0'>
                         <img src={zoom} alt='zoom' className='' />
                         <img src={reuters} alt='reuters' className='' />
@@ -1052,7 +1048,7 @@ const BookDemo = () => {
                 </div>
             </div>
             <div className='right-container w-full px-4 md:px-3'>
-                <div className='mt-12 lg:mt-20 flex items-center justify-center xl:justify-normal xl:px-14 w-full'>
+                <div className='mt-12 lg:mt-24 flex items-center justify-center md:justify-normal md:px-12 xl:px-14 w-full'>
                     <img src={logo} alt='comapny-logo' className='md:w-[200px] w-[140px] items-center' />
                 </div>
 
@@ -1060,21 +1056,21 @@ const BookDemo = () => {
                 {currentStep === 1 && (
                     <div className='w-full'>
                         <div className='customise-container items-center xl:items-start flex flex-col md:mt-16 mt-6 max-w-full'>
-                            <h1 className='md:text-[32px] flex justify-center md:justify-normal md:ml-16 xl:ml-12 w-full font-work-sans-semibold text-[#213047]'>
+                            <h1 className='xl:mt-16 md:text-[32px] flex justify-center md:justify-normal md:ml-16 xl:ml-12 w-full font-work-sans-semibold text-[#213047]'>
                                 Customize your 30-Minute Demo
                             </h1>
-                            <p className='text-[#727272] ml-0 px-1 items-center justify-center md:px-2 xl:px-4 md:ml-12 xl:ml-8 2xl:ml-8 flex md:items-start md:justify-normal md:text-[20px] lg:text-[24px] text-[18px] xl:text-[20px] font-work-sans-regular w-full'>
+                            <p className='text-[#727272] ml-0 px-1 items-center justify-center md:px-2 xl:px-10 2xl:px-0 xl:ml-4 md:ml-12 2xl:ml-12 flex md:items-start md:justify-normal md:text-[20px] xl:text-start lg:text-[24px] text-[16px] xl:text-[20px] font-work-sans-regular w-full'>
                                 Setup your primary focus and customize the demo accordingly.
                             </p>
                         </div>
-                        <div className='w-full max-w-full px-4 md:px-8 xl:px-8 2xl:px-10'>
+                        <div className='w-full max-w-full px-4 md:px-8 xl:px-8 2xl:px-10 flex xl:mt-4 mt-10'>
                             <ProgressBar
                                 bgcolor="#0066FF"
                                 progress={Math.round(progress)}
                                 height={9}
                             />
                         </div>
-                        <div className="w-full mt-14">
+                        <div className="w-full mt-24 md:mt-14 px-4 md:px-0">
                             {currentQuestionIndex >= 0 && currentQuestionIndex < questionsData.length && (
                                 <div key={questionsData?.[currentQuestionIndex]?.id} className="mb-6 flex flex-col items-start mx-auto">
                                     <motion.div
@@ -1084,12 +1080,12 @@ const BookDemo = () => {
                                         className="delay-100 transition duration-150 ease-in-out"
                                     >
                                         {questionsData[currentQuestionIndex] && (
-                                            <h2 className="font-work-sans-semibold mb-2 text-start px-4 xl:px-2 md:ml-4 xl:ml-10 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
+                                            <h4 className="font-work-sans-semibold mb-2 text-start px-4 xl:px-2 md:ml-4 xl:ml-10 text-[16px] md:text-[22px] lg:text-[28px] xl:text-[22px] 2xl:text-[22px] text-[#000000]">
                                                 {questionsData[currentQuestionIndex].text} <StyledSpan>*</StyledSpan>
-                                            </h2>
+                                            </h4>
                                         )}
                                     </motion.div>
-                                    <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-10 my-6 lg:text-[15px] max-w-full">
+                                    <div className="flex flex-wrap gap-4 md:gap-6 md:gap-y-8 justify-start items-center px-2 md:px-0 xl:justify-normal lg:ml-6 xl:ml-10 my-6 lg:text-[15px] max-w-full xl:mt-10">
                                         {questionsData[currentQuestionIndex]?.options?.map((option) => {
                                             const isMultiSelect = questionsData[currentQuestionIndex]?.multiSelect || false;
                                             const currentQuestionId = questionsData[currentQuestionIndex]?.id || 0;
@@ -1107,7 +1103,7 @@ const BookDemo = () => {
                                                     className="delay-100 transition duration-150 ease-in-out"
                                                 >
                                                     <button
-                                                        className={`font-work-sans-regular px-4 py-2 md:px-8 md:py-3 lg:px-7 xl:px-7 2xl:px-8 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-sm ${isSelected ? "btn-option" : pendingAnswer?.option === option ? "btn-option" : "bg-[#F6F6F6]"
+                                                        className={`text-black font-work-sans-regular px-4 py-2 md:px-8 md:py-3 lg:px-7 xl:px-7 2xl:px-8 rounded-full border font-normal text-[14px] md:ml-2 lg:ml-0 md:text-[18px] xl:text-[16px] 2xl:text-[16px] ${isSelected ? "btn-option" : pendingAnswer?.option === option ? "btn-option" : "bg-[#F6F6F6]"
                                                             }`}
                                                         onClick={() => handleAnswer(currentQuestionId, option)}
                                                         disabled={pendingAnswer !== null && !isSelected && selectedAnswers[currentQuestionId]}
@@ -1145,21 +1141,21 @@ const BookDemo = () => {
 
                         </div>
 
-                        <div className='flex justify-end gap-x-2 md:gap-x-2 items-center mt-10 md:px-4 2xl:px-7 py-2'>
+                        <div className='2xl:fixed 2xl:bottom-24 2xl:right-0 flex justify-end gap-x-2 md:gap-x-2 items-center mt-10 md:px-4 2xl:px-7 py-2'>
                             <button
-                                className={`font-work-sans-regular btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 text-[12px] items-center font-normal md:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
+                                className={`font-work-sans-semibold btn-next1 flex gap-x-2 md:gap-x-6 text-[12px] items-center md:text-[16px] 2xl:text-[18px] ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400' : 'text-[#0066FF]'} font-semibold`}
                                 onClick={handlePrevious}
                                 disabled={currentQuestionIndex === 0}
                             >
-                                <img src={arrow} alt='arrow' className='w-8 md:w-10' /> Previous
+                                <img src={arrow} alt='arrow' className='w-12 md:w-14' /> Previous
                             </button>
                             <button
-                                className={`font-work-sans-semibold btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[12px] md:text-[16px] 2xl:text-[18px] ${!isCurrentQuestionAnswered() ? "opacity-50 cursor-not-allowed" : ""
+                                className={`font-work-sans-semibold btn-next flex gap-x-2 md:gap-x-6 items-center text-[12px] md:text-[16px] 2xl:text-[18px] ${!isCurrentQuestionAnswered() ? "opacity-50 cursor-not-allowed" : ""
                                     } font-semibold`}
                                 onClick={handleNext}
                             // disabled={!isCurrentQuestionAnswered()}
                             >
-                                Next Step <img src={arrow} alt="arrow" className='w-8 md:w-10' />
+                                Next Step <img src={arrow} alt="arrow" className='w-12 md:w-14' />
                             </button>
 
                         </div>
@@ -1169,22 +1165,22 @@ const BookDemo = () => {
                 {/* Step 2 */}
                 {currentStep === 2 && (
                     <div className='flex items-center w-full flex-col md:items-start md:px-2'>
-                        <div className='customise-container items-start flex flex-col md:px-10 mt-6 md:mt-16'>
-                            <h1 className='md:text-[32px] flex mx-auto md:ml-0 font-work-sans-semibold text-[#213047]'>
+                        <div className='customise-container items-start flex flex-col md:px-10 mt-6 md:mt-28'>
+                            <h1 className='md:text-[32px] flex mx-auto md:ml-0 text-[#213047]'>
                                 Your Information
                             </h1>
-                            <p className='text-[#727272] w-full md:text-start md:w-full md:text-[22px] lg:text-[24px] xl:text-[20px] font-work-sans-regular font-normal'>
+                            <p className='text-[#727272] w-full md:text-start md:w-full md:text-[22px] lg:text-[24px] xl:text-[20px] text-[16px]'>
                                 Please provide your information and schedule the demo seamlessly.
                             </p>
                         </div>
-                        <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-10 2xl:gap-x-4'>
+                        <div className='flex flex-col md:flex-row m-0 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 mt-16 md:mt-10 2xl:gap-x-4'>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     First Name <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
                                     maxLength={50}
-                                    className={`text-black placeholder-[#000000] p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.firstname ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`text-black placeholder-[#000000] py-2 px-3 md:p-4 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.firstname ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
                                     name="firstname"
                                     value={formData.firstname}
@@ -1193,17 +1189,17 @@ const BookDemo = () => {
                                     placeholder="Please enter your First Name"
                                 />
                                 {formErrors.firstname && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.firstname}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.firstname}</p>
                                 )}
                             </div>
 
                             <div className='flex flex-col items-start w-full md:w-1/2'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     Last Name <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
                                     maxLength={50}
-                                    className={`text-black  placeholder-[#000000] p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.lastname ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`text-black  placeholder-[#000000] py-2 px-3 md:p-4 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.lastname ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="text"
                                     name="lastname"
                                     value={formData.lastname}
@@ -1212,18 +1208,18 @@ const BookDemo = () => {
                                     placeholder="Please enter your Last Name"
                                 />
                                 {formErrors.lastname && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.lastname}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.lastname}</p>
                                 )}
                             </div>
                         </div>
 
-                        <div className='flex flex-col md:flex-row mt-3 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 2xl:gap-x-4 md:mt-0'>
+                        <div className='flex flex-col md:flex-row mt-5 md:m-10 w-11/12 space-y-4 md:space-y-0 md:space-x-14 lg:space-x-16 xl:space-x-14 2xl:gap-x-4 md:mt-0'>
                             <div className='flex flex-col items-start w-full md:w-1/2'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     Business Email ID <StyledSpan>*</StyledSpan>
                                 </label>
                                 <input
-                                    className={`text-black placeholder-[#000000] p-2 md:px-3 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`text-black placeholder-[#000000] py-2 px-3 md:p-4 rounded-lg border w-full mt-2 focus:outline-none font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.email ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     type="email"
                                     name="email"
                                     value={formData.email}
@@ -1232,16 +1228,16 @@ const BookDemo = () => {
                                     placeholder="Please enter your email ID"
                                 />
                                 {formErrors.email && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.email}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.email}</p>
                                 )}
                             </div>
 
                             <div className='flex flex-col items-start w-full md:w-1/2'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     Country <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`scrollbar-hide p-1 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#000000] font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.country ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`scrollbar-hide p-1 py-3 md:px-2 md:py-4 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#000000] font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.country ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="country"
                                     value={formData.country}
                                     onChange={handleInputChange}
@@ -1254,18 +1250,18 @@ const BookDemo = () => {
                                     ))}
                                 </select>
                                 {formErrors.country && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.country}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.country}</p>
                                 )}
                             </div>
                         </div>
 
                         <div className='flex flex-col w-11/12 gap-y-5 md:ml-10 md:gap-y-10 mt-5 md:mt-0'>
                             <div className='flex flex-col items-start w-full md:w-full'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     Industry Belongs To <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`scrollbar-hide p-1 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#000000] font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.industry_belongs_to ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`scrollbar-hide p-1 py-3 md:px-2 md:py-5 w-full rounded-lg border mt-2 bg-white focus:outline-none text-[#000000] font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.industry_belongs_to ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="industry_belongs_to"
                                     value={formData.industry_belongs_to}
                                     onChange={handleInputChange}
@@ -1278,16 +1274,16 @@ const BookDemo = () => {
                                     ))}
                                 </select>
                                 {formErrors.industry_belongs_to && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.industry_belongs_to}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.industry_belongs_to}</p>
                                 )}
                             </div>
 
                             <div className='flex flex-col items-start w-full md:w-full'>
-                                <label className="font-work-sans-semibold text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[22px]">
+                                <label className="font-work-sans-regular text-[#000000] md:text-[20px] lg:text-[22px] xl:text-[16px]">
                                     Department / Team <StyledSpan>*</StyledSpan>
                                 </label>
                                 <select
-                                    className={`p-1 py-3 md:px-2 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.department___team ? 'border-red-500' : 'border-[#465FF166]'}`}
+                                    className={`p-1 py-3 md:px-2 md:py-5 w-full rounded-lg border mt-2 bg-white focus:outline-none text-black font-work-sans-regular md:text-[16px] text-[14px] ${formErrors.department___team ? 'border-red-500' : 'border-[#465FF166]'}`}
                                     name="department___team"
                                     value={formData.department___team}
                                     onChange={handleInputChange}
@@ -1300,25 +1296,26 @@ const BookDemo = () => {
                                     ))}
                                 </select>
                                 {formErrors.department___team && (
-                                    <p className='text-red-500 text-sm mt-1 font-work-sans-regular'>{formErrors.department___team}</p>
+                                    <p className='text-red-500 text-[13px] xl:text-[15px] font-work-sans-regular'>{formErrors.department___team}</p>
                                 )}
                             </div>
                         </div>
 
 
-                        <div className='text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-10 md:mt-8 gap-x-2 lg:mr-4 lg:px-9 xl:px-2 2xl:px-8 md:px-6 px-1 2xl:mt-10'>
+                        <div className={`text-white mb-2 flex md:justify-end md:items-center justify-center items-center mt-16 w-full md:mt-8 gap-x-2 lg:mr-4 lg:px-9 xl:px-2 2xl:px-8 md:px-6 px-1 xl:mt-10 2xl:mt-32`}>
+
                             <button
-                                className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[12px] md:text-[16px] 2xl:text-[18px] font-work-sans-regular font-semibold`}
+                                className={`btn-next1 flex gap-x-2 md:gap-x-6 items-center text-[12px] md:text-[16px] 2xl:text-[18px] font-work-sans-semibold font-semibold`}
                                 onClick={handlePreviousStep}
                             >
-                                <img src={arrow} alt='arrow' className='w-8 md:w-10' /> Previous
+                                <img src={arrow} alt='arrow' className='w-12 md:w-14' /> Previous
                             </button>
 
                             <button
                                 className='btn-next flex gap-x-2 md:gap-x-6 items-center font-work-sans-semibold text-[12px] md:text-[16px] 2xl:text-[18px] font-semibold'
                                 onClick={handleNextStep}
                             >
-                                Next Step <img src={arrow} alt='arrow' className='w-8 md:w-10' />
+                                Next Step <img src={arrow} alt='arrow' className='w-12 md:w-14' />
                             </button>
                         </div>
 
@@ -1328,18 +1325,18 @@ const BookDemo = () => {
                 {/* Step 3 */}
                 {currentStep === 3 && (
                     <div className='w-full'>
-                        <div className='customise-container items-start flex flex-col mt-6 md:mt-16'>
-                            <h1 className='md:text-[32px] flex mx-auto md:ml-10 2xl:ml-[52px] font-work-sans-semibold text-[#213047]'>
+                        <div className='customise-container items-start flex flex-col mt-6 md:mt-24'>
+                            <h1 className='md:text-[32px] flex mx-auto md:ml-10 2xl:ml-[36px] font-work-sans-semibold text-[#213047]'>
                                 Book Demo
                             </h1>
-                            <p className='text-[#727272] flex md:ml-10 2xl:ml-[52px] md:w-full md:text-[24px] font-work-sans-regular font-normal mx-auto'>
+                            <p className='text-[#727272] flex md:ml-10 2xl:ml-[36px] md:w-full md:text-[24px] font-work-sans-regular font-normal mx-auto text-[16px]'>
                                 Please pick your suitable date and time slot for the demo.
                             </p>
                         </div>
 
                         <div className='flex mt-10 items-center w-full'>
                             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <div className={`flex flex-col md:flex-row items-center justify-between w-full sm:ml-4 lg:ml-7 xl:ml-7 2xl:px-0 2xl:ml-8 ml-0}`}>
+                                <div className={`flex flex-col md:flex-row items-center justify-between w-full sm:ml-4 md:ml-0 lg:ml-7 xl:ml-7 2xl:px-0 2xl:ml-8 ml-0}`}>
                                     {isDesktop ? (
                                         <DateCalendar
                                             value={value}
@@ -1352,7 +1349,7 @@ const BookDemo = () => {
                                             className="w-full"
                                             sx={{
                                                 width: {
-                                                    sm: '430px', // For tablets
+                                                    sm: '450px', // For tablets
                                                     md: '473px',
                                                     xl: '603px',
                                                     // xl: '420px', // For desktops
@@ -1361,12 +1358,13 @@ const BookDemo = () => {
                                                 height: "650px",
                                                 '& .MuiPickersCalendarHeader-root': {
                                                     paddingLeft: {
-                                                        xs: '0px',
+                                                        xs: '9px',
                                                         md: '10px',
                                                         '@media (min-width: 1536px)': { paddingLeft: '20px' },
                                                     },
                                                 },
                                                 '& .MuiPickersCalendarHeader-label': {
+                                                    color: "#000000 !important",
                                                     paddingRight: "20px",
                                                     fontSize: '24px !important',
                                                     fontWeight: 'bold !important',
@@ -1434,6 +1432,7 @@ const BookDemo = () => {
                                     ) : (
                                         <DateCalendar
                                             disablePast
+                                            value={value}
                                             onChange={(newValue) => setValue(newValue)}
                                             className="w-full"
                                             sx={{
@@ -1441,6 +1440,7 @@ const BookDemo = () => {
                                                 height: '450px',
                                                 '& .MuiPickersDay-root': {
                                                     marginX: '3px',
+                                                    fontSize: "12px",
                                                     color: '#666666 !important',
                                                     fontWeight: '700 !important',
                                                     '&:hover': {
@@ -1455,12 +1455,14 @@ const BookDemo = () => {
                                                     color: '#666666 !important',
                                                 },
                                                 '& .MuiTypography-root.MuiTypography-caption.MuiDayCalendar-weekDayLabel': {
+                                                    // s,m ,t 
                                                     color: '#333333 !important',
                                                     fontSize: '12px !important',
                                                     fontWeight: "700 !important",
                                                 },
                                                 '& .MuiPickersCalendarHeader-label': {
                                                     //month names
+                                                    color: "#000000 !important",
                                                     fontSize: '20px !important',
                                                     fontWeight: 'bold !important',
                                                 },
@@ -1476,10 +1478,10 @@ const BookDemo = () => {
                                     )}
                                     <div className="md:h-[280px] w-[2px] bg-gray-100 ml-12 md:ml-1 lg:ml-16 xl:ml-2 2xl:ml-0 xl:mx-3 2xl:mx-0"></div>
                                     <div className='flex flex-col items-center justify-start w-11/12 md:w-4/12 lg:w-6/12 xl:w-4/12 2xl:w-5/12'>
-                                        <h2 className='text-[16px] md:text-lg lg:text-[18px] xl:text-[18px] 2xl:text-[22px] font-work-sans-semibold text-[#000000] mb-4 md:mb-2 md:mt-0 font-semibold'>
+                                        <h2 className='text-[18px] md:text-[18px] lg:text-[18px] xl:text-[20px] 2xl:text-[22px] font-work-sans-semibold text-[#000000] mb-4 md:mb-4 md:mt-0 font-semibold'>
                                             Available Time Slots
                                         </h2>
-                                        <div className='w-full max-w-[300px] flex flex-col'>
+                                        <div className='w-full max-w-[300px] flex flex-col mt-2'>
                                             <div className='overflow-auto flex items-start justify-center  mx-auto' >
                                                 <div style={getContainerStyles()}>
                                                     {slots && slots.length > 0 ? (
@@ -1511,8 +1513,8 @@ const BookDemo = () => {
 
                         </div>
                         <div className='flex flex-col items-center md:items-start text-[18px] md:text-[16px] md:ml-10 mt-10 md:mt-16'>
-                            <p className='text-[#666666] text-[14px] font-work-sans-regular'>Demo Scheduling</p>
-                            <p className='text-[#333333] font-medium md:text-[22px] text-[18px] font-work-sans-regular'>
+                            <p className='text-[#666666] text-[14px] font-work-sans-regular -mb-1 mt-4'>Demo Scheduling</p>
+                            <p className='text-[#333333] font-medium md:text-[22px] text-[18px] font-work-sans-regular -mb-1'>
                                 {slots.length > 0
                                     ? selectedSlot
                                         ? formatSelectedSlot(showDate, selectedSlot)
@@ -1525,42 +1527,42 @@ const BookDemo = () => {
                                     Indian time: {getISTTimeDisplay(selectedSlot)}
                                 </p>
                             )} */}
-                            <p className='text-[14px] md:text-[16px] text-[#333333] font-work-sans-regular'>Timezone: {userTimezone}</p>
+                            <p className='text-[14px] md:text-[16px] text-[#333333] font-work-sans-regular -mb-3'>Timezone: {userTimezone}</p>
                         </div>
                         {/* <div className='text-white mb-2 flex justify-end items-center mt-10 w-full xl:mt-10 md:mt-8 gap-x-2 lg:mr-4 lg:px-9 xl:px-2 2xl:px-8 md:px-6 px-1 2xl:mt-10'> */}
                         <div className='text-white mb-2 flex justify-center items-center md:justify-end mt-10 md:-mt-4 gap-x-2 2xl:px-16 2xl:mr-0 2xl:mt-10 xl:px-4 xl:mt-14 xl:mr-0 lg:px-16 lg:mr-0 md:px-4'>
                             <button
-                                className={`btn-next1 flex gap-x-2 md:gap-x-6 md:w-48 w-42 items-center text-[12px] md:text-[16px] 2xl:text-[18px] font-semibold`}
+                                className={`btn-next1 flex gap-x-2 md:gap-x-6 items-center text-[12px] md:text-[16px] 2xl:text-[18px] font-semibold`}
                                 onClick={handlePreviousStep}
                             >
-                                <img src={arrow} alt='arrow' className='w-8 md:w-10' /> Previous
+                                <img src={arrow} alt='arrow' className='w-12 md:w-14' /> Previous
                             </button>
                             <button className='btn-next flex gap-x-2 md:gap-x-6 items-center font-semibold text-[12px] md:text-[16px] 2xl:text-[18px]'
                                 onClick={() => setIsModalOpen(true)}
                             >
-                                Book Demo <img src={arrow} alt='arrow' className='w-8 md:w-10' />
+                                Book Demo <img src={arrow} alt='arrow' className='w-12 md:w-14' />
                             </button>
 
                             {slots.length > 0 ? (
-                                <Modal isOpen={IsModalOpen} onClose={() => setIsModalOpen(false)}>
-                                    <div className="flex flex-col items-center text-center p-6">
-                                        <img src={success} alt="Success" className="mb-4 w-32 md:w-40 lg:w-48" />
-                                        <h2 className="text-xl font-work-sans-semibold">
+                                <Modal isOpen={IsModalOpen} onClose={() => setIsModalOpen(false)} slots={slots}>
+                                    <div className="flex flex-col items-center text-center p-6" onClick={(e) => e.stopPropagation()}>
+                                        <img src={success} alt="Success" className="mb-4 w-32 md:w-40 lg:w-80" />
+                                        <h2 className="text-[16px] md:text-[20px] font-work-sans-semibold -mb-1 md:-mb-2">
                                             Congrats! Your Demo has been booked
                                         </h2>
-                                        <p className="text-gray-600 font-work-sans-regular">
+                                        <p className="text-[16px] md:text-[20px] text-gray-600 font-work-sans-regular -mb-4">
                                             We will reach out to you soon!
                                         </p>
                                     </div>
                                 </Modal>
                             ) : (
                                 <Modal isOpen={IsModalOpen} onClose={() => setIsModalOpen(false)}>
-                                    <div className="flex flex-col items-center text-center p-6">
-                                        <img src={failed} alt="Error" className="mb-4 w-32 md:w-40 lg:w-48" />
-                                        <h2 className="text-xl font-work-sans-semibold">
+                                    <div className="flex flex-col items-center text-center p-6" onClick={(e) => e.stopPropagation()}>
+                                        <img src={failed} alt="Error" className="mb-4 w-32 md:w-40 lg:w-80" />
+                                        <h2 className="text-[16px] md:text-[20px] font-work-sans-semibold -mb-1  md:-mb-2">
                                             No Slots Available
                                         </h2>
-                                        <p className="text-gray-600 font-work-sans-regular">
+                                        <p className="text-[16px] md:text-[20px] text-gray-600 font-work-sans-regular -mb-4">
                                             We're sorry, but there are no slots available at the moment.
                                         </p>
                                     </div>
